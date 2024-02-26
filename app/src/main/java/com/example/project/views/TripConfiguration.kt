@@ -2,6 +2,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,15 +29,20 @@ fun TripConfigurationForm(title: String) {
     val numberOfVotesPerPerson = remember { mutableStateOf(TextFieldValue()) }
     var allowAnonymousVoting = remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.padding(16.dp)) {
-        Text(text = "$title Trip", fontSize = 24.sp, color = Color.Blue, modifier = Modifier.align(Alignment.CenterHorizontally))
+    Column(modifier = Modifier.padding(16.dp).fillMaxHeight()) {
+        Text(
+            text = "$title trip",
+            fontSize = 24.sp,
+            color = Color.Blue,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        InputField(label = "trip name", value = tripName.value, onValueChange = { tripName.value = it })
-        InputField(label = "destination city", value = destinationCity.value, onValueChange = { destinationCity.value = it })
-        InputField(label = "final destination count", value = finalDestinationCount.value, onValueChange = { finalDestinationCount.value = it })
-        InputField(label = "number of votes/person", value = numberOfVotesPerPerson.value, onValueChange = { numberOfVotesPerPerson.value = it })
+        InputField(label = "trip name", value = tripName.value, onValueChange = { tripName.value = it }, modifier = Modifier.weight(1f))
+        InputField(label = "destination city", value = destinationCity.value, onValueChange = { destinationCity.value = it }, modifier = Modifier.weight(1f))
+        InputField(label = "final destination count", value = finalDestinationCount.value, onValueChange = { finalDestinationCount.value = it }, modifier = Modifier.weight(1f))
+        InputField(label = "number of votes/person", value = numberOfVotesPerPerson.value, onValueChange = { numberOfVotesPerPerson.value = it }, modifier = Modifier.weight(1f))
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -61,8 +67,8 @@ fun TripConfigurationForm(title: String) {
 }
 
 @Composable
-fun InputField(label: String, value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit) {
-    Column(modifier = Modifier.padding(vertical = 8.dp)) {
+fun InputField(label: String, value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, modifier: Modifier = Modifier) {
+    Column(modifier = modifier.padding(vertical = 8.dp)) {
         Text(text = label, color = Color.Black, fontSize = 16.sp)
         OutlinedTextField(
             value = value,
