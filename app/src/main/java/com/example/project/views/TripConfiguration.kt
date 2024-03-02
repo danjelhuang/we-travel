@@ -42,10 +42,10 @@ fun TripConfigurationForm(title: String) {
             color = Color(0x1D, 0x35, 0x57),
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(top = 48.dp)
+                .padding(top = 100.dp)
         )
         
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(50.dp))
 
         InputField(label = "trip name", value = tripName.value, onValueChange = { tripName.value = it })
         Spacer(modifier = Modifier.height(20.dp))
