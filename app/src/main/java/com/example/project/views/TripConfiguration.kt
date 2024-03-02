@@ -31,6 +31,7 @@ fun TripConfigurationForm(title: String) {
     val finalDestinationCount = remember { mutableStateOf(TextFieldValue()) }
     val numberOfVotesPerPerson = remember { mutableStateOf(TextFieldValue()) }
     var allowAnonymousVoting = remember { mutableStateOf(false) }
+    val buttonText = if (title == "create") "create" else "save changes"
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
         .padding(16.dp)
@@ -82,7 +83,7 @@ fun TripConfigurationForm(title: String) {
             modifier = Modifier
                 .fillMaxWidth(0.5f)
                 .align(Alignment.CenterHorizontally)){
-            Text("Create", color = Color.White)
+            Text(buttonText, color = Color.White)
         }
     }
 }
