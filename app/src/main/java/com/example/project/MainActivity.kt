@@ -1,5 +1,6 @@
 package com.example.project
 
+import CreateAccountForm
 import TripConfigurationForm
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -23,7 +24,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    TripConfigurationForm("create")
+                    CreateAccountForm()
                 }
             }
         }
