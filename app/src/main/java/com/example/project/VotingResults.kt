@@ -20,6 +20,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -140,7 +142,7 @@ fun VotingListTextFooter() {
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 15.dp)
+            .padding(vertical = 20.dp)
     ) {
         Text(
             text = "Map + Best Travel Path",
@@ -174,7 +176,59 @@ fun Map() {
     }
 }
 
+@Composable
+fun VotingResultsPathList(idx: Int, votingListItem: VotingResultListItem, n: Int) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+    ) {
+        Column {
+            DestinationEntrySimple(destination = votingListItem.destination)
+            if (idx != n - 1) {
+                Image(
+                    painter = painterResource(id = R.drawable.path_list_connector),
+                    contentDescription = "path list connector line",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .size(30.dp)
+                        .padding(vertical = 5.dp)
+                )
+            }
+        }
+    }
+}
 
+@Composable
+fun VotingResultsFooter() {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Row {
+            Button(
+                onClick = { /*TODO*/ },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.save_icon),
+                    contentDescription = "save icon"
+                )
+            }
+            Button(
+                onClick = { /*TODO*/ },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.send_icon),
+                    contentDescription = "send icon"
+                )
+            }
+        }
+    }
+}
 
 @Composable
 fun ScrollableContent(destinations: List<VotingResultListItem>, innerPadding: PaddingValues) {
@@ -191,21 +245,28 @@ fun ScrollableContent(destinations: List<VotingResultListItem>, innerPadding: Pa
         item {
             VotingListTextFooter()
         }
-        item{
+        item {
             Map()
         }
         item {
-            VotingResultsPathList(destinations)
+            Spacer(modifier = Modifier.height((20.dp)))
         }
+        itemsIndexed(destinations) { idx, destination ->
+            VotingResultsPathList(idx, destination, destinations.size)
+        }
+        item {
+            Spacer(modifier = Modifier.height((20.dp)))
+        }
+        item {
+            VotingResultsFooter()
+        }
+        item {
+            Spacer(modifier = Modifier.height((20.dp)))
+        }
+
     }
 }
 
-fun VotingResultsPathList (destinations: List<VotingResultListItem>) {
-
-}
-
-
-@Preview(showBackground = true)
 @Composable
 fun VotingResultsMainScreen() {
     // Assuming we have a list of destinations to display
@@ -273,6 +334,3 @@ fun VotingResultsMainScreen() {
         ScrollableContent(destinations = destinations, innerPadding = innerPadding)
     }
 }
-
-
-

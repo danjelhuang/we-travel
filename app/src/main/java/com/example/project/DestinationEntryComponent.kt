@@ -34,6 +34,48 @@ data class Destination(
 )
 
 @Composable
+fun DestinationEntrySimple(destination: Destination) {
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFFF1FAEE),
+        ),
+        shape = RoundedCornerShape(15.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+
+    ) {
+        Row (
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(10.dp).fillMaxWidth()
+        ){
+            Column {
+                Text(
+                    text = destination.name,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+                Spacer(modifier = Modifier.height(5.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    RatingBar(rating = destination.rating.toFloat()) // Assuming you have a custom RatingBar composable
+                    Image(
+                        painter = painterResource(id = R.drawable.destination_pin),
+                        contentDescription = "Location pin widget",
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        text = " ${destination.address}",
+                        fontSize = 14.sp
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun DestinationEntry(destination: Destination) {
     // Could use Card instead if we don't want the elevation
     ElevatedCard(
