@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -26,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -132,15 +135,73 @@ fun VotingResultItineraryListComponent(index: Int, votingListItem: VotingResultL
 }
 
 @Composable
-fun ItineraryList(destinations: List<VotingResultListItem>, innerPadding: PaddingValues) {
+fun VotingListTextFooter() {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 15.dp)
+    ) {
+        Text(
+            text = "Map + Best Travel Path",
+            style = TextStyle(
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+                color = Color.Black
+            )
+        )
+    }
+}
+
+// TODO: This function will need a lot of changes once we implement the Maps API
+@Composable
+fun Map() {
+    Box(
+        contentAlignment = Alignment.TopCenter,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.map_placeholder),
+            contentDescription = "Place-holder map for google maps integration",
+            modifier = Modifier
+                .fillMaxWidth()
+                .size(540.dp)
+                .clip(RoundedCornerShape(10.dp))
+        )
+    }
+}
+
+
+
+@Composable
+fun ScrollableContent(destinations: List<VotingResultListItem>, innerPadding: PaddingValues) {
     LazyColumn(
         modifier = Modifier
             .padding(innerPadding),
     ) {
+        item {
+            VotingResultsHeader("New York")
+        }
         itemsIndexed(destinations) { idx, destination ->
             VotingResultItineraryListComponent(idx + 1, destination)
         }
+        item {
+            VotingListTextFooter()
+        }
+        item{
+            Map()
+        }
+        item {
+            VotingResultsPathList(destinations)
+        }
     }
+}
+
+fun VotingResultsPathList (destinations: List<VotingResultListItem>) {
+
 }
 
 
@@ -151,31 +212,65 @@ fun VotingResultsMainScreen() {
     val destinations = listOf(
         // Add your destinations here, for example:
         VotingResultListItem(
-            Destination(1, "MoMA", "11 W 53rd St, New York", "4.6", 50, R.drawable.sample_destination_image),
+            Destination(
+                1,
+                "MoMA",
+                "11 W 53rd St, New York",
+                "4.6",
+                50,
+                R.drawable.sample_destination_image
+            ),
             voteCount = 5,
         ),
         VotingResultListItem(
-            Destination(1, "MoMA", "11 W 53rd St, New York", "4.6", 50, R.drawable.sample_destination_image),
+            Destination(
+                1,
+                "MoMA",
+                "11 W 53rd St, New York",
+                "4.6",
+                50,
+                R.drawable.sample_destination_image
+            ),
             voteCount = 4,
         ),
         VotingResultListItem(
-            Destination(1, "MoMA", "11 W 53rd St, New York", "4.6", 50, R.drawable.sample_destination_image),
+            Destination(
+                1,
+                "MoMA",
+                "11 W 53rd St, New York",
+                "4.6",
+                50,
+                R.drawable.sample_destination_image
+            ),
             voteCount = 3,
         ),
         VotingResultListItem(
-            Destination(1, "MoMA", "11 W 53rd St, New York", "4.6", 50, R.drawable.sample_destination_image),
+            Destination(
+                1,
+                "MoMA",
+                "11 W 53rd St, New York",
+                "4.6",
+                50,
+                R.drawable.sample_destination_image
+            ),
             voteCount = 2,
         ),
         VotingResultListItem(
-            Destination(1, "MoMA", "11 W 53rd St, New York", "4.6", 50, R.drawable.sample_destination_image),
+            Destination(
+                1,
+                "MoMA",
+                "11 W 53rd St, New York",
+                "4.6",
+                50,
+                R.drawable.sample_destination_image
+            ),
             voteCount = 1,
         )
     )
 
     Scaffold(
-        topBar = { VotingResultsHeader(tripName = "New York") }
     ) { innerPadding ->
-        ItineraryList(destinations = destinations, innerPadding = innerPadding)
+        ScrollableContent(destinations = destinations, innerPadding = innerPadding)
     }
 }
 
