@@ -1,47 +1,31 @@
 package com.example.project
-
+import TripLoginSignup
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.project.ui.theme.ProjectTheme
-import com.example.project.Views.SessionCodeScreen
-
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val mainLogo: Drawable = resources.getDrawable(R.drawable.logo_wetravel_main, null)
+
         setContent {
             ProjectTheme {
-                App()
+                // A surface container using the 'background' color from the theme
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    TripLoginSignup()
+                }
             }
         }
     }
 }
 
-@Composable
-fun App() {
-    SessionCodeScreen()
-}
-
-
-
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ProjectTheme {
-        Greeting("Android")
-    }
-}
