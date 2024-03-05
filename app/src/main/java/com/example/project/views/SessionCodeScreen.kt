@@ -16,6 +16,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -33,17 +34,27 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.project.R
+
+val dmSansFamily = FontFamily(
+    Font(
+        resId = R.font.dmsans_semibold, FontWeight(600)
+    )
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogoTopAppBar() {
-    TopAppBar(title = { Text(text = "") }, navigationIcon = {
+    TopAppBar(title = {}, navigationIcon = {
         Icon(
-            painter = painterResource(id = R.drawable.wetravel_logo),
+            painter = painterResource(id = R.drawable.logo_we),
             contentDescription = "Logo",
             modifier = Modifier
                 .size(100.dp)
@@ -60,13 +71,13 @@ fun BackButton(onClick: () -> Unit) {
         onClick = { onClick() },
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color(red = 69, green = 123, blue = 157)
+            containerColor = MaterialTheme.colorScheme.secondary
         ),
         modifier = Modifier
             .fillMaxWidth(0.4f)
             .padding(20.dp)
     ) {
-        Text("go back")
+        Text("go back", fontFamily = dmSansFamily)
     }
 }
 
@@ -88,7 +99,7 @@ fun EnterCodeContent(innerpadding: PaddingValues, code: String, onCodeChange: (S
             OutlinedTextField(
                 value = code,
                 onValueChange = onCodeChange,
-                label = { Text("enter code") },
+                label = { Text("enter code", fontFamily = dmSansFamily, fontSize = 24.sp) },
                 modifier = Modifier.fillMaxWidth(0.6f),
                 textStyle = TextStyle(textAlign = TextAlign.Center)
             )
@@ -96,11 +107,11 @@ fun EnterCodeContent(innerpadding: PaddingValues, code: String, onCodeChange: (S
                 onClick = { /* TODO */ },
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(red = 69, green = 123, blue = 157)
+                    containerColor = MaterialTheme.colorScheme.secondary
                 ),
                 modifier = Modifier.fillMaxWidth(0.5f)
             ) {
-                Text("join")
+                Text("join", fontFamily = dmSansFamily)
             }
 
         }
@@ -138,33 +149,33 @@ fun CreateCodeContent(innerpadding: PaddingValues) {
                     .clip(shape = RoundedCornerShape(8.dp))
                     .border(
                         2.dp,
-                        Color(red = 69, green = 123, blue = 157),
+                        MaterialTheme.colorScheme.secondary,
                         shape = RoundedCornerShape(8.dp)
                     )
                     .padding(10.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text("k7jcc56")
+                Text("k7jcc56", fontFamily = dmSansFamily, fontSize = 24.sp)
             }
             Button(
                 onClick = { /* TODO */ },
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(red = 69, green = 123, blue = 157)
+                    containerColor = MaterialTheme.colorScheme.secondary
                 ),
                 modifier = Modifier.fillMaxWidth(0.5f)
             ) {
-                Text("copy share code")
+                Text("copy share code", fontFamily = dmSansFamily)
             }
             Button(
                 onClick = { /* TODO */ },
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(red = 69, green = 123, blue = 157)
+                    containerColor = MaterialTheme.colorScheme.secondary
                 ),
                 modifier = Modifier.fillMaxWidth(0.5f)
             ) {
-                Text("continue")
+                Text("continue", fontFamily = dmSansFamily)
             }
 
         }
@@ -189,8 +200,8 @@ fun SessionCodeScreen() {
 
     Scaffold(topBar = {
         LogoTopAppBar()
-    }) {innerpadding ->
-//        CreateCodeContent(innerpadding)
-        EnterCodeContent(innerpadding, code) { code = it }
+    }) { innerpadding ->
+        CreateCodeContent(innerpadding)
+//        EnterCodeContent(innerpadding, code) { code = it }
     }
 }
