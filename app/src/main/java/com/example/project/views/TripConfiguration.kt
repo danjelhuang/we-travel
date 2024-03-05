@@ -1,3 +1,4 @@
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.material3.Switch
 import androidx.compose.foundation.layout.Column
@@ -7,22 +8,32 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.project.R
 
 @Composable
 fun TripConfigurationForm(title: String) {
@@ -30,30 +41,39 @@ fun TripConfigurationForm(title: String) {
     val destinationCity = remember { mutableStateOf(TextFieldValue()) }
     val finalDestinationCount = remember { mutableStateOf(TextFieldValue()) }
     val numberOfVotesPerPerson = remember { mutableStateOf(TextFieldValue()) }
-    var allowAnonymousVoting = remember { mutableStateOf(false) }
+    val allowAnonymousVoting = remember { mutableStateOf(false) }
     val buttonText = if (title == "create") "create" else "save changes"
+    val dmSansFamily = FontFamily(
+        Font(
+            resId = R.font.dmsans_semibold, FontWeight(600)
+        )
+    )
 
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
         .padding(16.dp)
         .fillMaxHeight()) {
+        LogoTopBar()
+
+        Spacer(modifier = Modifier.height(50.dp))
+
         Text(
             text = "$title trip",
             fontSize = 48.sp,
-            color = Color(0x1D, 0x35, 0x57),
+            fontFamily = dmSansFamily,
+            color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
-                .padding(top = 100.dp)
         )
         
         Spacer(modifier = Modifier.height(50.dp))
 
-        InputField(label = "trip name", value = tripName.value, onValueChange = { tripName.value = it })
+        InputField(label = "trip name", value = tripName.value, onValueChange = { tripName.value = it }, dmSansFamily)
         Spacer(modifier = Modifier.height(20.dp))
-        InputField(label = "destination city", value = destinationCity.value, onValueChange = { destinationCity.value = it })
+        InputField(label = "destination city", value = destinationCity.value, onValueChange = { destinationCity.value = it }, dmSansFamily)
         Spacer(modifier = Modifier.height(20.dp))
-        InputField(label = "final destination count", value = finalDestinationCount.value, onValueChange = { finalDestinationCount.value = it })
+        InputField(label = "final destination count", value = finalDestinationCount.value, onValueChange = { finalDestinationCount.value = it }, dmSansFamily)
         Spacer(modifier = Modifier.height(20.dp))
-        InputField(label = "number of votes/person", value = numberOfVotesPerPerson.value, onValueChange = { numberOfVotesPerPerson.value = it })
+        InputField(label = "number of votes/person", value = numberOfVotesPerPerson.value, onValueChange = { numberOfVotesPerPerson.value = it }, dmSansFamily)
         Spacer(modifier = Modifier.height(20.dp))
 
         Row(
@@ -63,13 +83,13 @@ fun TripConfigurationForm(title: String) {
         ) {
             Switch(
                 colors = SwitchDefaults.colors(
-                    checkedTrackColor = Color(red = 69, green = 123, blue = 157)
+                    checkedTrackColor = MaterialTheme.colorScheme.secondary
                 ),
                 checked = allowAnonymousVoting.value,
                 onCheckedChange = { allowAnonymousVoting.value = it }
             )
             Spacer(modifier = Modifier.width(16.dp))
-            Text("allow anonymous voting", color = Color(0x1D, 0x35, 0x57))
+            Text("allow anonymous voting", color = MaterialTheme.colorScheme.primary, fontFamily = dmSansFamily)
         }
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -78,25 +98,44 @@ fun TripConfigurationForm(title: String) {
             onClick = {  /* TODO */ },
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(red = 69, green = 123, blue = 157)
+                containerColor = MaterialTheme.colorScheme.secondary
             ),
             modifier = Modifier
                 .fillMaxWidth(0.5f)
                 .align(Alignment.CenterHorizontally)){
-            Text(buttonText, color = Color.White)
+            Text(buttonText, color = Color.White, fontFamily = dmSansFamily)
         }
     }
 }
 
 @Composable
-fun InputField(label: String, value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit) {
+fun InputField(label: String, value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, fontFamily: FontFamily) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        label = { Text(label) },
+        label = { Text(label, fontFamily = fontFamily) },
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp)
             .padding(horizontal = 48.dp)
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LogoTopBar() {
+    TopAppBar(
+        title = {},
+        navigationIcon = {
+            Image(
+                painter = painterResource(id = R.drawable.logo_we),
+                contentDescription = "WeTravelLogo",
+                modifier = Modifier.size(100.dp)
+            )
+        },
+        modifier = Modifier.fillMaxWidth(),
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.background
+        )
     )
 }
