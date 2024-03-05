@@ -1,10 +1,7 @@
-package com.example.project
+package com.example.project.views
 
-import android.widget.Space
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,7 +15,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 
@@ -26,14 +25,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.project.components.Destination
+import com.example.project.components.DestinationEntry
+import com.example.project.components.DestinationEntrySimple
+import com.example.project.R
 
 data class VotingResultListItem(
     val destination: Destination,
@@ -132,52 +135,200 @@ fun VotingResultItineraryListComponent(index: Int, votingListItem: VotingResultL
 }
 
 @Composable
-fun ItineraryList(destinations: List<VotingResultListItem>, innerPadding: PaddingValues) {
-    LazyColumn(
+fun VotingListTextFooter() {
+    Box(
+        contentAlignment = Alignment.Center,
         modifier = Modifier
-            .padding(innerPadding),
+            .fillMaxWidth()
+            .padding(vertical = 20.dp)
     ) {
-        itemsIndexed(destinations) { idx, destination ->
-            VotingResultItineraryListComponent(idx + 1, destination)
+        Text(
+            text = "Map + Best Travel Path",
+            style = TextStyle(
+                fontWeight = FontWeight.Medium,
+                fontSize = 16.sp,
+                textAlign = TextAlign.Center,
+                color = Color.Black
+            )
+        )
+    }
+}
+
+// TODO: This function will need a lot of changes once we implement the Maps API
+@Composable
+fun Map() {
+    Box(
+        contentAlignment = Alignment.TopCenter,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.map_placeholder),
+            contentDescription = "Place-holder map for google maps integration",
+            modifier = Modifier
+                .fillMaxWidth()
+                .size(540.dp)
+                .clip(RoundedCornerShape(10.dp))
+        )
+    }
+}
+
+@Composable
+fun VotingResultsPathList(idx: Int, votingListItem: VotingResultListItem, n: Int) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+    ) {
+        Column {
+            DestinationEntrySimple(destination = votingListItem.destination)
+            if (idx != n - 1) {
+                Image(
+                    painter = painterResource(id = R.drawable.path_list_connector),
+                    contentDescription = "path list connector line",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .size(30.dp)
+                        .padding(vertical = 5.dp)
+                )
+            }
         }
     }
 }
 
+@Composable
+fun VotingResultsFooter() {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Row {
+            Button(
+                onClick = { /*TODO*/ },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.save_icon),
+                    contentDescription = "save icon"
+                )
+            }
+            Button(
+                onClick = { /*TODO*/ },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.send_icon),
+                    contentDescription = "send icon"
+                )
+            }
+        }
+    }
+}
 
-@Preview(showBackground = true)
+@Composable
+fun ScrollableContent(destinations: List<VotingResultListItem>, innerPadding: PaddingValues) {
+    LazyColumn(
+        modifier = Modifier
+            .padding(innerPadding),
+    ) {
+        item {
+            VotingResultsHeader("New York")
+        }
+        itemsIndexed(destinations) { idx, destination ->
+            VotingResultItineraryListComponent(idx + 1, destination)
+        }
+        item {
+            VotingListTextFooter()
+        }
+        item {
+            Map()
+        }
+        item {
+            Spacer(modifier = Modifier.height((20.dp)))
+        }
+        itemsIndexed(destinations) { idx, destination ->
+            VotingResultsPathList(idx, destination, destinations.size)
+        }
+        item {
+            Spacer(modifier = Modifier.height((20.dp)))
+        }
+        item {
+            VotingResultsFooter()
+        }
+        item {
+            Spacer(modifier = Modifier.height((20.dp)))
+        }
+
+    }
+}
+
 @Composable
 fun VotingResultsMainScreen() {
     // Assuming we have a list of destinations to display
     val destinations = listOf(
         // Add your destinations here, for example:
         VotingResultListItem(
-            Destination(1, "MoMA", "11 W 53rd St, New York", "4.6", 50, R.drawable.sample_destination_image),
+            Destination(
+                1,
+                "MoMA",
+                "11 W 53rd St, New York",
+                "4.6",
+                50,
+                R.drawable.sample_destination_image
+            ),
             voteCount = 5,
         ),
         VotingResultListItem(
-            Destination(1, "MoMA", "11 W 53rd St, New York", "4.6", 50, R.drawable.sample_destination_image),
+            Destination(
+                1,
+                "MoMA",
+                "11 W 53rd St, New York",
+                "4.6",
+                50,
+                R.drawable.sample_destination_image
+            ),
             voteCount = 4,
         ),
         VotingResultListItem(
-            Destination(1, "MoMA", "11 W 53rd St, New York", "4.6", 50, R.drawable.sample_destination_image),
+            Destination(
+                1,
+                "MoMA",
+                "11 W 53rd St, New York",
+                "4.6",
+                50,
+                R.drawable.sample_destination_image
+            ),
             voteCount = 3,
         ),
         VotingResultListItem(
-            Destination(1, "MoMA", "11 W 53rd St, New York", "4.6", 50, R.drawable.sample_destination_image),
+            Destination(
+                1,
+                "MoMA",
+                "11 W 53rd St, New York",
+                "4.6",
+                50,
+                R.drawable.sample_destination_image
+            ),
             voteCount = 2,
         ),
         VotingResultListItem(
-            Destination(1, "MoMA", "11 W 53rd St, New York", "4.6", 50, R.drawable.sample_destination_image),
+            Destination(
+                1,
+                "MoMA",
+                "11 W 53rd St, New York",
+                "4.6",
+                50,
+                R.drawable.sample_destination_image
+            ),
             voteCount = 1,
         )
     )
 
     Scaffold(
-        topBar = { VotingResultsHeader(tripName = "New York") }
     ) { innerPadding ->
-        ItineraryList(destinations = destinations, innerPadding = innerPadding)
+        ScrollableContent(destinations = destinations, innerPadding = innerPadding)
     }
 }
-
-
-

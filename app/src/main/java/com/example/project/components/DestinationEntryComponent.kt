@@ -1,4 +1,4 @@
-package com.example.project
+package com.example.project.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -22,6 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.project.R
 
 
 data class Destination(
@@ -32,6 +32,48 @@ data class Destination(
     val reviewCount: Int,
     val imageResId: Int,
 )
+
+@Composable
+fun DestinationEntrySimple(destination: Destination) {
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFFF1FAEE),
+        ),
+        shape = RoundedCornerShape(15.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+
+    ) {
+        Row (
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(10.dp).fillMaxWidth()
+        ){
+            Column {
+                Text(
+                    text = destination.name,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+                Spacer(modifier = Modifier.height(5.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    RatingBar(rating = destination.rating.toFloat()) // Assuming you have a custom RatingBar composable
+                    Image(
+                        painter = painterResource(id = R.drawable.destination_pin),
+                        contentDescription = "Location pin widget",
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        text = " ${destination.address}",
+                        fontSize = 14.sp
+                    )
+                }
+            }
+        }
+    }
+}
 
 @Composable
 fun DestinationEntry(destination: Destination) {

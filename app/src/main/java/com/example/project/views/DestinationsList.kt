@@ -1,9 +1,7 @@
-package com.example.project
+package com.example.project.views
 
-import android.text.style.ClickableSpan
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,17 +10,13 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Scaffold
 
@@ -38,6 +32,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.project.R
+import com.example.project.components.Destination
+import com.example.project.components.DestinationEntry
 
 //@Composable
 //fun NumberIndicator(number: Int, numVotes: Int) {
@@ -237,10 +234,16 @@ fun DestinationsList() {
     // Assuming we have a list of destinations to display
     val destinations = listOf(
         // Add your destinations here, for example:
-        Destination(1, "MoMA", "11 W 53rd St, New York", "4.6", 50, R.drawable.sample_destination_image),
+        Destination(1, "MoMA", "11 W 53rd St, New York", "4.6", 50,
+            R.drawable.sample_destination_image
+        ),
         // Add more destinations...
-        Destination(2, "MoMA", "11 W 53rd St, New York", "4.6", 50, R.drawable.sample_destination_image),
-        Destination(3, "MoMA", "11 W 53rd St, New York", "4.6", 50, R.drawable.sample_destination_image),
+        Destination(2, "MoMA", "11 W 53rd St, New York", "4.6", 50,
+            R.drawable.sample_destination_image
+        ),
+        Destination(3, "MoMA", "11 W 53rd St, New York", "4.6", 50,
+            R.drawable.sample_destination_image
+        ),
     )
 
     Scaffold(
