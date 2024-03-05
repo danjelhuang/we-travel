@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -192,34 +193,54 @@ fun BottomCard() {
 
             Spacer(modifier = Modifier.width(20.dp))
             
-            // TODO: Move this out
-            val mainButtonColor = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFE63946),
-                contentColor = Color.White
-            )
-
-            // Add destination button
-            FilledTonalButton(
-                onClick = { /*TODO*/ },
-                shape = RoundedCornerShape(20),
-                colors = mainButtonColor,
-                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.add_square),
-                    contentDescription = "User icon",
-                    modifier = Modifier.size(32.dp)
+                val mainButtonColor = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFFE63946),
+                    contentColor = Color.White
                 )
-                Spacer(modifier = Modifier.width(10.dp))
-                Text(
-                    text = "Destination",
-                    style = TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp,
+
+                // Add destination button
+                FilledTonalButton(
+                    onClick = { /*TODO*/ },
+                    shape = RoundedCornerShape(20),
+                    colors = mainButtonColor,
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.add_square),
+                        contentDescription = "User icon",
+                        modifier = Modifier.size(32.dp)
                     )
-                )
-                Spacer(modifier = Modifier.width(10.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = "Destination",
+                        style = TextStyle(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 20.sp,
+                        )
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                }
+                Spacer(modifier = Modifier.height(10.dp))
+                FilledTonalButton(
+                    onClick = { /*TODO*/ },
+                    shape = RoundedCornerShape(20),
+                    colors = mainButtonColor,
+                    contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp)
+                ) {
+                    Text(
+                        text = "Start Voting",
+                        style = TextStyle(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp,
+                        )
+                    )
+                }
             }
+            // TODO: Move this out
+
 
         }
 
