@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 
@@ -29,8 +30,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.project.components.Destination
@@ -41,6 +45,12 @@ import com.example.project.R
 data class VotingResultListItem(
     val destination: Destination,
     val voteCount: Int,
+)
+
+val dmSansFamily = FontFamily(
+    Font(
+        resId = R.font.dmsans_semibold, FontWeight(600)
+    )
 )
 
 @Composable
@@ -57,10 +67,10 @@ fun VotingResultsHeader(tripName: String) {
             Text(
                 text = "your itinerary for",
                 style = TextStyle(
-                    fontWeight = FontWeight.Normal,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.secondary,
+                    fontFamily = dmSansFamily
                 )
             )
             Spacer(modifier = Modifier.height(0.dp))
@@ -68,9 +78,10 @@ fun VotingResultsHeader(tripName: String) {
                 text = tripName,
                 style = TextStyle(
                     fontWeight = FontWeight.Bold,
-                    fontSize = 36.sp,
+                    fontSize = 45.sp,
                     textAlign = TextAlign.Center,
-                    color = Color.Black
+                    color = MaterialTheme.colorScheme.primary,
+                    fontFamily = dmSansFamily
                 )
             )
             Spacer(modifier = Modifier.height(20.dp))
@@ -80,7 +91,8 @@ fun VotingResultsHeader(tripName: String) {
                     fontWeight = FontWeight.Medium,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center,
-                    color = Color.Gray
+                    color = MaterialTheme.colorScheme.primary,
+                    fontFamily = dmSansFamily
                 )
             )
         }
@@ -99,7 +111,7 @@ fun VotingResultItineraryListComponent(index: Int, votingListItem: VotingResultL
             Surface(
                 color = Color.White,
                 shape = CircleShape,
-                border = BorderStroke(2.dp, Color(0xFF1D3557)),
+                border = BorderStroke(2.dp, color = MaterialTheme.colorScheme.primary),
                 modifier = Modifier.size(45.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
@@ -107,7 +119,8 @@ fun VotingResultItineraryListComponent(index: Int, votingListItem: VotingResultL
                         text = index.toString(),
                         color = Color(0xFF1D3557),
                         fontSize = 22.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = dmSansFamily
                     )
                 }
             }
@@ -125,7 +138,8 @@ fun VotingResultItineraryListComponent(index: Int, votingListItem: VotingResultL
                     text = "${votingListItem.voteCount}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 8.sp,
-                    color = Color.Black
+                    color = Color.Black,
+                    fontFamily = dmSansFamily
                 )
             }
         }
@@ -148,7 +162,8 @@ fun VotingListTextFooter() {
                 fontWeight = FontWeight.Medium,
                 fontSize = 16.sp,
                 textAlign = TextAlign.Center,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.primary,
+                fontFamily = dmSansFamily
             )
         )
     }
@@ -265,6 +280,7 @@ fun ScrollableContent(destinations: List<VotingResultListItem>, innerPadding: Pa
     }
 }
 
+@Preview(showBackground = true)
 @Composable
 fun VotingResultsMainScreen() {
     // Assuming we have a list of destinations to display
