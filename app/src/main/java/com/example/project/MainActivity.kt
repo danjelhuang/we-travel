@@ -83,7 +83,7 @@ fun WeTravelApp(navController: NavHostController = rememberNavController()) {
         }
         composable(route = Screens.TripConfiguration.name) {
             TripConfigurationForm(
-                "Trip",
+                "create",
                 onCreateTripButtonClicked = { navController.navigate(Screens.SessionCode.name) }
             )
         }
