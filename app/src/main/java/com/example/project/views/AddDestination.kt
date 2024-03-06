@@ -1,11 +1,10 @@
-
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -17,16 +16,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,19 +36,28 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.material.icons.rounded.Person
-import androidx.compose.material3.ButtonDefaults
+import com.example.project.R
+
+
+val dmSansFamily = FontFamily(
+    Font(
+        resId = R.font.dmsans_semibold, FontWeight(600)
+    )
+)
 
 @Composable
-fun AddDestinations() {
+fun AddDestinations(
+    onAddDestinationButtonClicked: () -> Unit,
+    onSettingsButtonClicked: () -> Unit
+) {
 
     val destinations = listOf(
         "CN tower",
@@ -101,24 +109,24 @@ fun AddDestinations() {
             Spacer(Modifier.weight(1f))
 
             IconButton(
-                onClick = { /* your click handler */ },
+                onClick = { /* TODO */ },
             ) {
                 Icon(
                     modifier = Modifier.size(24.dp),
                     imageVector = Icons.Rounded.Person,
                     contentDescription = "person",
-                  //  tint = Color.Black
+                    //  tint = Color.Black
                 )
             }
             Text(
-                text = "4", // Replace with your actual number
-                color = Color.Black,
-                fontSize = 24.sp, // Adjust the font size as needed
+                text = "4",
+                fontFamily = dmSansFamily,
+                fontSize = 24.sp,
                 modifier = Modifier
-                    .padding(start = 0.dp, top = 7.dp) // Adjust the padding as needed
+                    .padding(start = 0.dp, top = 7.dp)
             )
             IconButton(
-                onClick = { /* your click handler */ },
+                onClick = { onSettingsButtonClicked() },
             ) {
                 Icon(
                     modifier = Modifier.size(24.dp),
@@ -131,12 +139,12 @@ fun AddDestinations() {
         Text(
             modifier = Modifier.padding(start = 3.dp, bottom = 2.dp),
             text = "Add Destinations",
+            fontFamily = dmSansFamily,
             fontSize = 16.sp,
-            color = Color.Black,
             onTextLayout = {}
         )
 
-        Column(modifier = Modifier.fillMaxWidth(),) {
+        Column(modifier = Modifier.fillMaxWidth()) {
             Row(modifier = Modifier.fillMaxWidth()) {
                 TextField(
                     modifier = Modifier
@@ -157,8 +165,13 @@ fun AddDestinations() {
                         category = it
                         expanded = false
                     },
-                    placeholder = { Text("Enter a Destination",
-                        onTextLayout = {}) },
+                    placeholder = {
+                        Text(
+                            "Enter a Destination",
+                            onTextLayout = {},
+                            fontFamily = dmSansFamily
+                        )
+                    },
                     textStyle = TextStyle(
                         color = Color.Black,
                         fontWeight = FontWeight.Medium,
@@ -230,13 +243,17 @@ fun AddDestinations() {
                 }
             }
         }
-        Button(onClick = {},
+        Button(
+            onClick = { onAddDestinationButtonClicked() },
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(red = 69, green = 123, blue = 157)
             ),
         ) {
-            Text("Add")
+            Text(
+                "Add",
+                fontFamily = dmSansFamily
+            )
 
         }
     }

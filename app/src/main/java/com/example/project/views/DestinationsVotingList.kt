@@ -22,7 +22,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,7 +31,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.project.R
@@ -42,7 +40,7 @@ import com.example.project.components.VotingDestinationEntry
 
 @Composable
 // TODO: This is repeated code from DestinationsList lol
-fun DestinationsVotingListHeader(tripName: String) {
+fun DestinationsVotingListHeader(tripName: String, onSettingsButtonClicked: () -> Unit) {
     Box(
         contentAlignment = Alignment.CenterStart,
         modifier = Modifier
@@ -80,11 +78,11 @@ fun DestinationsVotingListHeader(tripName: String) {
                 // Button Section
                 Row(
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
                     // User count and button
 
                     Row(
-                        Modifier.clickable {  }, // TODO: Non functional
+                        Modifier.clickable { }, // TODO: Non functional
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Image(
@@ -105,7 +103,7 @@ fun DestinationsVotingListHeader(tripName: String) {
                     // Settings button
 
                     Row(
-                        Modifier.clickable { } // TODO: Non functional
+                        Modifier.clickable { onSettingsButtonClicked() } // TODO: Non functional
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.settings),
@@ -122,14 +120,14 @@ fun DestinationsVotingListHeader(tripName: String) {
 
 @Composable
 fun DestinationsVotingColumn(destinations: List<Destination>, innerPadding: PaddingValues) {
-    LazyColumn (
+    LazyColumn(
         modifier = Modifier
             .padding(innerPadding),
     ) {
         itemsIndexed(destinations) { _, destination ->
             Row(
                 modifier = Modifier.padding(vertical = 8.dp, horizontal = 10.dp)
-            ){
+            ) {
                 VotingDestinationEntry(destination = destination, coins = 2)
             }
 
@@ -139,7 +137,7 @@ fun DestinationsVotingColumn(destinations: List<Destination>, innerPadding: Padd
 
 
 @Composable
-fun VotingBottomCard() {
+fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -171,12 +169,12 @@ fun VotingBottomCard() {
                         fontWeight = FontWeight.Bold,
                         fontSize = 40.sp,
                         textAlign = TextAlign.Center,
-                        color =  Color(0xFFE63946)
+                        color = Color(0xFFE63946)
                     )
                 )
 
                 FilledTonalButton(
-                    onClick = { /*TODO*/ },
+                    onClick = { onEndVotingButtonClicked() },
                     shape = RoundedCornerShape(20),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFE63946),
@@ -223,7 +221,7 @@ fun VotingBottomCard() {
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 36.sp,
                                 textAlign = TextAlign.Center,
-                                color =  Color(0xFFFFE500)
+                                color = Color(0xFFFFE500)
                             )
                         )
                         Text(
@@ -258,7 +256,7 @@ fun VotingBottomCard() {
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 36.sp,
                                 textAlign = TextAlign.Center,
-                                color =  Color(0xFF1D3557)
+                                color = Color(0xFF1D3557)
                             )
                         )
                         Text(
@@ -276,27 +274,32 @@ fun VotingBottomCard() {
 }
 
 
-@Preview(showBackground = true)
 @Composable
-fun DestinationsVotingList() {
+fun DestinationsVotingList(
+    onEndVotingButtonClicked: () -> Unit,
+    onSettingsButtonClicked: () -> Unit
+) {
     // Assuming we have a list of destinations to display
     val destinations = listOf(
         // Add your destinations here, for example:
-        Destination(1, "MoMA", "11 W 53rd St, New York", "4.6", 50,
+        Destination(
+            1, "MoMA", "11 W 53rd St, New York", "4.6", 50,
             R.drawable.sample_destination_image, voted = true
         ),
         // Add more destinations...
-        Destination(2, "MoMA", "11 W 53rd St, New York", "4.6", 50,
+        Destination(
+            2, "MoMA", "11 W 53rd St, New York", "4.6", 50,
             R.drawable.sample_destination_image, voted = false
         ),
-        Destination(3, "MoMA", "11 W 53rd St, New York", "4.6", 50,
+        Destination(
+            3, "MoMA", "11 W 53rd St, New York", "4.6", 50,
             R.drawable.sample_destination_image, voted = true
         ),
     )
 
     Scaffold(
-        topBar = { DestinationsVotingListHeader(tripName = "Toronto") },
-        bottomBar = { VotingBottomCard() }
+        topBar = { DestinationsVotingListHeader(tripName = "Toronto", onSettingsButtonClicked) },
+        bottomBar = { VotingBottomCard(onEndVotingButtonClicked) }
     ) { innerPadding ->
         DestinationsVotingColumn(destinations = destinations, innerPadding = innerPadding)
     }

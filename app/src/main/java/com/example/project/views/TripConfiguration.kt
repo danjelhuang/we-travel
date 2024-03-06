@@ -1,6 +1,6 @@
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.material3.Switch
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +16,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -36,7 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.example.project.R
 
 @Composable
-fun TripConfigurationForm(title: String) {
+fun TripConfigurationForm(title: String, onButtonClicked: () -> Unit) {
     val tripName = remember { mutableStateOf(TextFieldValue()) }
     val destinationCity = remember { mutableStateOf(TextFieldValue()) }
     val finalDestinationCount = remember { mutableStateOf(TextFieldValue()) }
@@ -95,7 +96,7 @@ fun TripConfigurationForm(title: String) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = {  /* TODO */ },
+            onClick = {  onButtonClicked() },
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.secondary

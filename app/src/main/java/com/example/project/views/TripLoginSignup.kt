@@ -39,7 +39,10 @@ import com.example.project.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-fun TripLoginSignup() {
+fun TripLoginSignup(
+    onSigninButtonClicked: () -> Unit,
+    onSignupButtonClicked: () -> Unit
+) {
 
     val username = remember { mutableStateOf(TextFieldValue()) }
     val password = remember { mutableStateOf(TextFieldValue()) }
@@ -64,7 +67,7 @@ fun TripLoginSignup() {
             painter = painterResource(id = R.drawable.logo_wetravel_main),
             contentDescription = "WeTravelLogo",
             contentScale = ContentScale.FillWidth,
-            modifier = imageModifier.aspectRatio(16f/5f)
+            modifier = imageModifier.aspectRatio(16f / 5f)
         )
         Spacer(Modifier.height(1.dp))
 
@@ -83,10 +86,12 @@ fun TripLoginSignup() {
         OutlinedTextField(
             value = password.value,
             onValueChange = { password.value = it },
-            label = { Text(
-                text = "password",
-                fontFamily = dmSansFamily
-                ) },
+            label = {
+                Text(
+                    text = "password",
+                    fontFamily = dmSansFamily
+                )
+            },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
             shape = RoundedCornerShape(12.dp),
@@ -98,9 +103,11 @@ fun TripLoginSignup() {
         Spacer(Modifier.height(32.dp))
 
         Button(
-            onClick = {},
+            onClick = { onSigninButtonClicked() },
             shape = RoundedCornerShape(12.dp),
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
         ) {
             Text(
@@ -118,13 +125,13 @@ fun TripLoginSignup() {
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.primary,
             fontFamily = dmSansFamily
-            )
+        )
         Text(
             text = "create account",
             textAlign = TextAlign.Center,
             textDecoration = TextDecoration.Underline,
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.clickable(onClick = { /* Navigate to the create account screen */ }),
+            modifier = Modifier.clickable(onClick = { onSignupButtonClicked() }),
             fontFamily = dmSansFamily
         )
 

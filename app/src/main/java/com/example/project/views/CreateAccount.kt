@@ -34,7 +34,9 @@ import com.example.project.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateAccountForm() {
+fun CreateAccountForm(
+    onCreateAccountButtonClicked: () -> Unit
+) {
     val firstName = remember { mutableStateOf(TextFieldValue()) }
     val lastName = remember { mutableStateOf(TextFieldValue()) }
     val email = remember { mutableStateOf(TextFieldValue()) }
@@ -72,7 +74,7 @@ fun CreateAccountForm() {
 
 
         Button(
-            onClick = {  /* TODO */ },
+            onClick = {  onCreateAccountButtonClicked() },
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.secondary

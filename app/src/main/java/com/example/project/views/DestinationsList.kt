@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -19,8 +18,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,16 +29,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.project.R
 import com.example.project.components.Destination
 import com.example.project.components.DestinationEntry
-import androidx.compose.material3.MaterialTheme
 
 @Composable
-fun DestinationsListHeader(tripName: String) {
+fun DestinationsListHeader(tripName: String, onSettingsButtonClicked: () -> Unit) {
     Box(
         contentAlignment = Alignment.CenterStart,
         modifier = Modifier
@@ -77,11 +74,11 @@ fun DestinationsListHeader(tripName: String) {
                 // Button Section
                 Row(
                     verticalAlignment = Alignment.CenterVertically
-                ){
+                ) {
                     // User count and button
 
                     Row(
-                        Modifier.clickable {  }, // TODO: Non functional
+                        Modifier.clickable { }, // TODO: Non functional
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Image(
@@ -102,7 +99,7 @@ fun DestinationsListHeader(tripName: String) {
                     // Settings button
 
                     Row(
-                        Modifier.clickable { } // TODO: Non functional
+                        Modifier.clickable { onSettingsButtonClicked() } // TODO: Non functional
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.settings),
@@ -110,8 +107,6 @@ fun DestinationsListHeader(tripName: String) {
                             modifier = Modifier.size(32.dp)
                         )
                     }
-
-
 
 
                 }
@@ -123,14 +118,14 @@ fun DestinationsListHeader(tripName: String) {
 
 @Composable
 fun DestinationsColumn(destinations: List<Destination>, innerPadding: PaddingValues) {
-    LazyColumn (
+    LazyColumn(
         modifier = Modifier
             .padding(innerPadding),
     ) {
         itemsIndexed(destinations) { _, destination ->
             Row(
                 modifier = Modifier.padding(vertical = 8.dp, horizontal = 10.dp)
-            ){
+            ) {
                 DestinationEntry(destination = destination)
             }
 
@@ -140,7 +135,7 @@ fun DestinationsColumn(destinations: List<Destination>, innerPadding: PaddingVal
 
 
 @Composable
-fun BottomCard() {
+fun BottomCard(onAddDestinationButtonClicked: () -> Unit, onStartVotingButtonClicked: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -169,13 +164,13 @@ fun BottomCard() {
                         fontWeight = FontWeight.Bold,
                         fontSize = 40.sp,
                         textAlign = TextAlign.Center,
-                        color =  Color(0xFFE63946)
+                        color = Color(0xFFE63946)
                     )
                 )
             }
 
             Spacer(modifier = Modifier.width(20.dp))
-            
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -186,7 +181,7 @@ fun BottomCard() {
 
                 // Add destination button
                 FilledTonalButton(
-                    onClick = { /*TODO*/ },
+                    onClick = { onAddDestinationButtonClicked() },
                     shape = RoundedCornerShape(20),
                     colors = mainButtonColor,
                     contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp)
@@ -204,11 +199,10 @@ fun BottomCard() {
                             fontSize = 20.sp,
                         )
                     )
-                    Spacer(modifier = Modifier.width(10.dp))
                 }
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.width(10.dp))
                 FilledTonalButton(
-                    onClick = { /*TODO*/ },
+                    onClick = { onStartVotingButtonClicked() },
                     shape = RoundedCornerShape(20),
                     colors = mainButtonColor,
                     contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp)
@@ -232,27 +226,33 @@ fun BottomCard() {
 }
 
 
-@Preview(showBackground = true)
 @Composable
-fun DestinationsList() {
+fun DestinationsList(
+    onAddDestinationButtonClicked: () -> Unit,
+    onStartVotingButtonClicked: () -> Unit,
+    onSettingsButtonClicked: () -> Unit
+) {
     // Assuming we have a list of destinations to display
     val destinations = listOf(
         // Add your destinations here, for example:
-        Destination(1, "MoMA", "11 W 53rd St, New York", "4.6", 50,
+        Destination(
+            1, "MoMA", "11 W 53rd St, New York", "4.6", 50,
             R.drawable.sample_destination_image, voted = true
         ),
         // Add more destinations...
-        Destination(2, "MoMA", "11 W 53rd St, New York", "4.6", 50,
+        Destination(
+            2, "MoMA", "11 W 53rd St, New York", "4.6", 50,
             R.drawable.sample_destination_image, voted = false
         ),
-        Destination(3, "MoMA", "11 W 53rd St, New York", "4.6", 50,
+        Destination(
+            3, "MoMA", "11 W 53rd St, New York", "4.6", 50,
             R.drawable.sample_destination_image, voted = true
         ),
     )
 
     Scaffold(
-        topBar = { DestinationsListHeader(tripName = "Toronto") },
-        bottomBar = { BottomCard() }
+        topBar = { DestinationsListHeader(tripName = "Toronto", onSettingsButtonClicked) },
+        bottomBar = { BottomCard(onAddDestinationButtonClicked, onStartVotingButtonClicked) }
     ) { innerPadding ->
         DestinationsColumn(destinations = destinations, innerPadding = innerPadding)
     }
