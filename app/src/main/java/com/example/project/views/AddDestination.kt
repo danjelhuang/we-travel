@@ -1,4 +1,3 @@
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -55,7 +54,10 @@ val dmSansFamily = FontFamily(
 )
 
 @Composable
-fun AddDestinations(onAddDestinationButtonClicked: () -> Unit) {
+fun AddDestinations(
+    onAddDestinationButtonClicked: () -> Unit,
+    onSettingsButtonClicked: () -> Unit
+) {
 
     val destinations = listOf(
         "CN tower",
@@ -107,7 +109,7 @@ fun AddDestinations(onAddDestinationButtonClicked: () -> Unit) {
             Spacer(Modifier.weight(1f))
 
             IconButton(
-                onClick = { /* your click handler */ },
+                onClick = { /* TODO */ },
             ) {
                 Icon(
                     modifier = Modifier.size(24.dp),
@@ -117,14 +119,14 @@ fun AddDestinations(onAddDestinationButtonClicked: () -> Unit) {
                 )
             }
             Text(
-                text = "4", // Replace with your actual number
+                text = "4",
                 fontFamily = dmSansFamily,
-                fontSize = 24.sp, // Adjust the font size as needed
+                fontSize = 24.sp,
                 modifier = Modifier
-                    .padding(start = 0.dp, top = 7.dp) // Adjust the padding as needed
+                    .padding(start = 0.dp, top = 7.dp)
             )
             IconButton(
-                onClick = { /* your click handler */ },
+                onClick = { onSettingsButtonClicked() },
             ) {
                 Icon(
                     modifier = Modifier.size(24.dp),
@@ -164,9 +166,11 @@ fun AddDestinations(onAddDestinationButtonClicked: () -> Unit) {
                         expanded = false
                     },
                     placeholder = {
-                        Text("Enter a Destination",
+                        Text(
+                            "Enter a Destination",
                             onTextLayout = {},
-                            fontFamily = dmSansFamily)
+                            fontFamily = dmSansFamily
+                        )
                     },
                     textStyle = TextStyle(
                         color = Color.Black,
@@ -246,8 +250,10 @@ fun AddDestinations(onAddDestinationButtonClicked: () -> Unit) {
                 containerColor = Color(red = 69, green = 123, blue = 157)
             ),
         ) {
-            Text("Add",
-                fontFamily = dmSansFamily)
+            Text(
+                "Add",
+                fontFamily = dmSansFamily
+            )
 
         }
     }

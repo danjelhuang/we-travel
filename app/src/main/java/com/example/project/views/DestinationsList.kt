@@ -36,7 +36,7 @@ import com.example.project.components.Destination
 import com.example.project.components.DestinationEntry
 
 @Composable
-fun DestinationsListHeader(tripName: String) {
+fun DestinationsListHeader(tripName: String, onSettingsButtonClicked: () -> Unit) {
     Box(
         contentAlignment = Alignment.CenterStart,
         modifier = Modifier
@@ -99,7 +99,7 @@ fun DestinationsListHeader(tripName: String) {
                     // Settings button
 
                     Row(
-                        Modifier.clickable { } // TODO: Non functional
+                        Modifier.clickable { onSettingsButtonClicked() } // TODO: Non functional
                     ) {
                         Image(
                             painter = painterResource(id = R.drawable.settings),
@@ -229,25 +229,29 @@ fun BottomCard(onAddDestinationButtonClicked: () -> Unit, onStartVotingButtonCli
 @Composable
 fun DestinationsList(
     onAddDestinationButtonClicked: () -> Unit,
-    onStartVotingButtonClicked: () -> Unit
+    onStartVotingButtonClicked: () -> Unit,
+    onSettingsButtonClicked: () -> Unit
 ) {
     // Assuming we have a list of destinations to display
     val destinations = listOf(
         // Add your destinations here, for example:
-        Destination(1, "MoMA", "11 W 53rd St, New York", "4.6", 50,
+        Destination(
+            1, "MoMA", "11 W 53rd St, New York", "4.6", 50,
             R.drawable.sample_destination_image, voted = true
         ),
         // Add more destinations...
-        Destination(2, "MoMA", "11 W 53rd St, New York", "4.6", 50,
+        Destination(
+            2, "MoMA", "11 W 53rd St, New York", "4.6", 50,
             R.drawable.sample_destination_image, voted = false
         ),
-        Destination(3, "MoMA", "11 W 53rd St, New York", "4.6", 50,
+        Destination(
+            3, "MoMA", "11 W 53rd St, New York", "4.6", 50,
             R.drawable.sample_destination_image, voted = true
         ),
     )
 
     Scaffold(
-        topBar = { DestinationsListHeader(tripName = "Toronto") },
+        topBar = { DestinationsListHeader(tripName = "Toronto", onSettingsButtonClicked) },
         bottomBar = { BottomCard(onAddDestinationButtonClicked, onStartVotingButtonClicked) }
     ) { innerPadding ->
         DestinationsColumn(destinations = destinations, innerPadding = innerPadding)

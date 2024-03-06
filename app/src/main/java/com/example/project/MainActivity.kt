@@ -34,6 +34,7 @@ enum class Screens() {
     JoinSession,
     DestinationsListScreen,
     AddDestination,
+    EditTrip,
     VotingScreen,
     VotingResults
 }
@@ -84,7 +85,7 @@ fun WeTravelApp(navController: NavHostController = rememberNavController()) {
         composable(route = Screens.TripConfiguration.name) {
             TripConfigurationForm(
                 "create",
-                onCreateTripButtonClicked = { navController.navigate(Screens.SessionCode.name) }
+                onButtonClicked = { navController.navigate(Screens.SessionCode.name) }
             )
         }
         composable(route = Screens.JoinSession.name) {
@@ -101,21 +102,30 @@ fun WeTravelApp(navController: NavHostController = rememberNavController()) {
         composable(route = Screens.DestinationsListScreen.name) {
             DestinationsList(
                 onAddDestinationButtonClicked = { navController.navigate(Screens.AddDestination.name) },
-                onStartVotingButtonClicked = { navController.navigate(Screens.VotingScreen.name) }
+                onStartVotingButtonClicked = { navController.navigate(Screens.VotingScreen.name) },
+                onSettingsButtonClicked = { navController.navigate(Screens.EditTrip.name) }
             )
         }
         composable(route = Screens.AddDestination.name) {
             AddDestinations(
-                onAddDestinationButtonClicked = { navController.navigate(Screens.DestinationsListScreen.name) }
+                onAddDestinationButtonClicked = { navController.navigate(Screens.DestinationsListScreen.name) },
+                onSettingsButtonClicked = { navController.navigate(Screens.EditTrip.name) }
             )
         }
         composable(route = Screens.VotingScreen.name) {
             DestinationsVotingList(
-                onEndVotingButtonClicked = { navController.navigate(Screens.VotingResults.name) }
+                onEndVotingButtonClicked = { navController.navigate(Screens.VotingResults.name) },
+                onSettingsButtonClicked = { navController.navigate(Screens.EditTrip.name) }
             )
         }
         composable(route = Screens.VotingResults.name) {
             VotingResultsMainScreen()
+        }
+        composable(route = Screens.EditTrip.name) {
+            TripConfigurationForm(
+                "edit",
+                onButtonClicked = { navController.popBackStack() }
+            )
         }
 
     }

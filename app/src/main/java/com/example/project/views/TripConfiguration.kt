@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.example.project.R
 
 @Composable
-fun TripConfigurationForm(title: String, onCreateTripButtonClicked: () -> Unit) {
+fun TripConfigurationForm(title: String, onButtonClicked: () -> Unit) {
     val tripName = remember { mutableStateOf(TextFieldValue()) }
     val destinationCity = remember { mutableStateOf(TextFieldValue()) }
     val finalDestinationCount = remember { mutableStateOf(TextFieldValue()) }
@@ -96,7 +96,7 @@ fun TripConfigurationForm(title: String, onCreateTripButtonClicked: () -> Unit) 
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = {  onCreateTripButtonClicked() },
+            onClick = {  onButtonClicked() },
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.secondary
