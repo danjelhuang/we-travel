@@ -24,21 +24,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.project.R
 
 @Composable
-fun TripCreateorJoin() {
+fun TripCreateorJoin(
+    onCreateTripButtonClicked: () -> Unit,
+    onJoinTripButtonClicked: () -> Unit
+) {
     Column {
         TopBar()
-        SelectionButtons()
+        SelectionButtons(onCreateTripButtonClicked, onJoinTripButtonClicked)
     }
 }
+
 @Composable
-@Preview
-fun SelectionButtons() {
+fun SelectionButtons(
+    onCreateTripButtonClicked: () -> Unit,
+    onJoinTripButtonClicked: () -> Unit
+) {
     val dmSansFamily = FontFamily(
         Font(
             resId = R.font.dmsans_semibold, FontWeight(600)
@@ -53,7 +58,7 @@ fun SelectionButtons() {
     ) {
 
         Button(
-            onClick = { /* Handle to navigate to the Create Trip Activity */ },
+            onClick = { onCreateTripButtonClicked() },
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .height(125.dp)
@@ -61,13 +66,17 @@ fun SelectionButtons() {
                 .padding(16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
         ) {
-            Text(text = "create trip", fontFamily = dmSansFamily, fontSize = 36.sp /*color = Color.White*/)
+            Text(
+                text = "create trip",
+                fontFamily = dmSansFamily,
+                fontSize = 36.sp /*color = Color.White*/
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = { /* Handle to navigate to the Join Trip Activity */ },
+            onClick = { onJoinTripButtonClicked() },
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .height(125.dp)
@@ -75,7 +84,11 @@ fun SelectionButtons() {
                 .padding(16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
         ) {
-            Text(text = "join trip", fontFamily = dmSansFamily, fontSize = 36.sp /*color = Color.White*/)
+            Text(
+                text = "join trip",
+                fontFamily = dmSansFamily,
+                fontSize = 36.sp /*color = Color.White*/
+            )
         }
     }
 }

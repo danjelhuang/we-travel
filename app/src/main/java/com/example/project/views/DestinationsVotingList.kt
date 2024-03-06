@@ -139,7 +139,7 @@ fun DestinationsVotingColumn(destinations: List<Destination>, innerPadding: Padd
 
 
 @Composable
-fun VotingBottomCard() {
+fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -176,7 +176,7 @@ fun VotingBottomCard() {
                 )
 
                 FilledTonalButton(
-                    onClick = { /*TODO*/ },
+                    onClick = { onEndVotingButtonClicked() },
                     shape = RoundedCornerShape(20),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFE63946),
@@ -278,7 +278,7 @@ fun VotingBottomCard() {
 
 @Preview(showBackground = true)
 @Composable
-fun DestinationsVotingList() {
+fun DestinationsVotingList(onEndVotingButtonClicked: () -> Unit) {
     // Assuming we have a list of destinations to display
     val destinations = listOf(
         // Add your destinations here, for example:
@@ -296,7 +296,7 @@ fun DestinationsVotingList() {
 
     Scaffold(
         topBar = { DestinationsVotingListHeader(tripName = "Toronto") },
-        bottomBar = { VotingBottomCard() }
+        bottomBar = { VotingBottomCard(onEndVotingButtonClicked) }
     ) { innerPadding ->
         DestinationsVotingColumn(destinations = destinations, innerPadding = innerPadding)
     }

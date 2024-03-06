@@ -17,10 +17,8 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -38,7 +36,6 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.project.R
@@ -82,7 +79,13 @@ fun BackButton(onClick: () -> Unit) {
 }
 
 @Composable
-fun EnterCodeContent(innerpadding: PaddingValues, code: String, onCodeChange: (String) -> Unit) {
+fun EnterCodeContent(
+    innerpadding: PaddingValues,
+    code: String,
+    onCodeChange: (String) -> Unit,
+    onJoinButtonClicked: () -> Unit,
+    onBackButtonClicked: () -> Unit
+) {
     Column(
         modifier = Modifier.padding(innerpadding),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -104,7 +107,7 @@ fun EnterCodeContent(innerpadding: PaddingValues, code: String, onCodeChange: (S
                 textStyle = TextStyle(textAlign = TextAlign.Center)
             )
             Button(
-                onClick = { /* TODO */ },
+                onClick = { onJoinButtonClicked() },
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondary
@@ -123,13 +126,16 @@ fun EnterCodeContent(innerpadding: PaddingValues, code: String, onCodeChange: (S
             horizontalArrangement = Arrangement.Absolute.Left,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            BackButton {}
+            BackButton(onBackButtonClicked)
         }
     }
 }
 
 @Composable
-fun CreateCodeContent(innerpadding: PaddingValues) {
+fun CreateCodeContent(
+    innerpadding: PaddingValues,
+    onContinueButtonClicked: () -> Unit
+) {
     Column(
         modifier = Modifier.padding(innerpadding),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -168,7 +174,7 @@ fun CreateCodeContent(innerpadding: PaddingValues) {
                 Text("copy share code", fontFamily = dmSansFamily)
             }
             Button(
-                onClick = { /* TODO */ },
+                onClick = { onContinueButtonClicked() },
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondary
@@ -183,25 +189,46 @@ fun CreateCodeContent(innerpadding: PaddingValues) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(100.dp),
+                .height(200.dp),
             horizontalArrangement = Arrangement.Absolute.Left,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            BackButton {}
+            Text(
+                text = "note: you can always access this code from the settings page",
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(50.dp),
+                fontFamily = dmSansFamily
+            )
         }
     }
 }
 
-@Preview
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun SessionCodeScreen() {
+fun SessionCodeScreen(
+    onContinueButtonClicked: () -> Unit
+) {
+    Scaffold(topBar = {
+        LogoTopAppBar()
+    }) { innerpadding ->
+        CreateCodeContent(innerpadding, onContinueButtonClicked)
+    }
+}
+
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Composable
+fun JoinSessionScreen(onJoinButtonClicked: () -> Unit, onBackButtonClicked: () -> Unit) {
     var code by remember { mutableStateOf("") }
 
     Scaffold(topBar = {
         LogoTopAppBar()
     }) { innerpadding ->
-        CreateCodeContent(innerpadding)
-//        EnterCodeContent(innerpadding, code) { code = it }
+        EnterCodeContent(
+            innerpadding,
+            code,
+            { code = it },
+            onJoinButtonClicked,
+            onBackButtonClicked
+        )
     }
 }
