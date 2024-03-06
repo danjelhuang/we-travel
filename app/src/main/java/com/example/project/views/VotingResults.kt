@@ -293,7 +293,8 @@ fun VotingResultsMainScreen() {
                 "11 W 53rd St, New York",
                 "4.6",
                 50,
-                R.drawable.sample_destination_image
+                R.drawable.sample_destination_image,
+                voted = true
             ),
             voteCount = 5,
         ),
@@ -304,7 +305,8 @@ fun VotingResultsMainScreen() {
                 "11 W 53rd St, New York",
                 "4.6",
                 50,
-                R.drawable.sample_destination_image
+                R.drawable.sample_destination_image,
+                voted = false
             ),
             voteCount = 4,
         ),
@@ -315,7 +317,8 @@ fun VotingResultsMainScreen() {
                 "11 W 53rd St, New York",
                 "4.6",
                 50,
-                R.drawable.sample_destination_image
+                R.drawable.sample_destination_image,
+                voted = false
             ),
             voteCount = 3,
         ),
@@ -326,7 +329,8 @@ fun VotingResultsMainScreen() {
                 "11 W 53rd St, New York",
                 "4.6",
                 50,
-                R.drawable.sample_destination_image
+                R.drawable.sample_destination_image,
+                voted = false
             ),
             voteCount = 2,
         ),
@@ -337,7 +341,8 @@ fun VotingResultsMainScreen() {
                 "11 W 53rd St, New York",
                 "4.6",
                 50,
-                R.drawable.sample_destination_image
+                R.drawable.sample_destination_image,
+                voted = false
             ),
             voteCount = 1,
         )
