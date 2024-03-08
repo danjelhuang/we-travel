@@ -8,3 +8,4 @@
 | 2024/02/26 |       |         |        |       |         | 5    | login frontend              |
 | 2024/02/26 |       |         |        |       |         | 4    | create/join trip frontend   |
 | 2024/02/26 |       |         |        |       |         | 2    | figma design+imported theme |
+| 2024/02/26 |       |   6     |        |       |         | 6    | create addDestin. frontend  |
