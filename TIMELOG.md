@@ -5,3 +5,6 @@
 | 2024/02/26 |       |         | 3      |       |         |      | account creation frontend   |
 | 2024/03/04 | 4     |         |        |       |         |      | code management frontend    |
 | 2024/02/26 | 6     |         |        |       |         |      | linking pages together      |
+| 2024/02/26 |       |         |        |       |         | 5    | login frontend              |
+| 2024/02/26 |       |         |        |       |         | 4    | create/join trip frontend   |
+| 2024/02/26 |       |         |        |       |         | 2    | figma design+imported theme |
