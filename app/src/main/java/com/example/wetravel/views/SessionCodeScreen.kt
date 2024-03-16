@@ -1,4 +1,4 @@
-package com.example.project.Views
+package com.example.wetravel.Views
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.border
@@ -38,7 +38,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.project.R
+import com.example.wetravel.R
 
 val dmSansFamily = FontFamily(
     Font(

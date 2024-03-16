@@ -1,4 +1,4 @@
-package com.example.project
+package com.example.wetravel
 
 import AddDestinations
 import TripConfigurationForm
@@ -17,13 +17,13 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.project.Views.JoinSessionScreen
-import com.example.project.Views.SessionCodeScreen
-import com.example.project.ui.theme.ProjectTheme
-import com.example.project.views.CreateAccountForm
-import com.example.project.views.DestinationsList
-import com.example.project.views.DestinationsVotingList
-import com.example.project.views.VotingResultsMainScreen
+import com.example.wetravel.Views.JoinSessionScreen
+import com.example.wetravel.Views.SessionCodeScreen
+import com.example.wetravel.ui.theme.ProjectTheme
+import com.example.wetravel.views.CreateAccountForm
+import com.example.wetravel.views.DestinationsList
+import com.example.wetravel.views.DestinationsVotingList
+import com.example.wetravel.views.VotingResultsMainScreen
 
 enum class Screens() {
     Login,
@@ -42,7 +42,6 @@ enum class Screens() {
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val mainLogo: Drawable = resources.getDrawable(R.drawable.logo_wetravel_main, null)
 
         setContent {
             ProjectTheme {

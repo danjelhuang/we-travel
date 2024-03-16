@@ -1,4 +1,4 @@
-package com.example.project.ui.theme
+package com.example.wetravel.ui.theme
 
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -35,7 +35,6 @@ private val LightColorScheme = lightColorScheme(
 fun ProjectTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = LightColorScheme

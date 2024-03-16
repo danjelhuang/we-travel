@@ -1,4 +1,4 @@
-package com.example.project.views
+package com.example.wetravel.views
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -37,10 +37,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.project.components.Destination
-import com.example.project.components.DestinationEntry
-import com.example.project.components.DestinationEntrySimple
-import com.example.project.R
+import com.example.wetravel.components.Destination
+import com.example.wetravel.components.DestinationEntry
+import com.example.wetravel.components.DestinationEntrySimple
+import com.example.wetravel.R
 
 data class VotingResultListItem(
     val destination: Destination,
