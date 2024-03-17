@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.project"
+    namespace = "com.example.wetravel"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.project"
+        applicationId = "com.example.wetravel"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

@@ -1,4 +1,4 @@
-package com.example.project.views
+package com.example.wetravel.views
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +30,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import com.example.project.R
+import com.example.wetravel.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

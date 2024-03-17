@@ -1,4 +1,4 @@
-package com.example.project.views
+package com.example.wetravel.views
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -31,9 +31,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.project.R
-import com.example.project.components.Destination
-import com.example.project.components.DestinationEntry
+import com.example.wetravel.R
+import com.example.wetravel.components.Destination
+import com.example.wetravel.components.DestinationEntry
 
 @Composable
 fun DestinationsListHeader(tripName: String, onSettingsButtonClicked: () -> Unit) {

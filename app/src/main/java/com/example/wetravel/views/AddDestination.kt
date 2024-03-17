@@ -44,7 +44,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
-import com.example.project.R
+import com.example.wetravel.R
 
 
 val dmSansFamily = FontFamily(
