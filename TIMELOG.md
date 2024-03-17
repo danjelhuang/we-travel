@@ -10,3 +10,4 @@
 | 2024/02/26 |       |         |        |       |         | 2    | figma design+imported theme |
 | 2024/02/26 |       | 6       |        |       |         | 6    | create addDestin. frontend  |
 | 2024/03/16 |       |         | 1      |       |         |      | package refactor            |
+| 2024/03/16 |       |         | 2      |       |         |      | setup database              |
