@@ -18,7 +18,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.wetravel.Views.JoinSessionScreen
 import com.example.wetravel.Views.SessionCodeScreen
-import com.example.wetravel.database.DatabaseManager
 import com.example.wetravel.ui.theme.ProjectTheme
 import com.example.wetravel.views.CreateAccountForm
 import com.example.wetravel.views.DestinationsList
@@ -50,7 +49,6 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val db = DatabaseManager.db
                     WeTravelApp()
                 }
             }
