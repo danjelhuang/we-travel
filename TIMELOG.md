@@ -12,3 +12,4 @@
 | 2024/03/16 |       |         | 1      |       |         |      | package refactor            |
 | 2024/03/16 |       |         | 2      |       |         |      | setup database              |
 | 2024/03/16 |       |         | 2      |       |         |      | setup node backend          |
+| 2024/03/16 |       |         | 4      |       |         |      | trip creation               |

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -23,6 +24,7 @@ import com.example.wetravel.views.CreateAccountForm
 import com.example.wetravel.views.DestinationsList
 import com.example.wetravel.views.DestinationsVotingList
 import com.example.wetravel.views.VotingResultsMainScreen
+import kotlinx.coroutines.CoroutineScope
 
 enum class Screens() {
     Login,
@@ -57,7 +59,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun WeTravelApp(navController: NavHostController = rememberNavController()) {
+fun WeTravelApp(navController: NavHostController = rememberNavController(), coroutineScope: CoroutineScope = rememberCoroutineScope()) {
     NavHost(
         navController = navController,
         startDestination = Screens.Login.name,
@@ -83,7 +85,8 @@ fun WeTravelApp(navController: NavHostController = rememberNavController()) {
         composable(route = Screens.TripConfiguration.name) {
             TripConfigurationForm(
                 "create",
-                onButtonClicked = { navController.navigate(Screens.SessionCode.name) }
+                onButtonClicked = { navController.navigate(Screens.SessionCode.name) },
+                coroutineScope
             )
         }
         composable(route = Screens.JoinSession.name) {
@@ -122,7 +125,8 @@ fun WeTravelApp(navController: NavHostController = rememberNavController()) {
         composable(route = Screens.EditTrip.name) {
             TripConfigurationForm(
                 "edit",
-                onButtonClicked = { navController.popBackStack() }
+                onButtonClicked = { navController.popBackStack() },
+                coroutineScope
             )
         }
 
