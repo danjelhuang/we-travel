@@ -35,6 +35,10 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 
 @Composable
 fun TripConfigurationForm(title: String, onButtonClicked: () -> Unit) {
@@ -96,7 +100,10 @@ fun TripConfigurationForm(title: String, onButtonClicked: () -> Unit) {
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
-            onClick = {  onButtonClicked() },
+            onClick = {
+                handleButtonClick(tripName.value.text, destinationCity.value.text, numberOfVotesPerPerson.value.text)
+                onButtonClicked()
+                      },
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.secondary
@@ -105,6 +112,43 @@ fun TripConfigurationForm(title: String, onButtonClicked: () -> Unit) {
                 .fillMaxWidth(0.5f)
                 .align(Alignment.CenterHorizontally)){
             Text(buttonText, color = Color.White, fontFamily = dmSansFamily)
+        }
+    }
+}
+
+private fun handleButtonClick(tripName: String, destinationCity: String, numberOfVotesPerPerson: String) {
+    val tripData = """
+        {
+            "name": "$tripName",
+            "city": "$destinationCity",
+            "coinsPerPerson": $numberOfVotesPerPerson,
+            "adminUser": "AdminUserID",
+            "listOfParticipants": [],
+            "phase": "Add destinations",
+            "destinations": []
+        }
+    """.trimIndent()
+
+    postTripData(tripData)
+}
+
+private fun postTripData(tripData: String) {
+    val url = "http://localhost:300/api/v1/trips"
+
+    val client = OkHttpClient()
+
+    val requestBody = tripData.toRequestBody("application/json".toMediaType())
+
+    val request = Request.Builder()
+        .url(url)
+        .post(requestBody)
+        .build()
+
+    client.newCall(request).execute().use { response ->
+        if (!response.isSuccessful) {
+            // Handle unsuccessful response
+        } else {
+            // Handle successful response
         }
     }
 }
