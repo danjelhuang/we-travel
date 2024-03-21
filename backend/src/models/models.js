@@ -1,6 +1,3 @@
-const admin = require('firebase-admin');
-const db = admin.firestore();
-
 class Trip {
   constructor({ id, name, city, coinsPerPerson, adminUser, listOfParticipants, phase, destinations }) {
     this.id = id;
