@@ -17,8 +17,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.wetravel.Views.JoinSessionScreen
-import com.example.wetravel.Views.SessionCodeScreen
+import com.example.wetravel.views.JoinSessionScreen
+import com.example.wetravel.views.SessionCodeScreen
 import com.example.wetravel.ui.theme.ProjectTheme
 import com.example.wetravel.views.CreateAccountForm
 import com.example.wetravel.views.DestinationsList
