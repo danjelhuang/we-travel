@@ -1,4 +1,5 @@
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,13 +36,16 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 
 @Composable
-fun TripConfigurationForm(title: String, onButtonClicked: () -> Unit) {
+fun TripConfigurationForm(title: String, onButtonClicked: () -> Unit, scope: CoroutineScope) {
     val tripName = remember { mutableStateOf(TextFieldValue()) }
     val destinationCity = remember { mutableStateOf(TextFieldValue()) }
     val finalDestinationCount = remember { mutableStateOf(TextFieldValue()) }
@@ -101,9 +105,8 @@ fun TripConfigurationForm(title: String, onButtonClicked: () -> Unit) {
 
         Button(
             onClick = {
-                handleButtonClick(tripName.value.text, destinationCity.value.text, numberOfVotesPerPerson.value.text)
-                onButtonClicked()
-                      },
+                handleButtonClick(tripName.value.text, destinationCity.value.text, numberOfVotesPerPerson.value.text, scope)
+                onButtonClicked() },
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.secondary
@@ -116,39 +119,39 @@ fun TripConfigurationForm(title: String, onButtonClicked: () -> Unit) {
     }
 }
 
-private fun handleButtonClick(tripName: String, destinationCity: String, numberOfVotesPerPerson: String) {
+private fun handleButtonClick(tripName: String, destinationCity: String, numberOfVotesPerPerson: String, scope: CoroutineScope) {
     val tripData = """
         {
             "name": "$tripName",
             "city": "$destinationCity",
-            "coinsPerPerson": $numberOfVotesPerPerson,
+            "coinsPerPerson": "$numberOfVotesPerPerson",
             "adminUser": "AdminUserID",
             "listOfParticipants": [],
-            "phase": "Add destinations",
+            "phase": "Adding Destinations",
             "destinations": []
         }
     """.trimIndent()
 
-    postTripData(tripData)
+    postTripData(tripData, scope)
 }
 
-private fun postTripData(tripData: String) {
-    val url = "http://localhost:300/api/v1/trips"
+private fun postTripData(tripData: String, scope: CoroutineScope) {
+    scope.launch(Dispatchers.IO) {
+        val url = "http://10.0.2.2:3000/api/v1/trips"
+        val client = OkHttpClient()
+        val requestBody = tripData.toRequestBody("application/json".toMediaType())
+        val request = Request.Builder()
+            .url(url)
+            .post(requestBody)
+            .build()
 
-    val client = OkHttpClient()
-
-    val requestBody = tripData.toRequestBody("application/json".toMediaType())
-
-    val request = Request.Builder()
-        .url(url)
-        .post(requestBody)
-        .build()
-
-    client.newCall(request).execute().use { response ->
-        if (!response.isSuccessful) {
-            // Handle unsuccessful response
-        } else {
-            // Handle successful response
+        client.newCall(request).execute().use { response ->
+            Log.d("res", "$response")
+            if (!response.isSuccessful) {
+                Log.d("fai", "fail")
+            } else {
+                Log.d("good", "good")
+            }
         }
     }
 }
