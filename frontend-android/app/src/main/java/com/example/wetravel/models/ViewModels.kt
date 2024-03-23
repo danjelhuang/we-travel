@@ -20,6 +20,8 @@ class UserViewModel(private val tripRepository: TripRepository /* TODO: More API
     private val _createAccountResponse = MutableLiveData<Resource<Any?>>()
     val createAccountResponse: LiveData<Resource<Any?>> = _createAccountResponse
 
+    /* TODO: More Fields here for UserViewModel...*/
+
     fun createTrip(trip: Trip) {
         _createAccountResponse.value = Resource.Loading
 
@@ -39,24 +41,3 @@ class UserViewModel(private val tripRepository: TripRepository /* TODO: More API
     }
 
 }
-
-//class TripViewModel(private val tripRepository: TripRepository) : ViewModel() {
-//    private val _tripState = MutableLiveData<Resource<Trip>>()
-//    val tripState: LiveData<Resource<Trip>> = _tripState
-//    fun createTrip(trip: Trip) {
-//        _tripState.value = Resource.Loading
-//        viewModelScope.launch {
-//            try {
-//                val response = tripRepository.createTrip(trip)
-//
-//                // Check the result
-//                if (response.isSuccess) {
-//                    _tripState.postValue(Resource.Success(response.getOrNull()!!))
-//                }
-//            } catch (e: Exception) {
-//                _tripState.postValue(Resource.Error(e.message ?: "An unexpected error occured"))
-//            }
-//        }
-//    }
-//
-//}

@@ -46,7 +46,7 @@ enum class Screens() {
 }
 
 // Define our backend link and deserialization library + init the apiService
-// Currently the backend is just defined at localhost:3000
+// Currently the backend is just defined at 10.0.2.2:3000
 object RetrofitBuilder {
     private fun getRetrofit(): Retrofit {
         return Retrofit.Builder()
@@ -82,7 +82,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun WeTravelApp(
     navController: NavHostController = rememberNavController(),
-    coroutineScope: CoroutineScope = rememberCoroutineScope(),
     tripRepository: TripRepository
 ) {
     NavHost(

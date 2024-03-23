@@ -13,6 +13,8 @@ data class Destination(
     val voted: Boolean
 )
 
+// ENUM for voting phase
+// TODO: Decide how to incorporate this into our DB Schema
 enum class VotingPhase {
     ADD_DESTINATIONS,
     VOTING,

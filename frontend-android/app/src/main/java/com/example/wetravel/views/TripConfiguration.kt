@@ -44,7 +44,7 @@ fun TripConfigurationForm(
     onButtonClicked: () -> Unit,
     userViewModel: UserViewModel
 ) {
-    // TODO: Convert all of these fields to the values from ViewModel
+    // TODO: Convert all of these fields to the values from ViewModel and observe them for state changes
     val tripName = remember { mutableStateOf(TextFieldValue()) }
     val destinationCity = remember { mutableStateOf(TextFieldValue()) }
     val finalDestinationCount = remember { mutableStateOf(TextFieldValue()) }
