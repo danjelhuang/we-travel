@@ -16,7 +16,6 @@ interface ApiService {
 class TripRepository (private val apiService: ApiService) {
     suspend fun createTrip(tripConfiguration: Trip): Result<Unit> {
         return try {
-            Log.d("here", "here")
             val response = apiService.createTrip(tripConfiguration)
             Log.d("Response from trips API", response.toString())
             if (response.isSuccessful) {
