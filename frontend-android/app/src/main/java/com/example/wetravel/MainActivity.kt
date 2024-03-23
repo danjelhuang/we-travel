@@ -84,6 +84,7 @@ fun WeTravelApp(
     navController: NavHostController = rememberNavController(),
     tripRepository: TripRepository
 ) {
+    val userViewModel = UserViewModel(tripRepository)
     NavHost(
         navController = navController,
         startDestination = Screens.Login.name,
@@ -110,7 +111,7 @@ fun WeTravelApp(
             TripConfigurationForm(
                 "create",
                 onButtonClicked = { navController.navigate(Screens.SessionCode.name) },
-                userViewModel = UserViewModel(tripRepository)
+                userViewModel = userViewModel
             )
         }
         composable(route = Screens.JoinSession.name) {
@@ -150,7 +151,7 @@ fun WeTravelApp(
             TripConfigurationForm(
                 "edit",
                 onButtonClicked = { navController.popBackStack() },
-                userViewModel = UserViewModel(tripRepository)
+                userViewModel = userViewModel
             )
         }
 
