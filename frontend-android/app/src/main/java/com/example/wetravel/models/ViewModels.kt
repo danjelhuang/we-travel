@@ -1,5 +1,6 @@
 package com.example.wetravel.models
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -24,6 +25,7 @@ class UserViewModel(private val tripRepository: TripRepository /* TODO: More API
 
         viewModelScope.launch {
             try {
+                Log.d("create trip", "Create Trip called")
                 val result = tripRepository.createTrip(trip)
                 if (result.isSuccess) {
                     _createAccountResponse.postValue(Resource.Success(null))

@@ -80,7 +80,11 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun WeTravelApp(navController: NavHostController = rememberNavController(), coroutineScope: CoroutineScope = rememberCoroutineScope(), tripRepository: TripRepository) {
+fun WeTravelApp(
+    navController: NavHostController = rememberNavController(),
+    coroutineScope: CoroutineScope = rememberCoroutineScope(),
+    tripRepository: TripRepository
+) {
     NavHost(
         navController = navController,
         startDestination = Screens.Login.name,

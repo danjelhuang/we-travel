@@ -1,5 +1,6 @@
 package com.example.wetravel.service
 
+import android.util.Log
 import com.example.wetravel.models.Trip
 import retrofit2.Response
 import retrofit2.http.Body
@@ -15,7 +16,9 @@ interface ApiService {
 class TripRepository (private val apiService: ApiService) {
     suspend fun createTrip(tripConfiguration: Trip): Result<Unit> {
         return try {
+            Log.d("here", "here")
             val response = apiService.createTrip(tripConfiguration)
+            Log.d("Response from trips API", response.toString())
             if (response.isSuccessful) {
                 Result.success(response.body()!!)
             } else {

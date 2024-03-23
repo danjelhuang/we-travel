@@ -1,4 +1,3 @@
-
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -36,11 +35,15 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
+import com.example.wetravel.models.Trip
 import com.example.wetravel.models.UserViewModel
-import kotlinx.coroutines.CoroutineScope
 
 @Composable
-fun TripConfigurationForm(title: String, onButtonClicked: () -> Unit, userViewModel: UserViewModel) {
+fun TripConfigurationForm(
+    title: String,
+    onButtonClicked: () -> Unit,
+    userViewModel: UserViewModel
+) {
     // TODO: Convert all of these fields to the values from ViewModel
     val tripName = remember { mutableStateOf(TextFieldValue()) }
     val destinationCity = remember { mutableStateOf(TextFieldValue()) }
@@ -54,9 +57,11 @@ fun TripConfigurationForm(title: String, onButtonClicked: () -> Unit, userViewMo
         )
     )
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
-        .padding(16.dp)
-        .fillMaxHeight()) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier
+            .padding(16.dp)
+            .fillMaxHeight()
+    ) {
         LogoTopBar()
 
         Spacer(modifier = Modifier.height(50.dp))
@@ -69,16 +74,36 @@ fun TripConfigurationForm(title: String, onButtonClicked: () -> Unit, userViewMo
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
         )
-        
+
         Spacer(modifier = Modifier.height(50.dp))
 
-        InputField(label = "trip name", value = tripName.value, onValueChange = { tripName.value = it }, dmSansFamily)
+        InputField(
+            label = "trip name",
+            value = tripName.value,
+            onValueChange = { tripName.value = it },
+            dmSansFamily
+        )
         Spacer(modifier = Modifier.height(20.dp))
-        InputField(label = "destination city", value = destinationCity.value, onValueChange = { destinationCity.value = it }, dmSansFamily)
+        InputField(
+            label = "destination city",
+            value = destinationCity.value,
+            onValueChange = { destinationCity.value = it },
+            dmSansFamily
+        )
         Spacer(modifier = Modifier.height(20.dp))
-        InputField(label = "final destination count", value = finalDestinationCount.value, onValueChange = { finalDestinationCount.value = it }, dmSansFamily)
+        InputField(
+            label = "final destination count",
+            value = finalDestinationCount.value,
+            onValueChange = { finalDestinationCount.value = it },
+            dmSansFamily
+        )
         Spacer(modifier = Modifier.height(20.dp))
-        InputField(label = "number of votes/person", value = numberOfVotesPerPerson.value, onValueChange = { numberOfVotesPerPerson.value = it }, dmSansFamily)
+        InputField(
+            label = "number of votes/person",
+            value = numberOfVotesPerPerson.value,
+            onValueChange = { numberOfVotesPerPerson.value = it },
+            dmSansFamily
+        )
         Spacer(modifier = Modifier.height(20.dp))
 
         Row(
@@ -94,29 +119,46 @@ fun TripConfigurationForm(title: String, onButtonClicked: () -> Unit, userViewMo
                 onCheckedChange = { allowAnonymousVoting.value = it }
             )
             Spacer(modifier = Modifier.width(16.dp))
-            Text("allow anonymous voting", color = MaterialTheme.colorScheme.primary, fontFamily = dmSansFamily)
+            Text(
+                "allow anonymous voting",
+                color = MaterialTheme.colorScheme.primary,
+                fontFamily = dmSansFamily
+            )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = {
-//                handleButtonClick(tripName.value.text, destinationCity.value.text, numberOfVotesPerPerson.value.text, scope)
-                onButtonClicked() },
+                handleButtonClick(
+                    tripName.value.text,
+                    destinationCity.value.text,
+                    numberOfVotesPerPerson.value.text,
+                    finalDestinationCount.value.text,
+                    userViewModel = userViewModel
+                )
+                onButtonClicked()
+            },
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.secondary
             ),
             modifier = Modifier
                 .fillMaxWidth(0.5f)
-                .align(Alignment.CenterHorizontally)){
+                .align(Alignment.CenterHorizontally)
+        ) {
             Text(buttonText, color = Color.White, fontFamily = dmSansFamily)
         }
     }
 }
 
 @Composable
-fun InputField(label: String, value: TextFieldValue, onValueChange: (TextFieldValue) -> Unit, fontFamily: FontFamily) {
+fun InputField(
+    label: String,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    fontFamily: FontFamily
+) {
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -147,38 +189,22 @@ fun LogoTopBar() {
     )
 }
 
-//private fun handleButtonClick(tripName: String, destinationCity: String, numberOfVotesPerPerson: String, scope: CoroutineScope) {
-//    val tripData = """
-//        {
-//            "name": "$tripName",
-//            "city": "$destinationCity",
-//            "coinsPerPerson": "$numberOfVotesPerPerson",
-//            "adminUser": "AdminUserID",
-//            "listOfParticipants": [],
-//            "phase": "Adding Destinations",
-//            "destinations": []
-//        }
-//    """.trimIndent()
-//
-//    postTripData(tripData, scope)
-//}
 
-//private fun postTripData(tripData: String, scope: CoroutineScope) {
-//    scope.launch(Dispatchers.IO) {
-//        val url = "http://10.0.2.2:3000/api/v1/trips"
-//        val client = OkHttpClient()
-//        val requestBody = tripData.toRequestBody("application/json".toMediaType())
-//        val request = Request.Builder()
-//            .url(url)
-//            .post(requestBody)
-//            .build()
-//
-//        client.newCall(request).execute().use { response ->
-//            if (!response.isSuccessful) {
-//                Log.d("fai", "fail")
-//            } else {
-//                Log.d("good", "good")
-//            }
-//        }
-//    }
-//}
+// Button On-click functions
+private fun handleButtonClick(
+    tripName: String,
+    destinationCity: String,
+    finalDestinationCount: String,
+    numberOfVotesPerPerson: String,
+    userViewModel: UserViewModel
+) {
+    val tripData = Trip(
+        code = "asdf",
+        name = tripName,
+        city = destinationCity,
+        finalDestinationCount = finalDestinationCount,
+        votesPerPerson = numberOfVotesPerPerson.toInt(),
+        votingPhase = "default"
+    )
+    userViewModel.createTrip(tripData)
+}
