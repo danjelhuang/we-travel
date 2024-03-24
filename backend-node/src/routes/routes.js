@@ -6,4 +6,7 @@ const tripController = require('../controller/controller');
 router.post('/trips', tripController.createTrip);
 router.get('/trips/:id', tripController.loadTrip);
 
+// Update a trip based on a specific ID
+router.patch('/trips/:id', tripController.updateTrip);
+
 module.exports = router;

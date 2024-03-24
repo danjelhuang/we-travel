@@ -199,10 +199,9 @@ private fun handleButtonClick(
     userViewModel: UserViewModel
 ) {
     val tripData = Trip(
-        code = "asdf",
         name = tripName,
         city = destinationCity,
-        finalDestinationCount = finalDestinationCount,
+        finalDestinationCount = finalDestinationCount.toInt(),
         votesPerPerson = numberOfVotesPerPerson.toInt(),
         votingPhase = "default"
     )
