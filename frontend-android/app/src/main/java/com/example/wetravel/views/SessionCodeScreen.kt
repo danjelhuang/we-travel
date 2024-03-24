@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
 import com.example.wetravel.components.LogoTopAppBar
+import com.example.wetravel.models.UserViewModel
 
 val dmSansFamily = FontFamily(
     Font(
@@ -70,6 +71,8 @@ fun EnterCodeContent(
     onCodeChange: (String) -> Unit,
     onJoinButtonClicked: () -> Unit,
     onBackButtonClicked: () -> Unit
+
+    
 ) {
     Column(
         modifier = Modifier.padding(innerpadding),
@@ -202,8 +205,11 @@ fun SessionCodeScreen(
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun JoinSessionScreen(onJoinButtonClicked: () -> Unit, onBackButtonClicked: () -> Unit) {
+fun JoinSessionScreen(onJoinButtonClicked: () -> Unit, onBackButtonClicked: () -> Unit, userViewModel: UserViewModel
+) {
     var code by remember { mutableStateOf("") }
+
+
 
     Scaffold(topBar = {
         LogoTopAppBar()
@@ -212,8 +218,18 @@ fun JoinSessionScreen(onJoinButtonClicked: () -> Unit, onBackButtonClicked: () -
             innerpadding,
             code,
             { code = it },
-            onJoinButtonClicked,
+            /* { handleonJoinButtonClicked(code, userViewModel)},*/
             onBackButtonClicked
         )
     }
+}
+
+
+// Button on-click functions
+
+private fun handleonJoinButtonClicked(
+    code: String, 
+    userViewModel: UserViewModel
+) {
+    userViewModel.loadTrip(code)
 }
