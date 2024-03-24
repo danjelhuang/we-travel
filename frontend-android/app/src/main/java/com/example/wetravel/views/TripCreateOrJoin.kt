@@ -29,7 +29,7 @@ import com.example.wetravel.components.TripComponent
 val trips = listOf(
     Trip(
         1,
-        "besties takeover ny",
+        "besties takeover ny fjwaieofjiwaoejfioawefjiowjviowejviowejviowahviowehiovawjiova",
         "New York",
         listOf(0, 1, 2, 3, 4),
         0,
@@ -42,7 +42,7 @@ val trips = listOf(
         1,
         "weekend trip",
         "Toronto",
-        listOf(0, 1, 2, 3, 4, 5, 6, 7, 8),
+        listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
         0,
         R.drawable.sample_destination_image
     ),

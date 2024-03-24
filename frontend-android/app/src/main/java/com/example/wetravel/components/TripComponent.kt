@@ -59,6 +59,7 @@ fun TripComponent(trip: Trip) {
             Column(
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.spacedBy(5.dp),
+                modifier = Modifier.weight(1f)
             ) {
                 Text(
                     text = trip.name,
