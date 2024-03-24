@@ -117,7 +117,8 @@ fun WeTravelApp(
         composable(route = Screens.JoinSession.name) {
             JoinSessionScreen(
                 onJoinButtonClicked = { navController.navigate(Screens.DestinationsListScreen.name) },
-                onBackButtonClicked = { navController.navigate(Screens.TripCreateOrJoin.name) }
+                onBackButtonClicked = { navController.navigate(Screens.TripCreateOrJoin.name) },
+                userViewModel = userViewModel
             )
         }
         composable(route = Screens.SessionCode.name) {
