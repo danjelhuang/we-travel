@@ -15,3 +15,16 @@ exports.createTrip = async (req, res) => {
     res.status(500).json({ error: 'Failed to create trip' });
   }
 };
+
+exports.loadTrip = async (req, res) => {
+
+  try {
+    const tripId = req.params.id;
+    const trip = await tripService.loadTrip(tripId);
+    console.log("Trip fetched successfully");
+    res.status(201).json(trip);
+  } catch (error) {
+    console.error('Error fetching trip:', error);
+    res.status(500).json({ error: 'Failed to fetch trip' });
+  }
+};
