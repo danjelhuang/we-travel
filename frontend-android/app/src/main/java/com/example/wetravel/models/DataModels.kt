@@ -25,7 +25,7 @@ data class Trip(
     val code: String = "",
     val name: String = "",
     val city: String = "",
-    val finalDestinationCount: String = "",
+    val finalDestinationCount: Int = 0,
     val participants: List<String> = emptyList(),
     val votesPerPerson: Int = 0,
     val votingPhase: String = "",
