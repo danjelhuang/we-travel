@@ -10,13 +10,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.wetravel.R
-import com.example.wetravel.components.DestinationEntry
-import com.example.wetravel.components.DestinationsListFooter
-import com.example.wetravel.components.DestinationsListHeader
+import com.example.wetravel.components.DestinationsVotingListHeader
+import com.example.wetravel.components.VotingBottomCard
+import com.example.wetravel.components.VotingDestinationEntry
 import com.example.wetravel.models.Destination
 
+
+// The column of destination entries
 @Composable
-fun DestinationsColumn(destinations: List<Destination>, innerPadding: PaddingValues) {
+fun DestinationsVotingColumn(destinations: List<Destination>, innerPadding: PaddingValues) {
     LazyColumn(
         modifier = Modifier
             .padding(innerPadding),
@@ -25,42 +27,42 @@ fun DestinationsColumn(destinations: List<Destination>, innerPadding: PaddingVal
             Row(
                 modifier = Modifier.padding(vertical = 8.dp, horizontal = 10.dp)
             ) {
-                DestinationEntry(destination = destination)
+                VotingDestinationEntry(destination = destination, coins = 2)
             }
 
         }
     }
 }
 
+// The actual page
 @Composable
-fun DestinationsList(
-    onAddDestinationButtonClicked: () -> Unit,
-    onStartVotingButtonClicked: () -> Unit,
+fun DestinationsVotingList(
+    onEndVotingButtonClicked: () -> Unit,
     onSettingsButtonClicked: () -> Unit
 ) {
     // Assuming we have a list of destinations to display
     val destinations = listOf(
         // Add your destinations here, for example:
         Destination(
-            "MoMA", "11 W 53rd St, New York", "4.6", 50,
+      "MoMA", "11 W 53rd St, New York", "4.6", 50,
             R.drawable.sample_destination_image, voted = true, numOfVotes = 5
         ),
         // Add more destinations...
         Destination(
-           "MoMA", "11 W 53rd St, New York", "4.6", 50,
+             "MoMA", "11 W 53rd St, New York", "4.6", 50,
             R.drawable.sample_destination_image, voted = false, numOfVotes = 5
         ),
         Destination(
-            "MoMA", "11 W 53rd St, New York", "4.6", 50,
+             "MoMA", "11 W 53rd St, New York", "4.6", 50,
             R.drawable.sample_destination_image, voted = true, numOfVotes = 5
         ),
     )
 
     Scaffold(
-        topBar = { DestinationsListHeader(tripName = "Toronto", onSettingsButtonClicked) },
-        bottomBar = { DestinationsListFooter(onAddDestinationButtonClicked, onStartVotingButtonClicked) }
+        topBar = { DestinationsVotingListHeader(tripName = "Toronto", onSettingsButtonClicked) },
+        bottomBar = { VotingBottomCard(onEndVotingButtonClicked) }
     ) { innerPadding ->
-        DestinationsColumn(destinations = destinations, innerPadding = innerPadding)
+        DestinationsVotingColumn(destinations = destinations, innerPadding = innerPadding)
     }
 }
 

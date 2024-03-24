@@ -1,4 +1,4 @@
-package com.example.wetravel.Views
+package com.example.wetravel.views
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.border
