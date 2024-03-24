@@ -1,119 +1,151 @@
+package com.example.wetravel.views
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
+import com.example.wetravel.components.LogoTopAppBar
+import com.example.wetravel.components.Trip
+import com.example.wetravel.components.TripComponent
+
+// TODO: link this with data model
+val trips = listOf(
+    Trip(
+        1,
+        "besties takeover ny",
+        "New York",
+        listOf(0, 1, 2, 3, 4),
+        0,
+        R.drawable.sample_destination_image
+    ),
+    Trip(
+        1, "end of term trip", "Tokyo", listOf(0, 1, 2), 0, R.drawable.sample_destination_image
+    ),
+    Trip(
+        1,
+        "weekend trip",
+        "Toronto",
+        listOf(0, 1, 2, 3, 4, 5, 6, 7, 8),
+        0,
+        R.drawable.sample_destination_image
+    ),
+    Trip(
+        1, "end of term trip", "Tokyo", listOf(0, 1, 2), 0, R.drawable.sample_destination_image
+    ),
+    Trip(
+        1, "end of term trip", "Tokyo", listOf(0, 1, 2), 0, R.drawable.sample_destination_image
+    ),
+    Trip(
+        1, "end of term trip", "Tokyo", listOf(0, 1, 2), 0, R.drawable.sample_destination_image
+    ),
+    Trip(
+        1, "end of term trip", "Tokyo", listOf(0, 1, 2), 0, R.drawable.sample_destination_image
+    ),
+    Trip(
+        1, "end of term trip", "Tokyo", listOf(0, 1, 2), 0, R.drawable.sample_destination_image
+    ),
+    Trip(
+        1, "end of term trip", "Tokyo", listOf(0, 1, 2), 0, R.drawable.sample_destination_image
+    ),
+    Trip(
+        1, "end of term trip", "Tokyo", listOf(0, 1, 2), 0, R.drawable.sample_destination_image
+    ),
+)
+//val trips: List<Trip> = listOf()
 
 @Composable
-fun TripCreateorJoin(
-    onCreateTripButtonClicked: () -> Unit,
-    onJoinTripButtonClicked: () -> Unit
+fun LandingPage(
+    onCreateTripButtonClicked: () -> Unit, onJoinTripButtonClicked: () -> Unit
 ) {
-    Column {
-        TopBar()
-        SelectionButtons(onCreateTripButtonClicked, onJoinTripButtonClicked)
+    Scaffold(topBar = {
+        LogoTopAppBar()
+    }) { innerpadding ->
+        Column(modifier = Modifier.padding(innerpadding)) {
+            TripList(trips, Modifier.weight(1f))
+            CreateOrJoinTripBottomBar(onCreateTripButtonClicked, onJoinTripButtonClicked)
+        }
     }
 }
 
 @Composable
-fun SelectionButtons(
-    onCreateTripButtonClicked: () -> Unit,
-    onJoinTripButtonClicked: () -> Unit
+fun TripList(
+    trips: List<Trip>, modifier: Modifier
 ) {
-    val dmSansFamily = FontFamily(
-        Font(
-            resId = R.font.dmsans_semibold, FontWeight(600)
-        )
-    )
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(30.dp),
-    ) {
+    if (trips.isNotEmpty()) {
+        LazyColumn(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(15.dp),
+            modifier = modifier.padding(10.dp)
+        ) {
+            itemsIndexed(trips) { _, trip ->
+                TripComponent(trip = trip)
+            }
+        }
+    } else {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = modifier.fillMaxWidth()
+        ) {
+            Text(text = "Create or Join a trip")
+        }
+    }
+    
+}
 
+@Composable
+fun CreateOrJoinTripBottomBar(
+    onCreateTripButtonClicked: () -> Unit, onJoinTripButtonClicked: () -> Unit
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(25.dp, Alignment.CenterHorizontally),
+        modifier = Modifier
+            .height(100.dp)
+            .fillMaxWidth()
+    ) {
         Button(
             onClick = { onCreateTripButtonClicked() },
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier
-                .height(125.dp)
-                .width(2000.dp)
-                .padding(16.dp),
+                .height(60.dp)
+                .width(150.dp)
+                .padding(5.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
         ) {
             Text(
-                text = "create trip",
-                fontFamily = dmSansFamily,
-                fontSize = 36.sp /*color = Color.White*/
+                text = "create trip", fontFamily = dmSansFamily, fontSize = 16.sp
             )
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         Button(
             onClick = { onJoinTripButtonClicked() },
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier
-                .height(125.dp)
-                .width(2000.dp)
-                .padding(16.dp),
+                .height(60.dp)
+                .width(150.dp)
+                .padding(5.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
         ) {
             Text(
-                text = "join trip",
-                fontFamily = dmSansFamily,
-                fontSize = 36.sp /*color = Color.White*/
+                text = "join trip", fontFamily = dmSansFamily, fontSize = 16.sp
             )
         }
     }
 }
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TopBar() {
-    TopAppBar(
-        title = {},
-        navigationIcon = {
-            Image(
-                painter = painterResource(id = R.drawable.logo_we),
-                contentDescription = "WeTravelLogo",
-                modifier = Modifier.size(100.dp)
-            )
-        },
-        modifier = Modifier.fillMaxWidth(),
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background
-        )
-    )
-}
-
-
-
-
-
-

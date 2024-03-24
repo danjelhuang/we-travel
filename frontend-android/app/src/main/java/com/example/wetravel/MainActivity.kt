@@ -2,7 +2,6 @@ package com.example.wetravel
 
 import AddDestinations
 import TripConfigurationForm
-import TripCreateorJoin
 import TripLoginSignup
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -23,6 +22,7 @@ import com.example.wetravel.ui.theme.ProjectTheme
 import com.example.wetravel.views.CreateAccountForm
 import com.example.wetravel.views.DestinationsList
 import com.example.wetravel.views.DestinationsVotingList
+import com.example.wetravel.views.LandingPage
 import com.example.wetravel.views.VotingResultsMainScreen
 import kotlinx.coroutines.CoroutineScope
 
@@ -72,7 +72,7 @@ fun WeTravelApp(navController: NavHostController = rememberNavController(), coro
             )
         }
         composable(route = Screens.TripCreateOrJoin.name) {
-            TripCreateorJoin(
+            LandingPage(
                 onCreateTripButtonClicked = { navController.navigate(Screens.TripConfiguration.name) },
                 onJoinTripButtonClicked = { navController.navigate(Screens.JoinSession.name) }
             )
