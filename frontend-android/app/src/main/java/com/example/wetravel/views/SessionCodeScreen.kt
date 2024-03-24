@@ -39,28 +39,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
+import com.example.wetravel.components.LogoTopAppBar
 
 val dmSansFamily = FontFamily(
     Font(
         resId = R.font.dmsans_semibold, FontWeight(600)
     )
 )
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun LogoTopAppBar() {
-    TopAppBar(title = {}, navigationIcon = {
-        Icon(
-            painter = painterResource(id = R.drawable.logo_we),
-            contentDescription = "Logo",
-            modifier = Modifier
-                .size(100.dp)
-                .padding(start = 20.dp),
-            tint = Color.Unspecified
-        )
-
-    })
-}
 
 @Composable
 fun BackButton(onClick: () -> Unit) {
