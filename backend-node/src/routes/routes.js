@@ -4,6 +4,7 @@ const tripController = require('../controller/controller');
 
 // create a trip
 router.post('/trips', tripController.createTrip);
+// get a trip by id (access code)
 router.get('/trips/:id', tripController.loadTrip);
 
 // Update a trip based on a specific ID
