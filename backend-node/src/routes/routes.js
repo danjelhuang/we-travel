@@ -8,6 +8,13 @@ router.post('/trips', tripController.createTrip);
 router.get('/trips/:id', tripController.loadTrip);
 
 // Update a trip based on a specific ID
-router.patch('/trips/:id', tripController.updateTrip);
+router.patch('/update-trip/:id', tripController.updateTrip);
+
+// add participant to an existing trip route
+router.post('/add-participant-to-trip/:id', tripController.addParticipantToTrip)
+
+
+// remove participant from existing trip route
+router.post('/remove-participant-from-trip/:id', tripController.removeParticipantFromTrip)
 
 module.exports = router;

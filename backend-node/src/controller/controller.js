@@ -38,4 +38,41 @@ exports.updateTrip = async (req, res) => {
     console.error('Error updating trip: ', error);
     res.status(500).json({ error: 'Failed to update the trip' });
   }
-};
+}
+
+exports.addParticipantToTrip = async (req, res) => {
+  const tripId = req.params.id;
+  const userId = req.body;
+
+  if (!userId || !userId.userId) {
+    res.status(400).send({ success: false, message: 'Participant userId is required' });
+    return;
+  }
+
+  try {
+    const result = await tripService.addParticipantToTrip(userId.userId, tripId)
+    res.status(200).json(result)
+  } catch (error) {
+    console.error('Error adding participant to trip: ', error);
+    res.status(500).json({ error: 'Failed to add participant to the trip' });
+  }
+}
+
+exports.removeParticipantFromTrip = async (req, res) => {
+  const tripId = req.params.id;
+  const userId = req.body;
+
+  if (!userId || !userId.userId) {
+    res.status(400).send({ success: false, message: 'Participant userId is required' });
+    return;
+  }
+
+  try {
+    const result = await tripService.removeParticipantFromTrip(userId.userId, tripId)
+    res.status(200).json(result)
+  } catch (error) {
+    console.error('Error removing participant to trip: ', error);
+    res.status(500).json({ error: 'Failed to remove participant from the trip' });
+  }
+}
+;
