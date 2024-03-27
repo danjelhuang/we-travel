@@ -29,7 +29,7 @@
             </intent-filter>
             <meta-data
                 android:name="com.google.android.geo.API_KEY"
-                android:value="AIzaSyCi8Sv_ATotPJmYZmQhlMp4XYi5R4DF7z0" />
+                android:value="${MAPS_API_KEY}" />
 
         </activity>
     </application>
