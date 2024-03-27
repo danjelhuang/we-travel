@@ -48,7 +48,6 @@ import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import kotlinx.coroutines.launch
 
-
 val dmSansFamily = FontFamily(
     Font(
         resId = R.font.dmsans_semibold, FontWeight(600)
@@ -59,13 +58,10 @@ val dmSansFamily = FontFamily(
 fun AddDestinations(
     onAddDestinationButtonClicked: () -> Unit
 ) {
-
     val context = LocalContext.current
     PlacesClientManager.initialize(context)
     val placesClient = PlacesClientManager.getPlacesClient(context)
-
     val scope = rememberCoroutineScope()
-
 
     var category by remember {
         mutableStateOf("")
@@ -86,18 +82,21 @@ fun AddDestinations(
         MutableInteractionSource()
     }
 
-
     var predictions by remember {
         mutableStateOf<List<AutocompletePrediction>>(emptyList())
     }
 
+    var selectedPrediction by remember {
+        mutableStateOf<AutocompletePrediction?>(null)
+    }
 
     Column(modifier = Modifier
         .padding(30.dp)
         .fillMaxWidth()
         .clickable(interactionSource = interactionSource, indication = null, onClick = {
             expanded = false
-        })) {
+        })
+    ) {
 
 
         Text(modifier = Modifier.padding(start = 3.dp, bottom = 2.dp),
@@ -135,7 +134,6 @@ fun AddDestinations(
                             predictions = emptyList()
                         }
 
-
                     }, placeholder = {
                         Text(
                             "Enter a Destination", onTextLayout = {}, fontFamily = dmSansFamily
@@ -169,13 +167,18 @@ fun AddDestinations(
                         )
                 ) {
                     items(predictions) { prediction ->
-                        Text(text = prediction.getPrimaryText(null).toString(),
+                        Text(text = prediction.getPrimaryText(null)
+                            .toString() + ", " + prediction.getSecondaryText(null).toString(),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
                                     category = prediction
                                         .getPrimaryText(null)
+                                        .toString() + ", "
+                                    prediction
+                                        .getSecondaryText(null)
                                         .toString()
+                                    selectedPrediction = prediction
                                     expanded = false
                                     predictions = emptyList()
                                 }
@@ -185,7 +188,11 @@ fun AddDestinations(
             }
         }
         Button(
-            onClick = {onAddDestinationButtonClicked() },
+            onClick = {
+                onAddDestinationButtonClicked()
+                println(selectedPrediction)
+                // TODO: SEND REQUEST TO BACKEND WITH TRIP ID AND selectedPrediction
+            },
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(red = 69, green = 123, blue = 157)
@@ -204,19 +211,13 @@ fun fetchPredictions(
     query: String,
     onComplete: (List<AutocompletePrediction>) -> Unit
 ) {
-    println("fetch predictions")
     val token = AutocompleteSessionToken.newInstance()
+    // TODO: UPDATE QUERY TO INCLUDE CITY AFTER VIEWMODEL IS DONE
     val request =
         FindAutocompletePredictionsRequest.builder().setQuery(query).setSessionToken(token).build()
-
-    println(request)
-
-
     placesClient.findAutocompletePredictions(request).addOnSuccessListener { response ->
         onComplete(response.autocompletePredictions)
-        println("request")
     }.addOnFailureListener { exception ->
         println("failed")
     }
-
 }
