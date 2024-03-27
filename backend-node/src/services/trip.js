@@ -129,6 +129,38 @@ class TripService {
       throw new Error("Failed to remove participant");
     }
   }
+
+  async getUserVotes(tripID, userID) {
+    const trip = db.collection("trips").doc(tripID);
+    try {
+      const doc = await trip.get();
+      if (!doc.exists) {
+        console.log("No such document!");
+        return {
+          success: false,
+          message: "TripID error",
+        }
+      } else {
+
+        const userData = doc.data().users.find(user => user.userID === userID);
+        if (!userData) {
+          console.log('User not in trip');
+          return {
+              success: false,
+              message: "User not in trip",
+          };
+        }
+
+        return {
+          success: true,
+          votes: userData?.votes || -1
+        };
+      }
+    } catch (error) {
+      console.error("Error getting user votes: ", error);
+      throw new Error("Failed to get user votes");
+    }
+  }
 }
 
 module.exports = TripService;

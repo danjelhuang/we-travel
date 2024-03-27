@@ -14,8 +14,10 @@ router.patch('/update-trip/:id', tripController.updateTrip);
 // add participant to an existing trip route
 router.post('/add-participant-to-trip/:id', tripController.addParticipantToTrip)
 
-
 // remove participant from existing trip route
 router.post('/remove-participant-from-trip/:id', tripController.removeParticipantFromTrip)
+
+// get user votes in a trip
+router.get('/trips/:tripID/userVotes/:userID', tripController.getUserVotes)
 
 module.exports = router;
