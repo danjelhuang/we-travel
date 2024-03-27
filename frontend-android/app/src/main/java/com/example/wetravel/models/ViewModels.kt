@@ -40,41 +40,23 @@ class UserViewModel(private val tripRepository: TripRepository /* TODO: More API
         }
     }
 
-    fun loadTrip(tripId: String) {
-
-        viewModelScope.launch {
-            try {
-                Log.d("load trip", "load trip called")
-                val result = tripRepository.loadTrip(tripId)
-                // handle data here
-                // where to load - into the viewmodel?
-            }
-
-            catch (e: Exception) {
-                _createAccountResponse.postValue(Resource.Error("An exception occurred while calling the loadtrip API"))
-
-            }
-        }
-
-
-    }
-
-    fun addDestination(tripId: String, newDestination: Destination) {
-
-        viewModelScope.launch {
-            try {
-                Log.d("add location", "add location called")
-                val result = tripRepository.addDestination(tripId, newDestination)
-            }
-
-            catch (e: Exception) {
-                _createAccountResponse.postValue(Resource.Error("An exception occurred while calling the addLocation API"))
-
-            }
-        }
-
-
-    }
+//    fun loadTrip(tripId: String) {
+//
+//        viewModelScope.launch {
+//            try {
+//                Log.d("load trip", "load trip called")
+//                val result = tripRepository.loadTrip(tripId)
+//                // handle data here
+//                // where to load - into the viewmodel?
+//            }
+//
+//            catch (e: Exception) {
+//                _createAccountResponse.postValue(Resource.Error("An exception occurred while calling the loadrip API"))
+//
+//            }
+//        }
+//
+//    }
 
     
 
