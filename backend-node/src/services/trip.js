@@ -54,7 +54,7 @@ class TripService {
 
       const trip = doc.data();
 
-      const isExisting = trip.destinationsList.some(dest =>dest.address == newDestination.address);
+      const isExisting = trip.destinationsList.some(dest =>dest.placeID == newDestination.placeID);
 
       if (isExisting) {
         return { error: true, message: 'Destination already exists', status: 409 };
