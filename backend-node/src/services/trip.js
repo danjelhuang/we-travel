@@ -20,7 +20,7 @@ class TripService {
       
       if (!doc.exists) {
         console.log('No such trip!');
-        return null; // or throw an error based on your error handling strategy
+        return null; 
       } else {
         console.log('Trip data:', doc.data());
         return { id: doc.id, ...doc.data() };
@@ -34,12 +34,11 @@ class TripService {
   async addDestination(tripId, newDestination) {
     try {
       const docRef = db.collection('trips').doc(tripId);
-      console.log(tripId)
       const doc = await docRef.get();
       
       if (!doc.exists) {
         console.log('No such trip!');
-        return null; // or throw an error based on your error handling strategy
+        return null; 
       } 
 
       const trip = doc.data();
@@ -47,16 +46,16 @@ class TripService {
       const isExisting = trip.destinationsList.some(dest =>dest.address == newDestination.address);
 
       if (isExisting) {
-        res.status(409).send('Destination already exists')
+        return { error: true, message: 'Destination already exists', status: 409 };
       } else {
         await docRef.update({
           destinationsList: [...trip.destinationsList, newDestination]
         });
-        res.status(200).send('Destination added successfully');
+        return { error: false, message: 'Destination added successfully', status: 200 };
       }
   } catch (error) {
     console.error('Error  adding destination:', error);
-    res.status(500).send('Error adding destination to the trip');
+    throw new Error('Error adding destination to the trip');
   }
 }
 
