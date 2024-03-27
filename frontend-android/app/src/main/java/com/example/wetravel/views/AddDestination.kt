@@ -45,6 +45,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import com.example.wetravel.R
+import com.example.wetravel.models.UserViewModel
+import com.example.wetravel.models.Destination
+
 
 
 val dmSansFamily = FontFamily(
@@ -280,3 +283,13 @@ fun ItemsCategory(
     }
 
 }
+
+
+
+// private fun handleonAddDestinationButtonClicked(
+//     newDestination: Destination, 
+//     tripId: String,
+//     userViewModel: UserViewModel
+// ) {
+//     userViewModel.addDestination(tripId, newDestination)
+// }

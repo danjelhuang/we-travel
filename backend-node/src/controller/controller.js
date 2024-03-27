@@ -28,3 +28,19 @@ exports.loadTrip = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch trip' });
   }
 };
+
+exports.addDestination = async (req, res) => {
+
+  try {
+    const { tripId } = req.params;
+    console.log(tripId);
+    const newDestination = req.body;
+    const trip = await tripService.addDestination(tripId, newDestination);
+    console.log("Destination added successfully");
+    res.status(201).json(trip);
+  } catch (error) {
+    console.error('Error adding destination:', error);
+    res.status(500).json({ error: 'Failed to add destination' });
+  }
+};
+
