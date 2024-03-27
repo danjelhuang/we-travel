@@ -28,6 +28,28 @@ exports.loadTrip = async (req, res) => {
   }
 };
 
+exports.addDestination = async (req, res) => {
+
+  try {
+    const tripId = req.params.id;
+    const newDestination = req.body;
+    const trip = await tripService.addDestination(tripId, newDestination);
+    if (trip.error) {
+      res.status(500).json({ error: 'Failed to add destination' });
+      return
+    } else {
+      console.log("Destination added successfully");
+      res.status(201).json(trip);
+      return
+      
+    }
+    
+  } catch (error) {
+    console.error('Error adding destination:', error);
+    res.status(500).json({ error: 'Failed to add destination' });
+  }
+};
+
 exports.updateTrip = async (req, res) => {
   const tripId = req.params.id;
   const updates = req.body;
