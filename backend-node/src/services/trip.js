@@ -5,6 +5,7 @@ class TripService {
   async createTrip(tripData) {
     try {
       const docRef = db.collection('trips').doc(tripData.tripID);
+      tripData.users.push({ userID: tripData.adminUserID, votes: tripData.votesPerPerson })
       await docRef.set(tripData);
       return { id: docRef.id, ...tripData };
     } catch (error) {
