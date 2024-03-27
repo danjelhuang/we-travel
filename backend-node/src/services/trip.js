@@ -4,7 +4,7 @@ const db = require("../database/database");
 class TripService {
   async createTrip(tripData) {
     try {
-      const docRef = db.collection("trips").doc(tripData.code);
+      const docRef = db.collection('trips').doc(tripData.tripID);
       await docRef.set(tripData);
       return { id: docRef.id, ...tripData };
     } catch (error) {
@@ -58,9 +58,7 @@ class TripService {
 
       const trip = doc.data();
 
-      const isExisting = trip.destinationsList.some(
-        (dest) => dest.address == newDestination.address
-      );
+      const isExisting = trip.destinationsList.some(dest =>dest.placeID == newDestination.placeID);
 
       if (isExisting) {
         return {
