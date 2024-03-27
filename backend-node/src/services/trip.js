@@ -152,7 +152,7 @@ class TripService {
 
         return {
           success: true,
-          votes: userData?.votes || -1 // Optional chaining and fallback value
+          votes: userData?.votes || -1
         };
       }
     } catch (error) {
