@@ -1,6 +1,10 @@
+import java.util.Properties
+
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin") version "2.0.1"
 }
 
 android {
@@ -18,6 +22,20 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // Load API key from local.properties
+        val properties = Properties()
+        properties.load(rootProject.file("local.properties").inputStream())
+
+        buildConfigField(
+            "String",
+            "MAPS_API_KEY",
+            properties.getProperty("MAPS_API_KEY", "")
+        )
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
@@ -59,11 +77,17 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation ("androidx.fragment:fragment-ktx:1.6.2")
     implementation("androidx.navigation:navigation-compose:2.7.7")
     implementation("androidx.navigation:navigation-runtime-ktx:2.7.7")
     implementation ("com.squareup.okhttp3:okhttp:4.9.2")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
-    implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.7.0")
+
+    //google maps
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
+    implementation("com.google.android.libraries.places:places:3.4.0")
+
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
@@ -71,4 +95,5 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+
 }
