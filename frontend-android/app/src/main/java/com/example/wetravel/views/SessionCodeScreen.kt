@@ -218,6 +218,7 @@ fun JoinSessionScreen(onJoinButtonClicked: () -> Unit, onBackButtonClicked: () -
             innerpadding,
             code,
             { code = it },
+            {}, // replace this with below later
             /* { handleonJoinButtonClicked(code, userViewModel)},*/
             onBackButtonClicked
         )
@@ -227,9 +228,9 @@ fun JoinSessionScreen(onJoinButtonClicked: () -> Unit, onBackButtonClicked: () -
 
 // Button on-click functions
 
-private fun handleonJoinButtonClicked(
-    code: String, 
-    userViewModel: UserViewModel
-) {
-    userViewModel.loadTrip(code)
-}
+//private fun handleonJoinButtonClicked(
+//    code: String,
+//    userViewModel: UserViewModel
+//) {
+//    userViewModel.loadTrip(code)
+//}
