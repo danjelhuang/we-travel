@@ -31,11 +31,8 @@ exports.loadTrip = async (req, res) => {
 exports.addDestination = async (req, res) => {
 
   try {
-    console.log("hihihii:", req.params);
     const tripId = req.params.id;
-    console.log("controller js is:", tripId);
     const newDestination = req.body;
-    console.log("check dest:", newDestination);
     const trip = await tripService.addDestination(tripId, newDestination);
     if (trip.error) {
       res.status(500).json({ error: 'Failed to add destination' });

@@ -27,7 +27,6 @@ class TripService {
   async loadTrip(tripId) {
     try {
       const docRef = db.collection('trips').doc(tripId);
-      console.log(tripId)
       const doc = await docRef.get();
       
       if (!doc.exists) {
