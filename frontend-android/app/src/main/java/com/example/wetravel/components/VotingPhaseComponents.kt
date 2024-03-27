@@ -1,5 +1,4 @@
-package com.example.wetravel.views
-
+package com.example.wetravel.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -10,22 +9,23 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -34,10 +34,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
-import com.example.wetravel.components.Destination
-import com.example.wetravel.components.VotingDestinationEntry
+import com.example.wetravel.models.Destination
 
-
+// The header of the page
 @Composable
 // TODO: This is repeated code from DestinationsList lol
 fun DestinationsVotingListHeader(tripName: String, onSettingsButtonClicked: () -> Unit) {
@@ -113,29 +112,140 @@ fun DestinationsVotingListHeader(tripName: String, onSettingsButtonClicked: () -
                     }
                 }
             }
-
         }
     }
 }
 
+// The special Voting Destination Entry
 @Composable
-fun DestinationsVotingColumn(destinations: List<Destination>, innerPadding: PaddingValues) {
-    LazyColumn(
+fun VotingDestinationEntry(destination: Destination, coins: Int) {
+    // Could use Card instead if we don't want the elevation
+    ElevatedCard(
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp
+        ),
+        colors = CardDefaults.cardColors(
+            containerColor = Color(0xFFF1FAEE),
+        ),
+        shape = RoundedCornerShape(15.dp),
         modifier = Modifier
-            .padding(innerPadding),
+            .fillMaxWidth()
+
     ) {
-        itemsIndexed(destinations) { _, destination ->
-            Row(
-                modifier = Modifier.padding(vertical = 8.dp, horizontal = 10.dp)
-            ) {
-                VotingDestinationEntry(destination = destination, coins = 2)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(10.dp)
+                .fillMaxWidth()
+        ) {
+            Column {
+                Text(
+                    text = destination.name,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp
+                )
+                Spacer(modifier = Modifier.height(5.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(
+                        painter = painterResource(id = R.drawable.rating_star),
+                        contentDescription = "Location pin widget",
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        text = " ${destination.rating} "
+                    )
+                    Text(
+                        text = "(${destination.reviewCount})",
+                        fontSize = 14.sp
+                    )
+                }
+                Spacer(modifier = Modifier.height(5.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Image(
+                        painter = painterResource(id = R.drawable.coin),
+                        contentDescription = "TravelCoin",
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        text = " $coins",
+                        fontSize = 14.sp
+                    )
+                }
+
             }
 
+            Spacer(modifier = Modifier.weight(1f))
+
+            if (destination.voted) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy((-8).dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.coin),
+                        contentDescription = "TravelCoin",
+                        modifier = Modifier.size(40.dp)
+                    )
+                    FilledTonalButton(
+                        onClick = { /*TODO*/ },
+                        shape = RoundedCornerShape(20),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFE63946),
+                            contentColor = Color.White
+                        ),
+                        modifier = Modifier
+                            .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
+                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 3.dp),
+                    ) {
+                        Text(
+                            text = "Remove",
+                            style = TextStyle(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp,
+                            )
+                        )
+                    }
+                }
+            } else {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.vote_icon),
+                        contentDescription = "Vote with TravelCoin",
+                        modifier = Modifier.size(40.dp)
+                    )
+                    Row {
+                        Text(
+                            text = "Vote",
+                            style = TextStyle(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp,
+                            )
+                        )
+                        Spacer(modifier = Modifier.width(2.dp))
+                    }
+
+                }
+            }
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+
+            Image(
+                painter = painterResource(id = destination.imageResId),
+                contentDescription = "${destination.name} image",
+                modifier = Modifier
+                    .size(65.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            )
         }
     }
 }
 
-
+// Footer of the VotingPhase
 @Composable
 fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit) {
     Box(
@@ -144,7 +254,6 @@ fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit) {
             .background(color = Color(0xFFA8DADC))
     ) {
         Row(
-
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = Modifier
@@ -192,17 +301,13 @@ fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit) {
             }
 
             Spacer(modifier = Modifier.width(30.dp))
-
-            //
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
                 // Remaining travelCoins
                 Row(
-
                     modifier = Modifier.fillMaxWidth()
-
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.coin_bunch),
@@ -272,38 +377,3 @@ fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit) {
         }
     }
 }
-
-
-@Composable
-fun DestinationsVotingList(
-    onEndVotingButtonClicked: () -> Unit,
-    onSettingsButtonClicked: () -> Unit
-) {
-    // Assuming we have a list of destinations to display
-    val destinations = listOf(
-        // Add your destinations here, for example:
-        Destination(
-            1, "MoMA", "11 W 53rd St, New York", "4.6", 50,
-            R.drawable.sample_destination_image, voted = true
-        ),
-        // Add more destinations...
-        Destination(
-            2, "MoMA", "11 W 53rd St, New York", "4.6", 50,
-            R.drawable.sample_destination_image, voted = false
-        ),
-        Destination(
-            3, "MoMA", "11 W 53rd St, New York", "4.6", 50,
-            R.drawable.sample_destination_image, voted = true
-        ),
-    )
-
-    Scaffold(
-        topBar = { DestinationsVotingListHeader(tripName = "Toronto", onSettingsButtonClicked) },
-        bottomBar = { VotingBottomCard(onEndVotingButtonClicked) }
-    ) { innerPadding ->
-        DestinationsVotingColumn(destinations = destinations, innerPadding = innerPadding)
-    }
-}
-
-
-

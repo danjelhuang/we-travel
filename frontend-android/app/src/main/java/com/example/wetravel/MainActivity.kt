@@ -2,7 +2,6 @@ package com.example.wetravel
 
 import AddDestinations
 import TripConfigurationForm
-import TripCreateorJoin
 import TripLoginSignup
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -17,14 +16,20 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.wetravel.Views.JoinSessionScreen
-import com.example.wetravel.Views.SessionCodeScreen
+import com.example.wetravel.models.UserViewModel
+import com.example.wetravel.service.ApiService
+import com.example.wetravel.service.TripRepository
+import com.example.wetravel.views.JoinSessionScreen
+import com.example.wetravel.views.SessionCodeScreen
 import com.example.wetravel.ui.theme.ProjectTheme
 import com.example.wetravel.views.CreateAccountForm
 import com.example.wetravel.views.DestinationsList
 import com.example.wetravel.views.DestinationsVotingList
+import com.example.wetravel.views.LandingPage
 import com.example.wetravel.views.VotingResultsMainScreen
 import kotlinx.coroutines.CoroutineScope
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 enum class Screens() {
     Login,
@@ -40,9 +45,25 @@ enum class Screens() {
     VotingResults
 }
 
+// Define our backend link and deserialization library + init the apiService
+// Currently the backend is just defined at 10.0.2.2:3000
+object RetrofitBuilder {
+    private fun getRetrofit(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl("http://10.0.2.2:3000/api/v1/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    val apiService: ApiService = getRetrofit().create(ApiService::class.java)
+}
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Define the API Managers below
+        val tripRepository = TripRepository(apiService = RetrofitBuilder.apiService)
 
         setContent {
             ProjectTheme {
@@ -51,7 +72,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    WeTravelApp()
+                    WeTravelApp(tripRepository = tripRepository)
                 }
             }
         }
@@ -59,7 +80,11 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun WeTravelApp(navController: NavHostController = rememberNavController(), coroutineScope: CoroutineScope = rememberCoroutineScope()) {
+fun WeTravelApp(
+    navController: NavHostController = rememberNavController(),
+    tripRepository: TripRepository
+) {
+    val userViewModel = UserViewModel(tripRepository)
     NavHost(
         navController = navController,
         startDestination = Screens.Login.name,
@@ -72,7 +97,7 @@ fun WeTravelApp(navController: NavHostController = rememberNavController(), coro
             )
         }
         composable(route = Screens.TripCreateOrJoin.name) {
-            TripCreateorJoin(
+            LandingPage(
                 onCreateTripButtonClicked = { navController.navigate(Screens.TripConfiguration.name) },
                 onJoinTripButtonClicked = { navController.navigate(Screens.JoinSession.name) }
             )
@@ -86,13 +111,14 @@ fun WeTravelApp(navController: NavHostController = rememberNavController(), coro
             TripConfigurationForm(
                 "create",
                 onButtonClicked = { navController.navigate(Screens.SessionCode.name) },
-                coroutineScope
+                userViewModel = userViewModel
             )
         }
         composable(route = Screens.JoinSession.name) {
             JoinSessionScreen(
                 onJoinButtonClicked = { navController.navigate(Screens.DestinationsListScreen.name) },
-                onBackButtonClicked = { navController.navigate(Screens.TripCreateOrJoin.name) }
+                onBackButtonClicked = { navController.navigate(Screens.TripCreateOrJoin.name) },
+                userViewModel = userViewModel
             )
         }
         composable(route = Screens.SessionCode.name) {
@@ -125,7 +151,7 @@ fun WeTravelApp(navController: NavHostController = rememberNavController(), coro
             TripConfigurationForm(
                 "edit",
                 onButtonClicked = { navController.popBackStack() },
-                coroutineScope
+                userViewModel = userViewModel
             )
         }
 

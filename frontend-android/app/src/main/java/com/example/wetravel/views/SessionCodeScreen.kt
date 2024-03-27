@@ -1,4 +1,4 @@
-package com.example.wetravel.Views
+package com.example.wetravel.views
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.border
@@ -39,28 +39,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
+import com.example.wetravel.components.LogoTopAppBar
+import com.example.wetravel.models.UserViewModel
 
 val dmSansFamily = FontFamily(
     Font(
         resId = R.font.dmsans_semibold, FontWeight(600)
     )
 )
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun LogoTopAppBar() {
-    TopAppBar(title = {}, navigationIcon = {
-        Icon(
-            painter = painterResource(id = R.drawable.logo_we),
-            contentDescription = "Logo",
-            modifier = Modifier
-                .size(100.dp)
-                .padding(start = 20.dp),
-            tint = Color.Unspecified
-        )
-
-    })
-}
 
 @Composable
 fun BackButton(onClick: () -> Unit) {
@@ -85,6 +71,8 @@ fun EnterCodeContent(
     onCodeChange: (String) -> Unit,
     onJoinButtonClicked: () -> Unit,
     onBackButtonClicked: () -> Unit
+
+    
 ) {
     Column(
         modifier = Modifier.padding(innerpadding),
@@ -217,8 +205,11 @@ fun SessionCodeScreen(
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun JoinSessionScreen(onJoinButtonClicked: () -> Unit, onBackButtonClicked: () -> Unit) {
+fun JoinSessionScreen(onJoinButtonClicked: () -> Unit, onBackButtonClicked: () -> Unit, userViewModel: UserViewModel
+) {
     var code by remember { mutableStateOf("") }
+
+
 
     Scaffold(topBar = {
         LogoTopAppBar()
@@ -227,8 +218,19 @@ fun JoinSessionScreen(onJoinButtonClicked: () -> Unit, onBackButtonClicked: () -
             innerpadding,
             code,
             { code = it },
-            onJoinButtonClicked,
+            {}, // replace this with below later
+            /* { handleonJoinButtonClicked(code, userViewModel)},*/
             onBackButtonClicked
         )
     }
 }
+
+
+// Button on-click functions
+
+//private fun handleonJoinButtonClicked(
+//    code: String,
+//    userViewModel: UserViewModel
+//) {
+//    userViewModel.loadTrip(code)
+//}

@@ -221,3 +221,4 @@ fun fetchPredictions(
         println("failed")
     }
 }
+
