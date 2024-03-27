@@ -6,7 +6,7 @@ const tripService = new TripService();
 exports.createTrip = async (req, res) => {
   try {
     const tripData = req.body;
-    tripData.code = await generateUniqueTripCode();
+    tripData.tripID = await generateUniqueTripCode();
     const trip = await tripService.createTrip(tripData);
     console.log("Trip created successfully");
     res.status(201).json(trip);
