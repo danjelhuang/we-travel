@@ -46,7 +46,7 @@ class TripService {
     }
   }
 
-  async addDestination(tripId, newDestination) {
+  async addDestination(tripId, newDestinationID) {
     try {
       const docRef = db.collection("trips").doc(tripId);
       const doc = await docRef.get();
@@ -58,7 +58,7 @@ class TripService {
 
       const trip = doc.data();
 
-      const isExisting = trip.destinationsList.some(dest => dest.placeID == newDestination.placeID);
+      const isExisting = trip.destinationsList.some(dest => dest.placeID == newDestinationID);
 
       if (isExisting) {
         return {
@@ -67,7 +67,7 @@ class TripService {
         };
       } else {
         await docRef.update({
-          destinationsList: [...trip.destinationsList, newDestination],
+          destinationsList: FieldValue.arrayUnion({ placeID: newDestinationID, votes: 0 })
         });
         return {
           success: true,

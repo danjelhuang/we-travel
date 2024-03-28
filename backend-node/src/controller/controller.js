@@ -36,8 +36,8 @@ exports.addDestination = async (req, res) => {
 
   try {
     const tripId = req.params.id;
-    const newDestination = req.body;
-    const trip = await tripService.addDestination(tripId, newDestination);
+    const newDestinationID = req.body.placeID;
+    const trip = await tripService.addDestination(tripId, newDestinationID);
     if (trip.message === "Destination already exists") {
       console.log("Destination exists in trip")
       res.status(409).json(trip);
