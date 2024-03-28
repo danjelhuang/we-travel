@@ -86,7 +86,15 @@ class TripService {
   async addParticipantToTrip(userId, tripId) {
     try {
       const tripRef = db.collection("trips").doc(tripId);
-      const numOfVotes = (await tripRef.get()).data().finalDestinationCount;
+      const trip = await tripRef.get()
+      if (!trip.exists) {
+        console.log("No such trip!");
+        return {
+          success: false,
+          message: "Trip does not exist",
+        };  
+      }
+      const numOfVotes = trip.data().finalDestinationCount;
 
       await tripRef.update({
         users: FieldValue.arrayUnion({ userID: userId, votes: numOfVotes }),

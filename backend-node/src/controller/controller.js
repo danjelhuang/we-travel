@@ -78,7 +78,12 @@ exports.addParticipantToTrip = async (req, res) => {
 
   try {
     const result = await tripService.addParticipantToTrip(userId.userId, tripId)
-    res.status(200).json(result)
+    if (!result.success) {
+      res.status(404).json(result)
+    } else {
+      console.log("Participant added to trip")
+      res.status(200).json(result)
+    }
   } catch (error) {
     console.error('Error adding participant to trip: ', error);
     res.status(500).json({ error: 'Failed to add participant to the trip' });
