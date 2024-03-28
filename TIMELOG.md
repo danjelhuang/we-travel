@@ -14,4 +14,8 @@
 | 2024/03/16 |       |         | 2      |       |         |      | setup node backend          |
 | 2024/03/16 |       |         | 4      |       |         |      | trip creation               |
 | 2024/03/20 |       | 7       |        |       |         |      | setting up google maps API  |
+| 2024/03/24 |       |         | 1      |       |         |      | implement code generation   |
+| 2024/03/24 |       |         | 1      |       |         |      | duplicate trip code check   |
 | 2024/03/27 |       | 5       |        |       |         |      | adding placesAPI to addDest.|
+| 2024/03/27 |       |         | 1      |       |         |      | refactor trip code to tripID|
+| 2024/03/27 |       |         | 1      |       |         |      | add getUserVotes endpoint   |
