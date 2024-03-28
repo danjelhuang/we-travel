@@ -58,22 +58,20 @@ class TripService {
 
       const trip = doc.data();
 
-      const isExisting = trip.destinationsList.some(dest =>dest.placeID == newDestination.placeID);
+      const isExisting = trip.destinationsList.some(dest => dest.placeID == newDestination.placeID);
 
       if (isExisting) {
         return {
-          error: true,
+          success: false,
           message: "Destination already exists",
-          status: 409,
         };
       } else {
         await docRef.update({
           destinationsList: [...trip.destinationsList, newDestination],
         });
         return {
-          error: false,
+          success: true,
           message: "Destination added successfully",
-          status: 200,
         };
       }
     } catch (error) {
