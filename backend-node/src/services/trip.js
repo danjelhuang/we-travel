@@ -53,7 +53,10 @@ class TripService {
 
       if (!doc.exists) {
         console.log("No such trip!");
-        return null;
+        return {
+          success: false,
+          message: "Trip does not exist",
+        };
       }
 
       const trip = doc.data();
@@ -63,7 +66,7 @@ class TripService {
       if (isExisting) {
         return {
           success: false,
-          message: "Destination already exists",
+          message: "Destination already exists in trip",
         };
       } else {
         await docRef.update({
