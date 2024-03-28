@@ -101,6 +101,63 @@ class TripService {
       throw new Error('Failed to remove participant');
     }
   }
+
+  async addVote(tripId, userId, placeId) {
+
+    try {
+      const tripRef = db.collection('trips').doc(tripId);
+      const doc = await tripRef.get();
+
+      const destinations = doc.data().destinationsList;
+      const userList = doc.data().users;
+      
+      const destinationIndex = destinations.findIndex(d => d.placeID === placeId);
+      const userIndex = userList.findIndex(u => u.userID === userId);
+
+      destinations[destinationIndex].votes = destinations[destinationIndex].votes + 1 || 1;
+      userList[userIndex].votes = userList[userIndex].votes - 1 || 1;
+   
+      await tripRef.update({
+        destinationsList: destinations,
+        users: userList
+    });
+  
+      return { success: true, message: 'Vote added successfully to destination' };
+  
+    } catch (error) {
+      console.error('Error adding vote: ', error)
+      throw new Error('Failed to add vote');
+    }
+  }
+
+
+  async removeVote(tripId, userId, placeId) {
+
+    try {
+      const tripRef = db.collection('trips').doc(tripId);
+      const doc = await tripRef.get();
+
+      const destinations = doc.data().destinationsList;
+      const userList = doc.data().users;
+      
+      const destinationIndex = destinations.findIndex(d => d.placeID === placeId);
+      const userIndex = userList.findIndex(u => u.userID === userId);
+
+      destinations[destinationIndex].votes = destinations[destinationIndex].votes - 1 || 1;
+      userList[userIndex].votes = userList[userIndex].votes + 1 || 1;
+   
+      await tripRef.update({
+        destinationsList: destinations,
+        users: userList
+    });
+  
+      return { success: true, message: 'Vote removed successfully from destination' };
+  
+    } catch (error) {
+      console.error('Error removing vote: ', error)
+      throw new Error('Failed to remove vote');
+    }
+  }
 }
 
 

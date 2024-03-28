@@ -97,4 +97,60 @@ exports.removeParticipantFromTrip = async (req, res) => {
     res.status(500).json({ error: 'Failed to remove participant from the trip' });
   }
 }
+
+exports.addVote = async (req, res) => {
+
+  try {
+    const tripId = req.params.id;
+    const userId = req.params.userId;
+    const placeId = req.params.placeId;
+
+  
+    const trip = await tripService.addVote(tripId, userId, placeId);
+
+    if (trip.error) {
+      res.status(500).json({ error: 'Failed to add vote' });
+      return
+    } else {
+      console.log("Vote added successfully");
+      res.status(201).json(trip);
+      return
+      
+    }
+
+  } catch (error) {
+    console.error('Error adding vote:', error);
+    res.status(500).json({ error: 'Failed to add vote' });
+  } 
+
+  
+}
+
+exports.removeVote = async (req, res) => {
+
+  try {
+    const tripId = req.params.id;
+    const userId = req.params.userId;
+    const placeId = req.params.placeId;
+
+  
+    const trip = await tripService.removeVote(tripId, userId, placeId);
+
+    if (trip.error) {
+      res.status(500).json({ error: 'Failed to remove vote' });
+      return
+    } else {
+      console.log("Vote removed successfully");
+      res.status(201).json(trip);
+      return
+      
+    }
+
+  } catch (error) {
+    console.error('Error removing vote:', error);
+    res.status(500).json({ error: 'Failed to remove vote' });
+  } 
+
+  
+}
 ;
