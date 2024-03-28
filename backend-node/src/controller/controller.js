@@ -6,7 +6,7 @@ const tripService = new TripService();
 exports.createTrip = async (req, res) => {
   try {
     const tripData = req.body;
-    tripData.code = await generateUniqueTripCode();
+    tripData.tripID = await generateUniqueTripCode();
     const trip = await tripService.createTrip(tripData);
     console.log("Trip created successfully");
     res.status(201).json(trip);
@@ -95,6 +95,28 @@ exports.removeParticipantFromTrip = async (req, res) => {
   } catch (error) {
     console.error('Error removing participant to trip: ', error);
     res.status(500).json({ error: 'Failed to remove participant from the trip' });
+  }
+};
+
+exports.getUserVotes = async (req, res) => {
+  const tripID = req.params.tripID;
+  const userID = req.params.userID;
+
+  if (!tripID || !userID) {
+    res.status(400).send({ success: false, message: 'tripID and userID required' });
+    return;
+  }
+
+  try {
+    const result = await tripService.getUserVotes(tripID, userID);
+    if (result.success !== true) {
+      res.status(500).json({ error: 'Failed to get user votes' });
+      return;
+    }
+    res.status(200).json(result);
+  } catch (error) {
+    console.error('Error getting user votes: ', error);
+    res.status(500).json({ error: 'Failed to get user votes' });
   }
 }
 

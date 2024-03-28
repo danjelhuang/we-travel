@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -16,12 +15,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Search
-import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -30,11 +26,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -45,10 +43,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import com.example.wetravel.R
-import com.example.wetravel.models.UserViewModel
-import com.example.wetravel.models.Destination
-
-
+import com.google.android.libraries.places.api.model.AutocompletePrediction
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
+import kotlinx.coroutines.launch
 
 val dmSansFamily = FontFamily(
     Font(
@@ -58,22 +56,12 @@ val dmSansFamily = FontFamily(
 
 @Composable
 fun AddDestinations(
-    onAddDestinationButtonClicked: () -> Unit,
-    onSettingsButtonClicked: () -> Unit
+    onAddDestinationButtonClicked: () -> Unit
 ) {
-
-    val destinations = listOf(
-        "CN tower",
-        "Yonge Dundas Square",
-        "Ripleys Aquarium",
-        "Union Station",
-        "AGO Museum",
-        "Harbourfront",
-        "Kensington market",
-        "University of Toronto",
-        "Subway"
-    )
-
+    val context = LocalContext.current
+    PlacesClientManager.initialize(context)
+    val placesClient = PlacesClientManager.getPlacesClient(context)
+    val scope = rememberCoroutineScope()
 
     var category by remember {
         mutableStateOf("")
@@ -94,98 +82,67 @@ fun AddDestinations(
         MutableInteractionSource()
     }
 
-    // Category Field
-    Column(
-        modifier = Modifier
-            .padding(30.dp)
-            .fillMaxWidth()
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                onClick = {
-                    expanded = false
-                }
-            )
+    var predictions by remember {
+        mutableStateOf<List<AutocompletePrediction>>(emptyList())
+    }
+
+    var selectedPrediction by remember {
+        mutableStateOf<AutocompletePrediction?>(null)
+    }
+
+    Column(modifier = Modifier
+        .padding(30.dp)
+        .fillMaxWidth()
+        .clickable(interactionSource = interactionSource, indication = null, onClick = {
+            expanded = false
+        })
     ) {
 
-        Row(modifier = Modifier.fillMaxWidth()) {
-            Spacer(Modifier.weight(1f))
 
-            IconButton(
-                onClick = { /* TODO */ },
-            ) {
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    imageVector = Icons.Rounded.Person,
-                    contentDescription = "person",
-                    //  tint = Color.Black
-                )
-            }
-            Text(
-                text = "4",
-                fontFamily = dmSansFamily,
-                fontSize = 24.sp,
-                modifier = Modifier
-                    .padding(start = 0.dp, top = 7.dp)
-            )
-            IconButton(
-                onClick = { onSettingsButtonClicked() },
-            ) {
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    imageVector = Icons.Rounded.Settings,
-                    contentDescription = "settings",
-                )
-            }
-        }
-
-        Text(
-            modifier = Modifier.padding(start = 3.dp, bottom = 2.dp),
+        Text(modifier = Modifier.padding(start = 3.dp, bottom = 2.dp),
             text = "Add Destinations",
             fontFamily = dmSansFamily,
             fontSize = 16.sp,
-            onTextLayout = {}
-        )
+            onTextLayout = {})
 
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(modifier = Modifier.fillMaxWidth()) {
-                TextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(heightTextFields)
-                        .border(
-                            width = 3.dp,
-                            color = Color(red = 69, green = 123, blue = 157),
-                            shape = RoundedCornerShape(10.dp)
-                        )
+                TextField(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(heightTextFields)
+                    .border(
+                        width = 3.dp,
+                        color = Color(red = 69, green = 123, blue = 157),
+                        shape = RoundedCornerShape(10.dp)
+                    )
 
-                        .onGloballyPositioned { coordinates ->
-                            textFieldSize = coordinates.size.toSize()
-                        },
+                    .onGloballyPositioned { coordinates ->
+                        textFieldSize = coordinates.size.toSize()
+                    },
 
-                    value = category,
-                    onValueChange = {
+                    value = category, onValueChange = {
                         category = it
                         expanded = false
-                    },
-                    placeholder = {
+                        println("value changed")
+                        if (it.isNotEmpty()) {
+                            scope.launch {
+                                fetchPredictions(placesClient, it) { predictionsList ->
+                                    predictions = predictionsList
+                                }
+                            }
+                        } else {
+                            predictions = emptyList()
+                        }
+
+                    }, placeholder = {
                         Text(
-                            "Enter a Destination",
-                            onTextLayout = {},
-                            fontFamily = dmSansFamily
+                            "Enter a Destination", onTextLayout = {}, fontFamily = dmSansFamily
                         )
-                    },
-                    textStyle = TextStyle(
-                        color = Color.Black,
-                        fontWeight = FontWeight.Medium,
-                        fontSize = 16.sp
-                    ),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Done
-                    ),
-                    singleLine = true,
-                    trailingIcon = {
+                    }, textStyle = TextStyle(
+                        color = Color.Black, fontWeight = FontWeight.Medium, fontSize = 16.sp
+                    ), keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text, imeAction = ImeAction.Done
+                    ), singleLine = true, trailingIcon = {
                         IconButton(onClick = { expanded = true }) {
                             Icon(
                                 modifier = Modifier.size(24.dp),
@@ -194,102 +151,74 @@ fun AddDestinations(
                                 tint = Color.Black
                             )
                         }
-                    }
-                )
+                    })
             }
 
             AnimatedVisibility(visible = expanded) {
-                Card(
+                LazyColumn(
                     modifier = Modifier
-
-                        // .padding(horizontal = 5.dp)
+                        .fillMaxWidth()
+                        .heightIn(max = 300.dp)
                         .width(textFieldSize.width.dp)
                         .border(
                             width = 3.dp,
                             color = Color(red = 69, green = 123, blue = 157),
                             shape = RoundedCornerShape(10.dp)
-                        ),
-                    //shape = RoundedCornerShape(10.dp)
+                        )
                 ) {
-
-                    LazyColumn(
-                        modifier = Modifier.heightIn(max = 300.dp),
-                    ) {
-
-                        if (category.isNotEmpty()) {
-                            items(
-                                destinations.filter {
-                                    it.lowercase()
-                                        .contains(category.lowercase()) || it.lowercase()
-                                        .contains("others")
-                                }
-                                    .sorted()
-                            ) {
-                                ItemsCategory(title = it) { title ->
-                                    category = title
+                    items(predictions) { prediction ->
+                        Text(text = prediction.getPrimaryText(null)
+                            .toString() + ", " + prediction.getSecondaryText(null).toString(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    category = prediction
+                                        .getPrimaryText(null)
+                                        .toString() + ", "
+                                    prediction
+                                        .getSecondaryText(null)
+                                        .toString()
+                                    selectedPrediction = prediction
                                     expanded = false
+                                    predictions = emptyList()
                                 }
-                            }
-                        } else {
-                            items(
-                                destinations.sorted()
-                            ) {
-                                ItemsCategory(title = it) { title ->
-                                    category = title
-                                    expanded = false
-                                }
-                            }
-                        }
-
+                                .padding(16.dp))
                     }
-
                 }
             }
         }
         Button(
-            onClick = { onAddDestinationButtonClicked() },
+            onClick = {
+                onAddDestinationButtonClicked()
+                println(selectedPrediction)
+                // TODO: SEND REQUEST TO BACKEND WITH TRIP ID AND selectedPrediction
+            },
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(red = 69, green = 123, blue = 157)
             ),
         ) {
             Text(
-                "Add",
-                fontFamily = dmSansFamily
+                "Add", fontFamily = dmSansFamily
             )
-
         }
     }
 }
 
-@Composable
-fun ItemsCategory(
-    title: String,
-    onSelect: (String) -> Unit
+
+fun fetchPredictions(
+    placesClient: com.google.android.libraries.places.api.net.PlacesClient,
+    query: String,
+    onComplete: (List<AutocompletePrediction>) -> Unit
 ) {
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            //.height(55.dp)
-            .clickable {
-                onSelect(title)
-            }
-
-            .padding(15.dp)
-    ) {
-        Text(text = title, fontSize = 16.sp, fontWeight = FontWeight.Medium,
-            onTextLayout = {})
+    val token = AutocompleteSessionToken.newInstance()
+    // TODO: UPDATE QUERY TO INCLUDE CITY AFTER VIEWMODEL IS DONE
+    val request =
+        FindAutocompletePredictionsRequest.builder().setQuery(query).setSessionToken(token).build()
+    placesClient.findAutocompletePredictions(request).addOnSuccessListener { response ->
+        onComplete(response.autocompletePredictions)
+    }.addOnFailureListener { exception ->
+        println("failed")
     }
-
 }
 
-
-
-// private fun handleonAddDestinationButtonClicked(
-//     newDestination: Destination, 
-//     tripId: String,
-//     userViewModel: UserViewModel
-// ) {
-//     userViewModel.addDestination(tripId, newDestination)
-// }

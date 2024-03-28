@@ -218,8 +218,9 @@ fun JoinSessionScreen(onJoinButtonClicked: () -> Unit, onBackButtonClicked: () -
             innerpadding,
             code,
             { code = it },
-            {}, // replace this with below later
+            // replace this with below later
             /* { handleonJoinButtonClicked(code, userViewModel)},*/
+            onJoinButtonClicked,
             onBackButtonClicked
         )
     }
