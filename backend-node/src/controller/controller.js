@@ -20,8 +20,12 @@ exports.loadTrip = async (req, res) => {
   try {
     const tripId = req.params.id;
     const trip = await tripService.loadTrip(tripId);
-    console.log("Trip fetched successfully");
-    res.status(201).json(trip);
+    if (!trip.success) {
+      res.status(404).json(trip)
+    } else {
+      console.log("Trip fetched successfully");
+      res.status(200).json(trip);
+    }
   } catch (error) {
     console.error('Error fetching trip:', error);
     res.status(500).json({ error: 'Failed to fetch trip' });

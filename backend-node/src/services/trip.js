@@ -36,10 +36,9 @@ class TripService {
 
       if (!doc.exists) {
         console.log("No such trip!");
-        return null;
+        return { success: false, message: "Trip does not exist" };
       } else {
-        console.log("Trip data:", doc.data());
-        return { id: doc.id, ...doc.data() };
+        return { success: true, ...doc.data() };
       }
     } catch (error) {
       console.error("Error getting trip:", error);
