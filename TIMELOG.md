@@ -8,7 +8,7 @@
 | 2024/02/26 |       |         |        |       |         | 5    | login frontend              |
 | 2024/02/26 |       |         |        |       |         | 4    | create/join trip frontend   |
 | 2024/02/26 |       |         |        |       |         | 2    | figma design+imported theme |
-| 2024/02/26 |       | 6       |        |       |         | 6    | create addDestin. frontend  |
+| 2024/02/26 |       | 6       |        |       |         |      | create addDestin. frontend  |
 | 2024/03/16 |       |         | 1      |       |         |      | package refactor            |
 | 2024/03/16 |       |         | 2      |       |         |      | setup database              |
 | 2024/03/16 |       |         | 2      |       |         |      | setup node backend          |
