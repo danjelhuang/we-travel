@@ -148,13 +148,12 @@ class TripService {
     try {
       const doc = await trip.get();
       if (!doc.exists) {
-        console.log("No such document!");
+        console.log("No such trip!");
         return {
           success: false,
-          message: "TripID error",
+          message: "Trip does not exist",
         }
       } else {
-
         const userData = doc.data().users.find(user => user.userID === userID);
         if (!userData) {
           console.log('User not in trip');
@@ -163,7 +162,6 @@ class TripService {
               message: "User not in trip",
           };
         }
-
         return {
           success: true,
           votes: userData?.votes || -1

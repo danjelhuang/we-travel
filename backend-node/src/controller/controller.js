@@ -124,10 +124,11 @@ exports.getUserVotes = async (req, res) => {
 
   try {
     const result = await tripService.getUserVotes(tripID, userID);
-    if (result.success !== true) {
-      res.status(500).json({ error: 'Failed to get user votes' });
+    if (!result.success) {
+      res.status(404).json(result);
       return;
     }
+    console.log("Successfully got user votes")
     res.status(200).json(result);
   } catch (error) {
     console.error('Error getting user votes: ', error);
