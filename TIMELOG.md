@@ -19,3 +19,4 @@
 | 2024/03/27 |       | 5       |        |       |         |      | adding placesAPI to addDest.|
 | 2024/03/27 |       |         | 1      |       |         |      | refactor trip code to tripID|
 | 2024/03/27 |       |         | 1      |       |         |      | add getUserVotes endpoint   |
+| 2024/03/28 |       |         | 3      |       |         |      | improve error handling      |

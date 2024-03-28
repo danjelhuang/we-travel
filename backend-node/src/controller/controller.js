@@ -20,8 +20,12 @@ exports.loadTrip = async (req, res) => {
   try {
     const tripId = req.params.id;
     const trip = await tripService.loadTrip(tripId);
-    console.log("Trip fetched successfully");
-    res.status(201).json(trip);
+    if (!trip.success) {
+      res.status(404).json(trip)
+    } else {
+      console.log("Trip fetched successfully");
+      res.status(200).json(trip);
+    }
   } catch (error) {
     console.error('Error fetching trip:', error);
     res.status(500).json({ error: 'Failed to fetch trip' });
@@ -32,18 +36,19 @@ exports.addDestination = async (req, res) => {
 
   try {
     const tripId = req.params.id;
-    const newDestination = req.body;
-    const trip = await tripService.addDestination(tripId, newDestination);
-    if (trip.error) {
-      res.status(500).json({ error: 'Failed to add destination' });
-      return
+    const newDestinationID = req.body.placeID;
+    const trip = await tripService.addDestination(tripId, newDestinationID);
+    if (trip.message === "Trip does not exist") {
+      res.status(404).json(trip);
+    }
+    else if (trip.message === "Destination already exists in trip") {
+      console.log("Destination exists in trip")
+      res.status(409).json(trip);
     } else {
       console.log("Destination added successfully");
       res.status(201).json(trip);
-      return
-      
     }
-    
+    return
   } catch (error) {
     console.error('Error adding destination:', error);
     res.status(500).json({ error: 'Failed to add destination' });
@@ -55,7 +60,12 @@ exports.updateTrip = async (req, res) => {
   const updates = req.body;
   try {
     const result = await tripService.updateTrip(updates, tripId)
-    res.status(200).json(result);
+    if (!result.success) {
+      res.status(404).json(result)
+    } else {
+      console.log("Trip updated")
+      res.status(200).json(result);
+    }
   } catch (error) {
     console.error('Error updating trip: ', error);
     res.status(500).json({ error: 'Failed to update the trip' });
@@ -73,7 +83,12 @@ exports.addParticipantToTrip = async (req, res) => {
 
   try {
     const result = await tripService.addParticipantToTrip(userId.userId, tripId)
-    res.status(200).json(result)
+    if (!result.success) {
+      res.status(404).json(result)
+    } else {
+      console.log("Participant added to trip")
+      res.status(200).json(result)
+    }
   } catch (error) {
     console.error('Error adding participant to trip: ', error);
     res.status(500).json({ error: 'Failed to add participant to the trip' });
@@ -109,10 +124,11 @@ exports.getUserVotes = async (req, res) => {
 
   try {
     const result = await tripService.getUserVotes(tripID, userID);
-    if (result.success !== true) {
-      res.status(500).json({ error: 'Failed to get user votes' });
+    if (!result.success) {
+      res.status(404).json(result);
       return;
     }
+    console.log("Successfully got user votes")
     res.status(200).json(result);
   } catch (error) {
     console.error('Error getting user votes: ', error);

@@ -12,7 +12,7 @@ router.post('/trips/:id/removeVote/:placeId/:userId', tripController.removeVote)
 
 
 // Update a trip based on a specific ID
-router.patch('/update-trip/:id', tripController.updateTrip);
+router.patch('/trips/:id', tripController.updateTrip);
 
 // add participant to an existing trip route
 router.post('/add-participant-to-trip/:id', tripController.addParticipantToTrip)

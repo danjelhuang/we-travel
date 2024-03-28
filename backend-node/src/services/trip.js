@@ -17,11 +17,16 @@ class TripService {
   async updateTrip(updates, tripId) {
     try {
       const docRef = db.collection("trips").doc(tripId);
+      const doc = await docRef.get()
+      if (!doc.exists) {
+        console.log("No such trip!");
+        return { success: false, message: "Trip does not exist" };
+      }
+
       await docRef.update(updates);
       return {
         success: true,
         message: "Trip updated successfully",
-        id: tripId,
       };
     } catch (error) {
       console.error("Error updating trip: ", error);
@@ -36,10 +41,9 @@ class TripService {
 
       if (!doc.exists) {
         console.log("No such trip!");
-        return null;
+        return { success: false, message: "Trip does not exist" };
       } else {
-        console.log("Trip data:", doc.data());
-        return { id: doc.id, ...doc.data() };
+        return { success: true, ...doc.data() };
       }
     } catch (error) {
       console.error("Error getting trip:", error);
@@ -47,34 +51,35 @@ class TripService {
     }
   }
 
-  async addDestination(tripId, newDestination) {
+  async addDestination(tripId, newDestinationID) {
     try {
       const docRef = db.collection("trips").doc(tripId);
       const doc = await docRef.get();
 
       if (!doc.exists) {
         console.log("No such trip!");
-        return null;
+        return {
+          success: false,
+          message: "Trip does not exist",
+        };
       }
 
       const trip = doc.data();
 
-      const isExisting = trip.destinationsList.some(dest =>dest.placeID == newDestination.placeID);
+      const isExisting = trip.destinationsList.some(dest => dest.placeID == newDestinationID);
 
       if (isExisting) {
         return {
-          error: true,
-          message: "Destination already exists",
-          status: 409,
+          success: false,
+          message: "Destination already exists in trip",
         };
       } else {
         await docRef.update({
-          destinationsList: [...trip.destinationsList, newDestination],
+          destinationsList: FieldValue.arrayUnion({ placeID: newDestinationID, votes: 0 })
         });
         return {
-          error: false,
+          success: true,
           message: "Destination added successfully",
-          status: 200,
         };
       }
     } catch (error) {
@@ -86,7 +91,15 @@ class TripService {
   async addParticipantToTrip(userId, tripId) {
     try {
       const tripRef = db.collection("trips").doc(tripId);
-      const numOfVotes = (await tripRef.get()).data().finalDestinationCount;
+      const trip = await tripRef.get()
+      if (!trip.exists) {
+        console.log("No such trip!");
+        return {
+          success: false,
+          message: "Trip does not exist",
+        };  
+      }
+      const numOfVotes = trip.data().finalDestinationCount;
 
       await tripRef.update({
         users: FieldValue.arrayUnion({ userID: userId, votes: numOfVotes }),
@@ -135,13 +148,12 @@ class TripService {
     try {
       const doc = await trip.get();
       if (!doc.exists) {
-        console.log("No such document!");
+        console.log("No such trip!");
         return {
           success: false,
-          message: "TripID error",
+          message: "Trip does not exist",
         }
       } else {
-
         const userData = doc.data().users.find(user => user.userID === userID);
         if (!userData) {
           console.log('User not in trip');
@@ -150,7 +162,6 @@ class TripService {
               message: "User not in trip",
           };
         }
-
         return {
           success: true,
           votes: userData?.votes || -1
