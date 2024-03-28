@@ -17,11 +17,16 @@ class TripService {
   async updateTrip(updates, tripId) {
     try {
       const docRef = db.collection("trips").doc(tripId);
+      const doc = await docRef.get()
+      if (!doc.exists) {
+        console.log("No such trip!");
+        return { success: false, message: "Trip does not exist" };
+      }
+
       await docRef.update(updates);
       return {
         success: true,
         message: "Trip updated successfully",
-        id: tripId,
       };
     } catch (error) {
       console.error("Error updating trip: ", error);
