@@ -154,12 +154,14 @@ fun DestinationEntry(destination: Destination) {
 
             Spacer(modifier = Modifier.weight(1f))
 
+            // Destination image
             Image(
                 painter = painterResource(id = destination.imageResId),
                 contentDescription = "${destination.name} image",
                 modifier = Modifier
-                    .size(65.dp)
-                    .clip(RoundedCornerShape(8.dp))
+                    .size(200.dp)
+                    .clip(CircleShape)
+                    .clip(RoundedCornerShape(20.dp))
             )
         }
     }
