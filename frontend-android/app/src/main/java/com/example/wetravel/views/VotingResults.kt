@@ -19,7 +19,7 @@ import com.example.wetravel.components.Map
 import com.example.wetravel.components.VotingResultsFooter
 import com.example.wetravel.components.VotingResultsPathList
 import com.example.wetravel.models.Destination
-
+import java.util.UUID
 
 
 // The scrollable that structures the components for this page
@@ -68,6 +68,7 @@ fun VotingResultsMainScreen() {
     val destinations = listOf(
         // Add your destinations here, for exampl
         Destination(
+            UUID.randomUUID(),
             "MoMA",
             "11 W 53rd St, New York",
             "4.6",
@@ -77,7 +78,8 @@ fun VotingResultsMainScreen() {
             numOfVotes = 5,
         ),
         Destination(
-            "MoMA",
+            UUID.randomUUID(),
+            "MoMA 2",
             "11 W 53rd St, New York",
             "4.6",
             50,
@@ -86,7 +88,8 @@ fun VotingResultsMainScreen() {
             numOfVotes = 5,
         ),
         Destination(
-            "MoMA",
+            UUID.randomUUID(),
+            "MoMA 3",
             "11 W 53rd St, New York",
             "4.6",
             50,
@@ -95,7 +98,8 @@ fun VotingResultsMainScreen() {
             numOfVotes = 5,
         ),
         Destination(
-            "MoMA",
+            UUID.randomUUID(),
+            "MoMA 4",
             "11 W 53rd St, New York",
             "4.6",
             50,
@@ -104,7 +108,8 @@ fun VotingResultsMainScreen() {
             numOfVotes = 5,
         ),
         Destination(
-            "MoMA",
+            UUID.randomUUID(),
+            "MoMA 5",
             "11 W 53rd St, New York",
             "4.6",
             50,

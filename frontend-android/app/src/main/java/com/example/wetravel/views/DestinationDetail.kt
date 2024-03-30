@@ -39,6 +39,7 @@ import com.example.wetravel.components.DestinationEntry
 import com.example.wetravel.components.DestinationsListFooter
 import com.example.wetravel.components.DestinationsListHeader
 import com.example.wetravel.models.Destination
+import java.util.UUID
 
 
 @Preview(showBackground = true)
@@ -52,7 +53,7 @@ fun UserProfilePreview(
 class UserPreviewParameterProvider : PreviewParameterProvider<Destination> {
     override val values = sequenceOf(
         Destination(
-            "MoMA", "11 W 53rd St, New York", "4.6", 50,
+            UUID.randomUUID(),"MoMA", "11 W 53rd St, New York", "4.6", 50,
             R.drawable.sample_destination_image, voted = true, numOfVotes = 5
         ),
     )
@@ -91,7 +92,7 @@ fun DetailContent(destination: Destination, innerPadding: PaddingValues) {
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .size(64.dp)
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(8.dp))
         )
         Spacer(Modifier.height(16.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {

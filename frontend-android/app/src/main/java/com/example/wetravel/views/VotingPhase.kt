@@ -14,6 +14,7 @@ import com.example.wetravel.components.DestinationsVotingListHeader
 import com.example.wetravel.components.VotingBottomCard
 import com.example.wetravel.components.VotingDestinationEntry
 import com.example.wetravel.models.Destination
+import java.util.UUID
 
 
 // The column of destination entries
@@ -44,16 +45,16 @@ fun DestinationsVotingList(
     val destinations = listOf(
         // Add your destinations here, for example:
         Destination(
-      "MoMA", "11 W 53rd St, New York", "4.6", 50,
+            UUID.randomUUID(), "MoMA", "11 W 53rd St, New York", "4.6", 50,
             R.drawable.sample_destination_image, voted = true, numOfVotes = 5
         ),
         // Add more destinations...
         Destination(
-             "MoMA", "11 W 53rd St, New York", "4.6", 50,
+            UUID.randomUUID(), "MoMA", "11 W 53rd St, New York", "4.6", 50,
             R.drawable.sample_destination_image, voted = false, numOfVotes = 5
         ),
         Destination(
-             "MoMA", "11 W 53rd St, New York", "4.6", 50,
+            UUID.randomUUID(), "MoMA", "11 W 53rd St, New York", "4.6", 50,
             R.drawable.sample_destination_image, voted = true, numOfVotes = 5
         ),
     )

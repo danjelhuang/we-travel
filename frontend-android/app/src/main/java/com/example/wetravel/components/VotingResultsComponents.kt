@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -158,10 +159,10 @@ fun DestinationEntry(destination: Destination) {
             Image(
                 painter = painterResource(id = destination.imageResId),
                 contentDescription = "${destination.name} image",
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(64.dp)
-                    .clip(CircleShape)
-                    .clip(RoundedCornerShape(20.dp))
+                    .size(65.dp)
+                    .clip(RoundedCornerShape(8.dp))
             )
         }
     }
