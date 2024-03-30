@@ -12,7 +12,8 @@ data class Destination(
     val reviewCount: Int,
     val imageResId: Int,
     val numOfVotes: Int,
-    val voted: Boolean
+    val voted: Boolean,
+    val description: String
 )
 
 // ENUM for voting phase

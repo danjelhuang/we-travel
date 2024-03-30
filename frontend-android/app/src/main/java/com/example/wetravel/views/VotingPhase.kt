@@ -46,16 +46,16 @@ fun DestinationsVotingList(
         // Add your destinations here, for example:
         Destination(
             UUID.randomUUID(), "MoMA", "11 W 53rd St, New York", "4.6", 50,
-            R.drawable.sample_destination_image, voted = true, numOfVotes = 5
+            R.drawable.sample_destination_image, voted = true, numOfVotes = 5, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
         ),
         // Add more destinations...
         Destination(
             UUID.randomUUID(), "MoMA", "11 W 53rd St, New York", "4.6", 50,
-            R.drawable.sample_destination_image, voted = false, numOfVotes = 5
+            R.drawable.sample_destination_image, voted = false, numOfVotes = 5, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
         ),
         Destination(
             UUID.randomUUID(), "MoMA", "11 W 53rd St, New York", "4.6", 50,
-            R.drawable.sample_destination_image, voted = true, numOfVotes = 5
+            R.drawable.sample_destination_image, voted = true, numOfVotes = 5, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
         ),
     )
 

@@ -2,8 +2,6 @@ package com.example.wetravel.views
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -12,11 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +18,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -35,9 +28,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
-import com.example.wetravel.components.DestinationEntry
-import com.example.wetravel.components.DestinationsListFooter
-import com.example.wetravel.components.DestinationsListHeader
 import com.example.wetravel.models.Destination
 import java.util.UUID
 
@@ -54,7 +44,7 @@ class UserPreviewParameterProvider : PreviewParameterProvider<Destination> {
     override val values = sequenceOf(
         Destination(
             UUID.randomUUID(),"MoMA", "11 W 53rd St, New York", "4.6", 50,
-            R.drawable.sample_destination_image, voted = true, numOfVotes = 5
+            R.drawable.sample_destination_image, voted = true, numOfVotes = 5, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
         ),
     )
 }
@@ -85,15 +75,6 @@ fun DetailContent(destination: Destination, innerPadding: PaddingValues) {
                 .fillMaxWidth()
                 .clip(RoundedCornerShape(10.dp))
         )
-
-        Image(
-            painter = painterResource(id = destination.imageResId),
-            contentDescription = "${destination.name} image",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(64.dp)
-                .clip(RoundedCornerShape(8.dp))
-        )
         Spacer(Modifier.height(16.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
@@ -103,7 +84,8 @@ fun DetailContent(destination: Destination, innerPadding: PaddingValues) {
             )
             Text(
                 text = " ${destination.address}",
-                fontSize = 14.sp
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
             )
         }
         Spacer(modifier = Modifier.height(5.dp))
@@ -114,13 +96,21 @@ fun DetailContent(destination: Destination, innerPadding: PaddingValues) {
                 modifier = Modifier.size(16.dp)
             )
             Text(
-                text = " ${destination.rating} "
+                text = " ${destination.rating} ",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
             )
             Text(
                 text = "(${destination.reviewCount})",
-                fontSize = 14.sp
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
             )
         }
+        Spacer(modifier = Modifier.height(10.dp))
+        Text(
+            text = destination.description,
+            fontSize = 20.sp
+        )
     }
 }
 
