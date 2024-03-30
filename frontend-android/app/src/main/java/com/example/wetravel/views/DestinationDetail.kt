@@ -2,6 +2,7 @@ package com.example.wetravel.views
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
@@ -22,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -60,7 +63,9 @@ fun DetailContent(destination: Destination, innerPadding: PaddingValues) {
     Column(
         modifier = Modifier
             .padding(innerPadding)
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp),
+
+        
     ) {
         Text(
             text = destination.name,
@@ -71,13 +76,24 @@ fun DetailContent(destination: Destination, innerPadding: PaddingValues) {
                 color = Color.Black
             )
         )
+        Spacer(Modifier.height(10.dp))
         Image(
             painter = painterResource(id = destination.imageResId),
             contentDescription = "${destination.name} image",
             modifier = Modifier
                 .fillMaxWidth()
+                .clip(RoundedCornerShape(10.dp))
         )
 
+        Image(
+            painter = painterResource(id = destination.imageResId),
+            contentDescription = "${destination.name} image",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(64.dp)
+                .clip(RoundedCornerShape(16.dp))
+        )
+        Spacer(Modifier.height(16.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painter = painterResource(id = R.drawable.destination_pin),

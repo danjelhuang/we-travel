@@ -159,7 +159,7 @@ fun DestinationEntry(destination: Destination) {
                 painter = painterResource(id = destination.imageResId),
                 contentDescription = "${destination.name} image",
                 modifier = Modifier
-                    .size(200.dp)
+                    .size(64.dp)
                     .clip(CircleShape)
                     .clip(RoundedCornerShape(20.dp))
             )
