@@ -1,14 +1,20 @@
 package com.example.wetravel.views
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -18,12 +24,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.wetravel.R
 import com.example.wetravel.components.LogoTopAppBar
 import com.example.wetravel.components.Trip
 import com.example.wetravel.components.TripComponent
+import com.example.wetravel.presentation.sign_in.UserData
 
 // TODO: link this with data model
 val trips = listOf(
@@ -72,12 +86,16 @@ val trips = listOf(
 
 @Composable
 fun LandingPage(
-    onCreateTripButtonClicked: () -> Unit, onJoinTripButtonClicked: () -> Unit
+    userData: UserData?,
+    onSignOut: () -> Unit,
+    onCreateTripButtonClicked: () -> Unit,
+    onJoinTripButtonClicked: () -> Unit
 ) {
     Scaffold(topBar = {
         LogoTopAppBar()
     }) { innerpadding ->
         Column(modifier = Modifier.padding(innerpadding)) {
+            ProfileSection(userData, onSignOut)
             TripList(trips, Modifier.weight(1f))
             CreateOrJoinTripBottomBar(onCreateTripButtonClicked, onJoinTripButtonClicked)
         }
@@ -108,6 +126,82 @@ fun TripList(
         }
     }
     
+}
+
+@Composable
+fun ProfileSection(
+    userData: UserData?,
+    onSignOut: () -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(25.dp),
+        modifier = Modifier
+            .height(100.dp)
+            .fillMaxWidth()
+            .padding(
+                horizontal = 20.dp,
+                vertical = 10.dp
+            )
+    ) {
+        if (userData?.profilePictureUrl != null) {
+            AsyncImage(
+                model = userData.profilePictureUrl,
+                contentDescription = "Profile Picture",
+                modifier = Modifier
+                    .size(75.dp)
+                    .clip(CircleShape)
+                    .border(1.dp, Color.Black, CircleShape),
+                contentScale = ContentScale.Crop
+            )
+        } else {
+            Image(
+                painter = painterResource(id = R.drawable.sample_destination_image),
+                contentDescription = "Profile picture",
+                modifier = Modifier
+                    .size(75.dp)
+                    .clip(CircleShape)
+                    .border(1.dp, Color.Black, CircleShape),
+                contentScale = ContentScale.Crop
+            )
+        }
+
+        Column (
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.CenterVertically),
+            modifier = Modifier.fillMaxHeight()
+        ) {
+            if (userData?.username != null) {
+                Text(
+                    text = "Hello ${userData.username}!",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 24.sp,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            } else {
+                Text(
+                    text = "Hello user!",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 24.sp,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+
+            Button(
+                onClick = { onSignOut() },
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier
+                    .padding(2.dp)
+                    .height(30.dp)
+                    .width(100.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
+            ) {
+                Text(
+                    text = "sign out", fontFamily = dmSansFamily, fontSize = 10.sp
+                )
+            }
+        }
+    }
 }
 
 @Composable

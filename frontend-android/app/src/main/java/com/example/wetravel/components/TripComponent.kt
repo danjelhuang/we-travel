@@ -40,13 +40,9 @@ fun TripComponent(trip: Trip) {
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp
-        ),
-        colors = CardDefaults.cardColors(
+        ), colors = CardDefaults.cardColors(
             containerColor = Color(0xFFF1FAEE),
-        ),
-        shape = RoundedCornerShape(15.dp),
-        modifier = Modifier
-            .fillMaxWidth()
+        ), shape = RoundedCornerShape(15.dp), modifier = Modifier.fillMaxWidth()
 
     ) {
         Row(
@@ -78,8 +74,7 @@ fun TripComponent(trip: Trip) {
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
-                            text = " ${trip.city}",
-                            fontSize = 12.sp
+                            text = " ${trip.city}", fontSize = 12.sp
                         )
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -89,8 +84,7 @@ fun TripComponent(trip: Trip) {
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
-                            text = " ${trip.participants.size}",
-                            fontSize = 12.sp
+                            text = " ${trip.participants.size}", fontSize = 12.sp
                         )
                     }
                 }
