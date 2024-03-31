@@ -42,7 +42,8 @@ import com.example.wetravel.models.UserViewModel
 fun TripConfigurationForm(
     title: String,
     onButtonClicked: () -> Unit,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    currentUser: String
 ) {
     // TODO: Convert all of these fields to the values from ViewModel and observe them for state changes
     val tripName = remember { mutableStateOf(TextFieldValue()) }
@@ -135,7 +136,8 @@ fun TripConfigurationForm(
                     destinationCity.value.text,
                     numberOfVotesPerPerson.value.text,
                     finalDestinationCount.value.text,
-                    userViewModel = userViewModel
+                    userViewModel = userViewModel,
+                    user = currentUser
                 )
                 onButtonClicked()
             },
@@ -196,13 +198,15 @@ private fun handleButtonClick(
     destinationCity: String,
     finalDestinationCount: String,
     numberOfVotesPerPerson: String,
-    userViewModel: UserViewModel
+    userViewModel: UserViewModel,
+    user: String
 ) {
     val tripData = Trip(
         name = tripName,
         city = destinationCity,
         finalDestinationCount = finalDestinationCount.toInt(),
-        votesPerPerson = finalDestinationCount.toInt()
+        votesPerPerson = finalDestinationCount.toInt(),
+        adminUserID = user
     )
     userViewModel.createTrip(tripData)
 }

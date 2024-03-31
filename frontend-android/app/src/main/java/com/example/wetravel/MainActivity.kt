@@ -189,7 +189,8 @@ fun WeTravelApp(
             TripConfigurationForm(
                 "create",
                 onButtonClicked = { navController.navigate(Screens.SessionCode.name) },
-                userViewModel = userViewModel
+                userViewModel = userViewModel,
+                currentUser = googleAuthUIClient.getSignedInUser()?.userId ?: ""
             )
         }
         composable(route = Screens.JoinSession.name) {
@@ -227,7 +228,8 @@ fun WeTravelApp(
             TripConfigurationForm(
                 "edit",
                 onButtonClicked = { navController.popBackStack() },
-                userViewModel = userViewModel
+                userViewModel = userViewModel,
+                currentUser = googleAuthUIClient.getSignedInUser()?.userId ?: ""
             )
         }
 
