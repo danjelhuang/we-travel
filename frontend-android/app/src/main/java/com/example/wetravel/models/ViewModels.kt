@@ -42,6 +42,22 @@ class UserViewModel(private val tripRepository: TripRepository /* TODO: More API
         }
     }
 
+    // TODO: Casting a vote
+    fun castVote(tripID: String, placeID: String) {
+        try {
+
+        } catch (e: Exception) {
+
+        }
+
+    }
+
+
+    // TODO: Removing a vote
+    fun removeVote() {
+
+    }
+
 //    fun loadTrip(tripId: String) {
 //
 //        viewModelScope.launch {

@@ -29,6 +29,19 @@ class TripRepository (private val apiService: ApiService) {
         }
     }
 
+
+    // Voting
+    // Trip ID, User ID, Place ID
+    // Send the request
+    // On success: update the destination vote counts
+    // On failure: throw an error
+
+//    suspend fun castVote(): Result<Unit> {
+//        return Result.success()
+//    }
+
+
+
     // TODO: more functions related Trip specific stuff
 }
 
