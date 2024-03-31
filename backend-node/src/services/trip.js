@@ -243,8 +243,8 @@ class TripService {
       }
       await docRef.set({ tripIds: [] });
       return {
-        success: true,
-        message: 'User added successfully'
+        id: doc.id,
+        tripIds: []
       };
     } catch (error) {
       console.error('Error adding user:', error);
