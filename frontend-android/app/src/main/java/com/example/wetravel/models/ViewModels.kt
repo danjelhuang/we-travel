@@ -17,13 +17,13 @@ sealed class Resource<out T> {
 
 class UserViewModel(private val tripRepository: TripRepository /* TODO: More API Managers here*/) :
     ViewModel() {
-    private val _tripData = MutableLiveData<Resource<Trip>>()
-    val tripData: LiveData<Resource<Trip>> = _tripData
+    private val _tripCode = MutableLiveData<Resource<String>>()
+    val tripCode: LiveData<Resource<String>> = _tripCode
 
     /* TODO: More Fields here for UserViewModel...*/
 
     fun createTrip(trip: Trip) {
-        _tripData.value = Resource.Loading
+        _tripCode.value = Resource.Loading
 
         viewModelScope.launch {
             try {
@@ -32,12 +32,12 @@ class UserViewModel(private val tripRepository: TripRepository /* TODO: More API
                 Log.d("Create trip Return Values: ", result.toString())
                 if (result.isSuccess) {
                     // Load trip Data into tripData state var
-                    _tripData.postValue(Resource.Success(result.getOrNull()!!)) // Shouldn't be null
+                    _tripCode.postValue(Resource.Success(result.getOrNull()!!.tripID)) // Shouldn't be null
                 } else {
-                    _tripData.postValue(Resource.Error("The API call failed with an Error. Check the API Logs"))
+                    _tripCode.postValue(Resource.Error("The API call failed with an Error. Check the API Logs"))
                 }
             } catch (e: Exception) {
-                _tripData.postValue(Resource.Error("An exception occurred while calling the createTrip API"))
+                _tripCode.postValue(Resource.Error("An exception occurred while calling the createTrip API"))
             }
         }
     }

@@ -202,20 +202,20 @@ fun SessionCodeScreen(
     onContinueButtonClicked: () -> Unit,
     userViewModel: UserViewModel
 ) {
-    val tripDataResource by userViewModel.tripData.observeAsState(initial = Resource.Loading)
+    val tripCodeResource by userViewModel.tripCode.observeAsState(initial = Resource.Loading)
     Scaffold(topBar = {
         LogoTopAppBar()
     }) { innerpadding ->
-        when (tripDataResource) {
+        when (tripCodeResource) {
             is Resource.Success -> {
-                val tripCode = (tripDataResource as Resource.Success<Trip>).data.tripID
+                val tripCode = (tripCodeResource as Resource.Success<String>).data
                 CreateCodeContent(innerpadding, tripCode, onContinueButtonClicked)
             }
             is Resource.Loading -> {
                 CircularProgressIndicator()
             }
             is Resource.Error -> {
-                val errorMessage = (tripDataResource as Resource.Error).message
+                val errorMessage = (tripCodeResource as Resource.Error).message
                 // Display the error message
                 Text(text = "Error: $errorMessage")
             }
