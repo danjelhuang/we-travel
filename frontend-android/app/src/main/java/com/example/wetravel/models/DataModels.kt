@@ -16,14 +16,6 @@ data class Destination(
     val description: String
 )
 
-// ENUM for voting phase
-// TODO: Decide how to incorporate this into our DB Schema
-enum class VotingPhase {
-    ADD_DESTINATIONS,
-    VOTING,
-    RESULTS
-}
-
 data class Trip(
     val tripID: String = "",
     val name: String = "",
