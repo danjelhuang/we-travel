@@ -24,7 +24,7 @@ enum class VotingPhase {
     RESULTS
 }
 
-data class Users(
+data class TripUsers(
     val userID: String = "",
     val votes: Int = 0,
 )
@@ -34,7 +34,7 @@ data class Trip(
     val name: String = "",
     val city: String = "",
     val finalDestinationCount: Int = 0,
-    val users: List<Users> = emptyList(),
+    val users: List<TripUsers> = emptyList(),
     val adminUserID: String = "",
     val votesPerPerson: Int = 0,
     val phase: String = "",
