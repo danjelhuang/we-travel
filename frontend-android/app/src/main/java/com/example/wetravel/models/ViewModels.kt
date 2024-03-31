@@ -59,7 +59,6 @@ class UserViewModel(private val tripRepository: TripRepository /* TODO: More API
 //        }
 //
 //    }
-
     
 
 }
