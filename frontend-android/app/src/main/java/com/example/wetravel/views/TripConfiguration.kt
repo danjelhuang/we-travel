@@ -202,8 +202,7 @@ private fun handleButtonClick(
         name = tripName,
         city = destinationCity,
         finalDestinationCount = finalDestinationCount.toInt(),
-        votesPerPerson = numberOfVotesPerPerson.toInt(),
-        votingPhase = "default"
+        votesPerPerson = finalDestinationCount.toInt()
     )
     userViewModel.createTrip(tripData)
 }

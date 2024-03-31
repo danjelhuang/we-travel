@@ -22,13 +22,14 @@ enum class VotingPhase {
 }
 
 data class Trip(
-    val code: String = "",
+    val tripID: String = "",
     val name: String = "",
     val city: String = "",
     val finalDestinationCount: Int = 0,
-    val participants: List<String> = emptyList(),
+    val users: List<String> = emptyList(),
+    val adminUserID: String = "",
     val votesPerPerson: Int = 0,
-    val votingPhase: String = "",
+    val phase: String = "",
     val destinationsList: List<Destination> = emptyList()
 )
 
