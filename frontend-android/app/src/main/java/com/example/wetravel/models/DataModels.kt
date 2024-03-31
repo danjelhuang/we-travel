@@ -16,12 +16,25 @@ data class Destination(
     val description: String
 )
 
+// ENUM for voting phase
+// TODO: Decide how to incorporate this into our DB Schema
+enum class VotingPhase {
+    ADD_DESTINATIONS,
+    VOTING,
+    RESULTS
+}
+
+data class TripUsers(
+    val userID: String = "",
+    val votes: Int = 0,
+)
+
 data class Trip(
     val tripID: String = "",
     val name: String = "",
     val city: String = "",
     val finalDestinationCount: Int = 0,
-    val users: List<String> = emptyList(),
+    val users: List<TripUsers> = emptyList(),
     val adminUserID: String = "",
     val votesPerPerson: Int = 0,
     val phase: String = "",

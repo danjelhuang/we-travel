@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +24,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -40,6 +42,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
 import com.example.wetravel.components.LogoTopAppBar
+import com.example.wetravel.models.Resource
+import com.example.wetravel.models.Trip
 import com.example.wetravel.models.UserViewModel
 
 val dmSansFamily = FontFamily(
@@ -122,6 +126,7 @@ fun EnterCodeContent(
 @Composable
 fun CreateCodeContent(
     innerpadding: PaddingValues,
+    tripCode: String,
     onContinueButtonClicked: () -> Unit
 ) {
     Column(
@@ -149,7 +154,7 @@ fun CreateCodeContent(
                     .padding(10.dp),
                 contentAlignment = Alignment.Center
             ) {
-                Text("k7jcc56", fontFamily = dmSansFamily, fontSize = 24.sp)
+                Text(tripCode, fontFamily = dmSansFamily, fontSize = 24.sp)
             }
             Button(
                 onClick = { /* TODO */ },
@@ -194,12 +199,28 @@ fun CreateCodeContent(
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun SessionCodeScreen(
-    onContinueButtonClicked: () -> Unit
+    onContinueButtonClicked: () -> Unit,
+    userViewModel: UserViewModel
 ) {
+    val tripCodeResource by userViewModel.tripCode.observeAsState(initial = Resource.Loading)
     Scaffold(topBar = {
         LogoTopAppBar()
     }) { innerpadding ->
-        CreateCodeContent(innerpadding, onContinueButtonClicked)
+        when (tripCodeResource) {
+            is Resource.Success -> {
+                val tripCode = (tripCodeResource as Resource.Success<String>).data
+                CreateCodeContent(innerpadding, tripCode, onContinueButtonClicked)
+            }
+            is Resource.Loading -> {
+                CircularProgressIndicator()
+            }
+            is Resource.Error -> {
+                val errorMessage = (tripCodeResource as Resource.Error).message
+                // Display the error message
+                Text(text = "Error: $errorMessage")
+            }
+        }
+
     }
 }
 
