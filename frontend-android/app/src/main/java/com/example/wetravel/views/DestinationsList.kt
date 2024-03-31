@@ -14,6 +14,7 @@ import com.example.wetravel.components.DestinationEntry
 import com.example.wetravel.components.DestinationsListFooter
 import com.example.wetravel.components.DestinationsListHeader
 import com.example.wetravel.models.Destination
+import java.util.UUID
 
 @Composable
 fun DestinationsColumn(destinations: List<Destination>, innerPadding: PaddingValues) {
@@ -42,17 +43,17 @@ fun DestinationsList(
     val destinations = listOf(
         // Add your destinations here, for example:
         Destination(
-            "MoMA", "11 W 53rd St, New York", "4.6", 50,
-            R.drawable.sample_destination_image, voted = true, numOfVotes = 5
+            UUID.randomUUID().toString(),"MoMA", "11 W 53rd St, New York", "4.6", 50,
+            R.drawable.sample_destination_image, voted = true, numOfVotes = 5, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
         ),
         // Add more destinations...
         Destination(
-           "MoMA", "11 W 53rd St, New York", "4.6", 50,
-            R.drawable.sample_destination_image, voted = false, numOfVotes = 5
+            UUID.randomUUID().toString(),"MoMA 2", "11 W 53rd St, New York", "4.6", 50,
+            R.drawable.sample_destination_image, voted = false, numOfVotes = 5, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
         ),
         Destination(
-            "MoMA", "11 W 53rd St, New York", "4.6", 50,
-            R.drawable.sample_destination_image, voted = true, numOfVotes = 5
+            UUID.randomUUID().toString(),"MoMA", "11 W 53rd St, New York", "4.6", 50,
+            R.drawable.sample_destination_image, voted = true, numOfVotes = 5, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
         ),
     )
 

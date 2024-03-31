@@ -1,16 +1,19 @@
 package com.example.wetravel.models
 
+import java.util.UUID
 
 
 // This file contains the Data Models used by our Frontend
 data class Destination(
+    val placeId: String,
     val name: String,
     val address: String,
     val rating: String,
     val reviewCount: Int,
     val imageResId: Int,
     val numOfVotes: Int,
-    val voted: Boolean
+    val voted: Boolean,
+    val description: String
 )
 
 // ENUM for voting phase

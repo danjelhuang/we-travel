@@ -19,7 +19,7 @@ import com.example.wetravel.components.Map
 import com.example.wetravel.components.VotingResultsFooter
 import com.example.wetravel.components.VotingResultsPathList
 import com.example.wetravel.models.Destination
-
+import java.util.UUID
 
 
 // The scrollable that structures the components for this page
@@ -68,6 +68,7 @@ fun VotingResultsMainScreen() {
     val destinations = listOf(
         // Add your destinations here, for exampl
         Destination(
+            UUID.randomUUID().toString(),
             "MoMA",
             "11 W 53rd St, New York",
             "4.6",
@@ -75,42 +76,51 @@ fun VotingResultsMainScreen() {
             R.drawable.sample_destination_image,
             voted = true,
             numOfVotes = 5,
+            description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
         ),
         Destination(
-            "MoMA",
+            UUID.randomUUID().toString(),
+            "MoMA 2",
             "11 W 53rd St, New York",
             "4.6",
             50,
             R.drawable.sample_destination_image,
             voted = true,
             numOfVotes = 5,
+            description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
         ),
         Destination(
-            "MoMA",
+            UUID.randomUUID().toString(),
+            "MoMA 3",
             "11 W 53rd St, New York",
             "4.6",
             50,
             R.drawable.sample_destination_image,
             voted = true,
             numOfVotes = 5,
+            description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
         ),
         Destination(
-            "MoMA",
+            UUID.randomUUID().toString(),
+            "MoMA 4",
             "11 W 53rd St, New York",
             "4.6",
             50,
             R.drawable.sample_destination_image,
             voted = true,
             numOfVotes = 5,
+            description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
         ),
         Destination(
-            "MoMA",
+            UUID.randomUUID().toString(),
+            "MoMA 5",
             "11 W 53rd St, New York",
             "4.6",
             50,
             R.drawable.sample_destination_image,
             voted = true,
             numOfVotes = 5,
+            description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
         ),
     )
 
