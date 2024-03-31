@@ -68,7 +68,7 @@ fun VotingResultsMainScreen() {
     val destinations = listOf(
         // Add your destinations here, for exampl
         Destination(
-            UUID.randomUUID(),
+            UUID.randomUUID().toString(),
             "MoMA",
             "11 W 53rd St, New York",
             "4.6",
@@ -79,7 +79,7 @@ fun VotingResultsMainScreen() {
             description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
         ),
         Destination(
-            UUID.randomUUID(),
+            UUID.randomUUID().toString(),
             "MoMA 2",
             "11 W 53rd St, New York",
             "4.6",
@@ -90,7 +90,7 @@ fun VotingResultsMainScreen() {
             description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
         ),
         Destination(
-            UUID.randomUUID(),
+            UUID.randomUUID().toString(),
             "MoMA 3",
             "11 W 53rd St, New York",
             "4.6",
@@ -101,7 +101,7 @@ fun VotingResultsMainScreen() {
             description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
         ),
         Destination(
-            UUID.randomUUID(),
+            UUID.randomUUID().toString(),
             "MoMA 4",
             "11 W 53rd St, New York",
             "4.6",
@@ -112,7 +112,7 @@ fun VotingResultsMainScreen() {
             description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
         ),
         Destination(
-            UUID.randomUUID(),
+            UUID.randomUUID().toString(),
             "MoMA 5",
             "11 W 53rd St, New York",
             "4.6",
