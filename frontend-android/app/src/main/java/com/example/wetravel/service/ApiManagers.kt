@@ -45,7 +45,7 @@ class TripRepository (private val apiService: ApiService) {
     // TODO: more functions related Trip specific stuff
 }
 
-// TODO: Create more API Managers here (e.g. DatabaseAPIManager, GoogleMapsAPIManager, ...)
+    // TODO: Create more API Managers here (e.g. DatabaseAPIManager, GoogleMapsAPIManager, ...)
 
 
 

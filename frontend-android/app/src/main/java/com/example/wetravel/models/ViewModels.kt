@@ -5,8 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.wetravel.R
 import com.example.wetravel.service.TripRepository
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 // Below is a class to help us enforce state of data while we fetch from the backend
 sealed class Resource<out T> {
@@ -21,6 +23,32 @@ class UserViewModel(private val tripRepository: TripRepository /* TODO: More API
     val tripCode: LiveData<Resource<String>> = _tripCode
 
     /* TODO: More Fields here for UserViewModel...*/
+
+    val sampleTrip: Trip = Trip(
+        tripID = "a1b2c3",
+        name = "Sample Trip",
+        city = "London",
+        finalDestinationCount = 5,
+        users = emptyList(),
+        adminUserID = "localUser",
+        votesPerPerson = 5,
+        phase = "ADD_DESTINATIONS",
+        destinationsList = listOf(
+            Destination(
+                UUID.randomUUID().toString(), "MoMA", "11 W 53rd St, New York", "4.6", 50,
+                R.drawable.sample_destination_image, voted = true, numOfVotes = 5, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
+            ),
+            // Add more destinations...
+            Destination(
+                UUID.randomUUID().toString(), "MoMA", "11 W 53rd St, New York", "4.6", 50,
+                R.drawable.sample_destination_image, voted = false, numOfVotes = 5, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
+            ),
+            Destination(
+                UUID.randomUUID().toString(), "MoMA", "11 W 53rd St, New York", "4.6", 50,
+                R.drawable.sample_destination_image, voted = true, numOfVotes = 5, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
+            ),
+        )
+    )
 
     fun createTrip(trip: Trip) {
         _tripCode.value = Resource.Loading
