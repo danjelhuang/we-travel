@@ -1,4 +1,6 @@
+import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,12 +20,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -35,17 +39,28 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
+import com.example.wetravel.presentation.sign_in.SignInState
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
 fun TripLoginSignup(
-    onSigninButtonClicked: () -> Unit,
-    onSignupButtonClicked: () -> Unit
+    state: SignInState,
+    onSigninButtonClicked: () -> Unit
 ) {
 
-    val username = remember { mutableStateOf(TextFieldValue()) }
-    val password = remember { mutableStateOf(TextFieldValue()) }
+    val context = LocalContext.current
+    LaunchedEffect(key1 = state.signInError) {
+        state.signInError?.let { error ->
+            Toast.makeText(
+                context,
+                error,
+                Toast.LENGTH_LONG
+            ).show()
+        }
+    }
+
+//    val username = remember { mutableStateOf(TextFieldValue()) }
+//    val password = remember { mutableStateOf(TextFieldValue()) }
 
     val dmSansFamily = FontFamily(
         Font(
@@ -59,7 +74,7 @@ fun TripLoginSignup(
             .wrapContentSize(Alignment.Center)
             .padding(50.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
         val imageModifier = Modifier
             .size(280.dp)
@@ -69,71 +84,71 @@ fun TripLoginSignup(
             contentScale = ContentScale.FillWidth,
             modifier = imageModifier.aspectRatio(16f / 5f)
         )
-        Spacer(Modifier.height(1.dp))
-
-        OutlinedTextField(
-            value = username.value,
-            onValueChange = { username.value = it },
-            label = { Text("username", fontFamily = dmSansFamily) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            shape = RoundedCornerShape(12.dp)
-            // colors = MaterialTheme.colorScheme.DarkestBlueOutline
-        )
-
-        Spacer(Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = password.value,
-            onValueChange = { password.value = it },
-            label = {
-                Text(
-                    text = "password",
-                    fontFamily = dmSansFamily
-                )
-            },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            shape = RoundedCornerShape(12.dp),
-//            TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(
-//                unfocusedBorderColor = Color.White
-//            )
-        )
-
-        Spacer(Modifier.height(32.dp))
+//        Spacer(Modifier.height(1.dp))
+//
+//        OutlinedTextField(
+//            value = username.value,
+//            onValueChange = { username.value = it },
+//            label = { Text("username", fontFamily = dmSansFamily) },
+//            modifier = Modifier.fillMaxWidth(),
+//            singleLine = true,
+//            shape = RoundedCornerShape(12.dp)
+//            // colors = MaterialTheme.colorScheme.DarkestBlueOutline
+//        )
+//
+//        Spacer(Modifier.height(16.dp))
+//
+//        OutlinedTextField(
+//            value = password.value,
+//            onValueChange = { password.value = it },
+//            label = {
+//                Text(
+//                    text = "password",
+//                    fontFamily = dmSansFamily
+//                )
+//            },
+//            modifier = Modifier.fillMaxWidth(),
+//            singleLine = true,
+//            shape = RoundedCornerShape(12.dp),
+////            TextFieldColors = TextFieldDefaults.outlinedTextFieldColors(
+////                unfocusedBorderColor = Color.White
+////            )
+//        )
+//
+        Spacer(Modifier.height(100.dp))
 
         Button(
             onClick = { onSigninButtonClicked() },
             shape = RoundedCornerShape(12.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
+                .height(60.dp),
             colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
         ) {
             Text(
-                text = "sign in",
+                text = "sign in with google",
                 color = Color.White,
                 fontFamily = dmSansFamily,
                 fontSize = 20.sp
             )
         }
 
-        Spacer(Modifier.height(24.dp))
+//        Spacer(Modifier.height(24.dp))
 
-        Text(
-            text = "don't have an account yet?",
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.primary,
-            fontFamily = dmSansFamily
-        )
-        Text(
-            text = "create account",
-            textAlign = TextAlign.Center,
-            textDecoration = TextDecoration.Underline,
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.clickable(onClick = { onSignupButtonClicked() }),
-            fontFamily = dmSansFamily
-        )
+//        Text(
+//            text = "don't have an account yet?",
+//            textAlign = TextAlign.Center,
+//            color = MaterialTheme.colorScheme.primary,
+//            fontFamily = dmSansFamily
+//        )
+//        Text(
+//            text = "create account",
+//            textAlign = TextAlign.Center,
+//            textDecoration = TextDecoration.Underline,
+//            color = MaterialTheme.colorScheme.primary,
+//            modifier = Modifier.clickable(onClick = { onSignupButtonClicked() }),
+//            fontFamily = dmSansFamily
+//        )
 
     }
 

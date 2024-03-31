@@ -1,31 +1,46 @@
 package com.example.wetravel
 
-import AddDestinations
-import TripConfigurationForm
-import TripLoginSignup
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.android.gms.auth.api.identity.Identity
+import kotlinx.coroutines.launch
+
+import AddDestinations
+import TripConfigurationForm
+import TripLoginSignup
+import android.app.Activity.RESULT_OK
+import android.content.Context
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.navigation.NavHostController
 import com.example.wetravel.models.UserViewModel
+import com.example.wetravel.presentation.sign_in.GoogleAuthUIClient
+import com.example.wetravel.presentation.sign_in.SignInViewModel
 import com.example.wetravel.service.ApiService
 import com.example.wetravel.service.TripRepository
-import com.example.wetravel.views.JoinSessionScreen
-import com.example.wetravel.views.SessionCodeScreen
 import com.example.wetravel.ui.theme.ProjectTheme
 import com.example.wetravel.views.CreateAccountForm
 import com.example.wetravel.views.DestinationsList
 import com.example.wetravel.views.DestinationsVotingList
+import com.example.wetravel.views.JoinSessionScreen
 import com.example.wetravel.views.LandingPage
+import com.example.wetravel.views.SessionCodeScreen
 import com.example.wetravel.views.VotingResultsMainScreen
 import kotlinx.coroutines.CoroutineScope
 import retrofit2.Retrofit
@@ -59,6 +74,14 @@ object RetrofitBuilder {
 }
 
 class MainActivity : ComponentActivity() {
+
+    private val googleAuthUIClient by lazy {
+        GoogleAuthUIClient(
+            context = applicationContext,
+            oneTapClient = Identity.getSignInClient(applicationContext)
+        )
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -72,7 +95,12 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    WeTravelApp(tripRepository = tripRepository)
+                    WeTravelApp(
+                        tripRepository = tripRepository,
+                        googleAuthUIClient = googleAuthUIClient,
+                        lifecycleScope = lifecycleScope,
+                        applicationContext = applicationContext
+                    )
                 }
             }
         }
@@ -82,7 +110,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun WeTravelApp(
     navController: NavHostController = rememberNavController(),
-    tripRepository: TripRepository
+    tripRepository: TripRepository,
+    googleAuthUIClient: GoogleAuthUIClient,
+    lifecycleScope: CoroutineScope,
+    applicationContext: Context
 ) {
     val userViewModel = UserViewModel(tripRepository)
     NavHost(
@@ -91,21 +122,68 @@ fun WeTravelApp(
         modifier = Modifier.fillMaxSize()
     ) {
         composable(route = Screens.Login.name) {
-            TripLoginSignup(
-                onSigninButtonClicked = { navController.navigate(Screens.TripCreateOrJoin.name) },
-                onSignupButtonClicked = { navController.navigate(Screens.CreateAccount.name) }
-            )
+            val viewModel = viewModel<SignInViewModel>()
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
+            LaunchedEffect(key1 = Unit) {
+                if (googleAuthUIClient.getSignedInUser() != null) {
+                    navController.navigate(Screens.TripCreateOrJoin.name)
+                }
+            }
+
+            val launcher =
+                rememberLauncherForActivityResult(contract = ActivityResultContracts.StartIntentSenderForResult(),
+                    onResult = { result ->
+                        if (result.resultCode == RESULT_OK) {
+                            lifecycleScope.launch {
+                                val signInResult = googleAuthUIClient.signInWithIntent(
+                                    intent = result.data ?: return@launch
+                                )
+                                viewModel.onSignInResult(signInResult)
+                            }
+                        }
+                    })
+
+            LaunchedEffect(key1 = state.isSignInSuccessful) {
+                if (state.isSignInSuccessful) {
+                    Toast.makeText(
+                        applicationContext, "Sign in successful", Toast.LENGTH_LONG
+                    ).show()
+
+                    navController.navigate(Screens.TripCreateOrJoin.name)
+                    viewModel.resetState()
+                }
+            }
+
+            TripLoginSignup(state = state, onSigninButtonClicked = {
+                lifecycleScope.launch {
+                    val signInIntentSender = googleAuthUIClient.signIn()
+                    launcher.launch(
+                        IntentSenderRequest.Builder(
+                            signInIntentSender ?: return@launch
+                        ).build()
+                    )
+                }
+            })
+
         }
         composable(route = Screens.TripCreateOrJoin.name) {
-            LandingPage(
+            // TODO: We can get the user data here or inside the LandingPage composable
+            LandingPage(userData = googleAuthUIClient.getSignedInUser(),
+                onSignOut = {
+                    lifecycleScope.launch {
+                        googleAuthUIClient.signOut()
+                        Toast.makeText(
+                            applicationContext, "Signed out", Toast.LENGTH_LONG
+                        ).show()
+                        navController.navigate(Screens.Login.name)
+                    }
+                },
                 onCreateTripButtonClicked = { navController.navigate(Screens.TripConfiguration.name) },
-                onJoinTripButtonClicked = { navController.navigate(Screens.JoinSession.name) }
-            )
+                onJoinTripButtonClicked = { navController.navigate(Screens.JoinSession.name) })
         }
         composable(route = Screens.CreateAccount.name) {
-            CreateAccountForm(
-                onCreateAccountButtonClicked = { navController.navigate(Screens.TripCreateOrJoin.name) }
-            )
+            CreateAccountForm(onCreateAccountButtonClicked = { navController.navigate(Screens.TripCreateOrJoin.name) })
         }
         composable(route = Screens.TripConfiguration.name) {
             TripConfigurationForm(
@@ -122,9 +200,7 @@ fun WeTravelApp(
             )
         }
         composable(route = Screens.SessionCode.name) {
-            SessionCodeScreen(
-                onContinueButtonClicked = { navController.navigate(Screens.DestinationsListScreen.name) }
-            )
+            SessionCodeScreen(onContinueButtonClicked = { navController.navigate(Screens.DestinationsListScreen.name) })
         }
         composable(route = Screens.DestinationsListScreen.name) {
             DestinationsList(
