@@ -201,7 +201,10 @@ fun WeTravelApp(
             )
         }
         composable(route = Screens.SessionCode.name) {
-            SessionCodeScreen(onContinueButtonClicked = { navController.navigate(Screens.DestinationsListScreen.name) })
+            SessionCodeScreen(
+                onContinueButtonClicked = { navController.navigate(Screens.DestinationsListScreen.name) },
+                userViewModel = userViewModel
+            )
         }
         composable(route = Screens.DestinationsListScreen.name) {
             DestinationsList(
