@@ -17,25 +17,27 @@ sealed class Resource<out T> {
 
 class UserViewModel(private val tripRepository: TripRepository /* TODO: More API Managers here*/) :
     ViewModel() {
-    private val _createAccountResponse = MutableLiveData<Resource<Any?>>()
-    val createAccountResponse: LiveData<Resource<Any?>> = _createAccountResponse
+    private val _tripData = MutableLiveData<Resource<Trip>>()
+    val tripData: LiveData<Resource<Trip>> = _tripData
 
     /* TODO: More Fields here for UserViewModel...*/
 
     fun createTrip(trip: Trip) {
-        _createAccountResponse.value = Resource.Loading
+        _tripData.value = Resource.Loading
 
         viewModelScope.launch {
             try {
                 Log.d("create trip", "Create Trip called")
                 val result = tripRepository.createTrip(trip)
+                Log.d("Create trip Return Values: ", result.toString())
                 if (result.isSuccess) {
-                    _createAccountResponse.postValue(Resource.Success(null))
+                    // Load trip Data into tripData state var
+                    _tripData.postValue(Resource.Success(result.getOrNull()!!)) // Shouldn't be null
                 } else {
-                    _createAccountResponse.postValue(Resource.Error("The API call failed with an Error. Check the API Logs"))
+                    _tripData.postValue(Resource.Error("The API call failed with an Error. Check the API Logs"))
                 }
             } catch (e: Exception) {
-                _createAccountResponse.postValue(Resource.Error("An exception occurred while calling the createTrip API"))
+                _tripData.postValue(Resource.Error("An exception occurred while calling the createTrip API"))
             }
         }
     }

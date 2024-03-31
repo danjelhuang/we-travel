@@ -9,12 +9,12 @@ import retrofit2.http.PUT
 
 interface ApiService {
     @POST("trips")
-    suspend fun createTrip(@Body tripConfiguration: Trip): Response<Unit>
+    suspend fun createTrip(@Body tripConfiguration: Trip): Response<Trip>
 }
 
 
 class TripRepository (private val apiService: ApiService) {
-    suspend fun createTrip(tripConfiguration: Trip): Result<Unit> {
+    suspend fun createTrip(tripConfiguration: Trip): Result<Trip> {
         return try {
             val response = apiService.createTrip(tripConfiguration)
             Log.d("Response from trips API", response.toString())
