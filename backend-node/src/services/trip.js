@@ -229,6 +229,49 @@ class TripService {
       throw new Error('Failed to remove vote');
     }
   }
+
+  async createUser(userId) {
+    try {
+      const docRef = db.collection('users').doc(userId);
+      const doc = await docRef.get();
+      if (doc.exists) {
+        console.log('User already exists');
+        return {
+          success: false,
+          message: 'User already exists'
+        };
+      }
+      await docRef.set({ tripIds: [] });
+      return {
+        success: true,
+        message: 'User added successfully'
+      };
+    } catch (error) {
+      console.error('Error adding user:', error);
+      throw new Error('Failed to add user');
+    }
+  }
+
+  async getUser(userId) {
+    try {
+      const docRef = db.collection('users').doc(userId);
+      const doc = await docRef.get();
+      if (!doc.exists) {
+        console.log('User does not exist');
+        return {
+          success: false,
+          message: 'User does not exist'
+        };
+      }
+      return {
+        id: doc.id,
+        ...doc.data()
+      };
+    } catch (error) {
+      console.error('Error getting user:', error);
+      throw new Error('Failed to get user');
+    }
+  }
 }
 
 module.exports = TripService;
