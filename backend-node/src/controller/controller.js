@@ -192,3 +192,36 @@ exports.removeVote = async (req, res) => {
   
 }
 ;
+
+
+exports.createUser = async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const user = await tripService.createUser(userId);
+    if (!user.success) {
+      res.status(404).json(user)
+    } else {
+      console.log("User added successfully");
+      res.status(201).json({ success: user.success, userID: user.id, tripIDs: user.tripIds });
+    }
+  } catch (error) {
+    console.error('Error adding user:', error);
+    res.status(500).json({ error: 'Failed to add user' });
+  }
+}
+
+exports.getUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await tripService.getUser(userId);
+    if (!user.success) {
+      res.status(404).json(user)
+    } else {
+      console.log("User fetched successfully");
+      res.status(200).json(user);
+    }
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).json({ error: 'Failed to fetch user' });
+  }
+};

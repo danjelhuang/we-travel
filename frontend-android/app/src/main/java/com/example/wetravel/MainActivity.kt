@@ -26,6 +26,7 @@ import TripConfigurationForm
 import TripLoginSignup
 import android.app.Activity.RESULT_OK
 import android.content.Context
+import android.util.Log
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.navigation.NavHostController
@@ -34,6 +35,7 @@ import com.example.wetravel.presentation.sign_in.GoogleAuthUIClient
 import com.example.wetravel.presentation.sign_in.SignInViewModel
 import com.example.wetravel.service.ApiService
 import com.example.wetravel.service.TripRepository
+import com.example.wetravel.service.UserRepository
 import com.example.wetravel.ui.theme.ProjectTheme
 import com.example.wetravel.views.CreateAccountForm
 import com.example.wetravel.views.DestinationsList
@@ -87,6 +89,7 @@ class MainActivity : ComponentActivity() {
 
         // Define the API Managers below
         val tripRepository = TripRepository(apiService = RetrofitBuilder.apiService)
+        val userRepository = UserRepository(apiService = RetrofitBuilder.apiService)
 
         setContent {
             ProjectTheme {
@@ -97,6 +100,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     WeTravelApp(
                         tripRepository = tripRepository,
+                        userRepository = userRepository,
                         googleAuthUIClient = googleAuthUIClient,
                         lifecycleScope = lifecycleScope,
                         applicationContext = applicationContext
@@ -111,11 +115,12 @@ class MainActivity : ComponentActivity() {
 fun WeTravelApp(
     navController: NavHostController = rememberNavController(),
     tripRepository: TripRepository,
+    userRepository: UserRepository,
     googleAuthUIClient: GoogleAuthUIClient,
     lifecycleScope: CoroutineScope,
     applicationContext: Context
 ) {
-    val userViewModel = UserViewModel(tripRepository)
+    val userViewModel = UserViewModel(tripRepository = tripRepository, userRepository = userRepository)
     NavHost(
         navController = navController,
         startDestination = Screens.Login.name,
@@ -127,6 +132,7 @@ fun WeTravelApp(
 
             LaunchedEffect(key1 = Unit) {
                 if (googleAuthUIClient.getSignedInUser() != null) {
+                    userViewModel.getOrCreateUser(googleAuthUIClient.getSignedInUser()?.userId ?: "")
                     navController.navigate(Screens.TripCreateOrJoin.name)
                 }
             }
@@ -150,6 +156,7 @@ fun WeTravelApp(
                         applicationContext, "Sign in successful", Toast.LENGTH_LONG
                     ).show()
 
+                    userViewModel.getOrCreateUser(googleAuthUIClient.getSignedInUser()?.userId ?: "")
                     navController.navigate(Screens.TripCreateOrJoin.name)
                     viewModel.resetState()
                 }
@@ -180,7 +187,8 @@ fun WeTravelApp(
                     }
                 },
                 onCreateTripButtonClicked = { navController.navigate(Screens.TripConfiguration.name) },
-                onJoinTripButtonClicked = { navController.navigate(Screens.JoinSession.name) })
+                onJoinTripButtonClicked = { navController.navigate(Screens.JoinSession.name) },
+                userViewModel = userViewModel)
         }
         composable(route = Screens.CreateAccount.name) {
             CreateAccountForm(onCreateAccountButtonClicked = { navController.navigate(Screens.TripCreateOrJoin.name) })

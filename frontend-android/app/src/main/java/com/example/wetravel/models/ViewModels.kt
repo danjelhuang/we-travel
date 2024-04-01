@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.wetravel.service.TripRepository
+import com.example.wetravel.service.UserRepository
 import kotlinx.coroutines.launch
 
 // Below is a class to help us enforce state of data while we fetch from the backend
@@ -15,10 +16,17 @@ sealed class Resource<out T> {
     object Loading : Resource<Nothing>()
 }
 
-class UserViewModel(private val tripRepository: TripRepository /* TODO: More API Managers here*/) :
-    ViewModel() {
+class UserViewModel(
+    private val tripRepository: TripRepository, private val userRepository: UserRepository
+) : ViewModel() {
     private val _tripCode = MutableLiveData<Resource<String>>()
     val tripCode: LiveData<Resource<String>> = _tripCode
+
+    private val _userID = MutableLiveData<Resource<String>>()
+    val userID: LiveData<Resource<String>> = _userID
+
+    private val _tripIDs = MutableLiveData<Resource<List<String>>>()
+    val tripIDs: LiveData<Resource<List<String>>> = _tripIDs
 
     /* TODO: More Fields here for UserViewModel...*/
 
@@ -42,6 +50,36 @@ class UserViewModel(private val tripRepository: TripRepository /* TODO: More API
         }
     }
 
+    fun getOrCreateUser(userID: String) {
+        _userID.value = Resource.Loading
+        _tripIDs.value = Resource.Loading
+
+        viewModelScope.launch {
+            try {
+                Log.d("get user", "Get User called")
+                val result1 = userRepository.getUser(userID)
+                Log.d("Get user Return Values: ", result1.toString())
+                if (result1.isSuccess) {
+                    _userID.postValue(Resource.Success(result1.getOrNull()!!.userID))
+                    _tripIDs.postValue(Resource.Success(result1.getOrNull()!!.tripIDs))
+                } else {
+                    Log.d("create user", "Create User called")
+                    val result = userRepository.createUser(userID)
+                    Log.d("Create user Return Values: ", result.toString())
+                    if (result.isSuccess) {
+                        _userID.postValue(Resource.Success(result.getOrNull()!!.userID))
+                        _tripIDs.postValue(Resource.Success(result.getOrNull()!!.tripIDs))
+                    } else {
+                        _userID.postValue(Resource.Error("The Create Trip API call failed with an Error. Check the API Logs"))
+                        _tripIDs.postValue(Resource.Error("The Create Trip API call failed with an Error. Check the API Logs"))
+                    }
+                }
+            } catch (e: Exception) {
+                _tripCode.postValue(Resource.Error("An exception occurred while calling the createUser API"))
+            }
+        }
+    }
+
 //    fun loadTrip(tripId: String) {
 //
 //        viewModelScope.launch {
@@ -59,6 +97,6 @@ class UserViewModel(private val tripRepository: TripRepository /* TODO: More API
 //        }
 //
 //    }
-    
+
 
 }
