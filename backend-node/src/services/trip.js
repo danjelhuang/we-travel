@@ -279,8 +279,6 @@ class TripService {
       const destinationDetails = destinations[placeId];
 
       // check for verifying that a user already voted for a trip they want to remove a vote from 
-      console.log("here")
-      console.log(destinationDetails.userVotes[userId])
       const currentUserVotesForGivenPlace = destinationDetails.userVotes[userId] 
       if (currentUserVotesForGivenPlace === undefined || currentUserVotesForGivenPlace === 0) {
         console.log("Can't remove a vote from a location you didn't already vote for");
