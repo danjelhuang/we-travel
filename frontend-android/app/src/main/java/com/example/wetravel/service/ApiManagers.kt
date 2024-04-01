@@ -1,6 +1,7 @@
 package com.example.wetravel.service
 
 import android.util.Log
+import com.example.wetravel.models.Destination
 import com.example.wetravel.models.Trip
 import com.example.wetravel.models.User
 import com.example.wetravel.models.UserCreationRequest
