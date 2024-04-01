@@ -24,6 +24,15 @@ enum class VotingPhase {
     RESULTS
 }
 
+data class User(
+    val userID: String = "",
+    val tripIDs: List<String> = emptyList(),
+)
+
+data class UserCreationRequest(
+    val userId: String
+)
+
 data class TripUsers(
     val userID: String = "",
     val votes: Int = 0,
@@ -40,6 +49,7 @@ data class Trip(
     val phase: String = "",
     val destinationsList: List<Destination> = emptyList()
 )
+
 
 // TODO: Remove this and convert ViewModel properties in the ViewModels.kt class
 data class ViewModel(

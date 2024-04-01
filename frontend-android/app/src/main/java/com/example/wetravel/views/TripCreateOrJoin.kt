@@ -1,5 +1,6 @@
 package com.example.wetravel.views
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -18,10 +19,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,6 +41,8 @@ import com.example.wetravel.R
 import com.example.wetravel.components.LogoTopAppBar
 import com.example.wetravel.components.Trip
 import com.example.wetravel.components.TripComponent
+import com.example.wetravel.models.Resource
+import com.example.wetravel.models.UserViewModel
 import com.example.wetravel.presentation.sign_in.UserData
 
 // TODO: link this with data model
@@ -89,8 +95,10 @@ fun LandingPage(
     userData: UserData?,
     onSignOut: () -> Unit,
     onCreateTripButtonClicked: () -> Unit,
-    onJoinTripButtonClicked: () -> Unit
+    onJoinTripButtonClicked: () -> Unit,
+    userViewModel: UserViewModel
 ) {
+    val tripIDsResource by userViewModel.tripIDs.observeAsState(initial = Resource.Loading)
     Scaffold(topBar = {
         LogoTopAppBar()
     }) { innerpadding ->

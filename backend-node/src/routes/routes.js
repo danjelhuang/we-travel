@@ -2,6 +2,18 @@ const express = require('express');
 const router = express.Router();
 const tripController = require('../controller/controller');
 
+// #region User Routes
+
+// create a user
+router.post('/users/', tripController.createUser);
+
+// get a user by id
+router.get('/users/:id', tripController.getUser);
+
+// #endregion
+
+// #region Trip Routes
+
 // create a trip
 router.post('/trips', tripController.createTrip);
 // get a trip by id (access code)
@@ -22,5 +34,7 @@ router.post('/remove-participant-from-trip/:id', tripController.removeParticipan
 
 // get user votes in a trip
 router.get('/trips/:tripID/userVotes/:userID', tripController.getUserVotes)
+
+// #endregion
 
 module.exports = router;

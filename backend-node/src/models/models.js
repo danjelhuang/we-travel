@@ -11,4 +11,11 @@ class Trip {
   }
 }
 
-module.exports = Trip;
+class User {
+  constructor({ id, tripIds }) {
+    this.id = id;
+    this.tripIds = tripIds;
+  }
+}
+
+module.exports = Trip, User;
