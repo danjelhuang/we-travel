@@ -47,7 +47,7 @@ data class Trip(
     val adminUserID: String = "",
     val votesPerPerson: Int = 0,
     val phase: String = "",
-    val destinationsList: List<Destination> = emptyList()
+    val destinationsList: List<Destination> = emptyList(),
 )
 
 

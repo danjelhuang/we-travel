@@ -52,6 +52,44 @@ class TripService {
     }
   }
 
+  async getAllTrips(userId) {
+    try {
+      // Step 1: Retrieve the user document by userId
+      const userDoc = await db.collection('users').doc(userId).get();
+      
+      if (!userDoc.exists) {
+        console.log('No such user!');
+        return {success: false, data: []};
+      }
+      
+      const userData = userDoc.data();
+      const tripIds = userData.tripIds || [];
+      
+      // Step 2: Fetch trips using tripIds
+      const tripsPromises = tripIds.map(tripId => db.collection('trips').doc(tripId).get());
+      const tripsDocs = await Promise.all(tripsPromises);
+      
+      // Step 3: Extract the trip data from documents
+      const tripsData = tripsDocs.map(doc => {
+        if (!doc.exists) {
+          console.log('A trip document does not exist');
+          return null;
+        }
+        return { ...doc.data() };
+      }).filter(trip => trip !== null); // Filter out any null values (non-existing trip documents)
+      console.log(tripsData)
+      if (tripsData) {
+        return {success: true, data: tripsData}
+      } else {
+        return {success: false, data: []}
+      }
+
+    } catch (error) {
+      console.error("Error fetching user trips:", error);
+      throw error; // Rethrow or handle as needed
+    }
+  }
+
   async addDestination(tripId, newDestinationID) {
     try {
       const docRef = db.collection("trips").doc(tripId);

@@ -21,7 +21,7 @@ router.get('/trips/:id', tripController.loadTrip);
 router.post('/trips/:id/destinationsList', tripController.addDestination);
 router.post('/trips/:id/addVote/:placeId/:userId', tripController.addVote);
 router.post('/trips/:id/removeVote/:placeId/:userId', tripController.removeVote);
-
+router.get('/userTrips/:id', tripController.getAllTrips);
 
 // Update a trip based on a specific ID
 router.patch('/trips/:id', tripController.updateTrip);

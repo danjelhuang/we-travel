@@ -22,11 +22,11 @@ class UserViewModel(
     private val _tripCode = MutableLiveData<Resource<String>>()
     val tripCode: LiveData<Resource<String>> = _tripCode
 
-    private val _userID = MutableLiveData<Resource<String>>()
-    val userID: LiveData<Resource<String>> = _userID
+    private val _user = MutableLiveData<Resource<User>>()
+    val user: LiveData<Resource<User>> = _user
 
-    private val _tripIDs = MutableLiveData<Resource<List<String>>>()
-    val tripIDs: LiveData<Resource<List<String>>> = _tripIDs
+    private val _allTrips = MutableLiveData<Resource<Map<String, Trip>>>()
+    val allTrips: LiveData<Resource<Map<String, Trip>>> = _allTrips
 
     /* TODO: More Fields here for UserViewModel...*/
 
@@ -51,52 +51,52 @@ class UserViewModel(
     }
 
     fun getOrCreateUser(userID: String) {
-        _userID.value = Resource.Loading
-        _tripIDs.value = Resource.Loading
+        _user.value = Resource.Loading
 
         viewModelScope.launch {
             try {
                 Log.d("get user", "Get User called")
-                val result1 = userRepository.getUser(userID)
-                Log.d("Get user Return Values: ", result1.toString())
-                if (result1.isSuccess) {
-                    _userID.postValue(Resource.Success(result1.getOrNull()!!.userID))
-                    _tripIDs.postValue(Resource.Success(result1.getOrNull()!!.tripIDs))
+                val result = userRepository.getUser(userID)
+                Log.d("Get user Return Values: ", result.toString())
+                if (result.isSuccess) {
+                    val newUser = User(result.getOrNull()!!.userID, result.getOrNull()!!.tripIDs)
+                    _user.postValue(Resource.Success(newUser))
                 } else {
                     Log.d("create user", "Create User called")
                     val result = userRepository.createUser(userID)
                     Log.d("Create user Return Values: ", result.toString())
                     if (result.isSuccess) {
-                        _userID.postValue(Resource.Success(result.getOrNull()!!.userID))
-                        _tripIDs.postValue(Resource.Success(result.getOrNull()!!.tripIDs))
+                        val newUser = User(result.getOrNull()!!.userID, result.getOrNull()!!.tripIDs)
+                        _user.postValue(Resource.Success(newUser))
                     } else {
-                        _userID.postValue(Resource.Error("The Create User API call failed with an Error. Check the API Logs"))
-                        _tripIDs.postValue(Resource.Error("The Create User API call failed with an Error. Check the API Logs"))
+                        _user.postValue(Resource.Error("The Create User API call failed with an Error. Check the API Logs"))
                     }
                 }
             } catch (e: Exception) {
-                _tripCode.postValue(Resource.Error("An exception occurred while calling the createUser API"))
+                _user.postValue(Resource.Error("An exception occurred while calling the createUser API"))
             }
         }
     }
 
-//    fun loadTrip(tripId: String) {
-//
-//        viewModelScope.launch {
-//            try {
-//                Log.d("load trip", "load trip called")
-//                val result = tripRepository.loadTrip(tripId)
-//                // handle data here
-//                // where to load - into the viewmodel?
-//            }
-//
-//            catch (e: Exception) {
-//                _createAccountResponse.postValue(Resource.Error("An exception occurred while calling the loadrip API"))
-//
-//            }
-//        }
-//
-//    }
+    fun getAllTrips(userID: String) {
+        _allTrips.value = Resource.Loading
 
+        viewModelScope.launch {
+            try {
+                Log.d("get all trip", "get all Trips called")
+                val result = tripRepository.getAllTrips(userID)
+                Log.d("get all Trips Return Values: ", result.toString())
+                if (result.isSuccess) {
+                    // Construct the map here
+                    val tripMap: Map<String, Trip> = result.getOrNull()!!.associateBy { it.tripID }
+                    _allTrips.postValue(Resource.Success(tripMap))
+                } else {
+                    _allTrips.postValue(Resource.Error("The Get All Trips API call failed with an Error. Check the API Logs"))
+                }
+            } catch (e: Exception) {
+                _allTrips.postValue(Resource.Error("An exception occurred while calling the Get All Trips API"))
+            }
+        }
+    }
 
 }

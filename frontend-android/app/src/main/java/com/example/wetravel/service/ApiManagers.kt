@@ -22,6 +22,9 @@ interface ApiService {
     @GET("users/{id}")
     suspend fun getUser(@Path("id") userID: String): Response<User>
 
+    @GET("userTrips/{id}")
+    suspend fun getAllTrips(@Path("id") userID: String): Response<List<Trip>>
+
 }
 
 
@@ -35,6 +38,21 @@ class TripRepository (private val apiService: ApiService) {
             } else {
                 // Return error
                 Result.failure(RuntimeException("Create Trip API call failed"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getAllTrips(userID: String): Result<List<Trip>> {
+        return try {
+            val response = apiService.getAllTrips(userID = userID)
+            Log.d("Response from get all trips API", response.toString())
+            if (response.isSuccessful) {
+                Result.success(response.body()!!)
+            } else {
+                // Return error
+                Result.failure(RuntimeException("Get All Trip API call failed"))
             }
         } catch (e: Exception) {
             Result.failure(e)
