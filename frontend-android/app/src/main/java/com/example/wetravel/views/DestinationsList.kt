@@ -7,6 +7,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.wetravel.R
@@ -14,7 +16,10 @@ import com.example.wetravel.components.DestinationEntry
 import com.example.wetravel.components.DestinationsListFooter
 import com.example.wetravel.components.DestinationsListHeader
 import com.example.wetravel.models.Destination
+import com.example.wetravel.models.UserViewModel
 import java.util.UUID
+
+
 
 @Composable
 fun DestinationsColumn(destinations: List<Destination>, innerPadding: PaddingValues) {
@@ -37,8 +42,11 @@ fun DestinationsColumn(destinations: List<Destination>, innerPadding: PaddingVal
 fun DestinationsList(
     onAddDestinationButtonClicked: () -> Unit,
     onStartVotingButtonClicked: () -> Unit,
-    onSettingsButtonClicked: () -> Unit
+    onSettingsButtonClicked: () -> Unit,
+    userViewModel: UserViewModel
 ) {
+    val tripCity by userViewModel.tripCity.observeAsState("")
+
     // Assuming we have a list of destinations to display
     val destinations = listOf(
         // Add your destinations here, for example:
@@ -58,7 +66,7 @@ fun DestinationsList(
     )
 
     Scaffold(
-        topBar = { DestinationsListHeader(tripName = "Toronto", onSettingsButtonClicked) },
+        topBar = { DestinationsListHeader(tripName = tripCity, onSettingsButtonClicked) },
         bottomBar = { DestinationsListFooter(onAddDestinationButtonClicked, onStartVotingButtonClicked) }
     ) { innerPadding ->
         DestinationsColumn(destinations = destinations, innerPadding = innerPadding)

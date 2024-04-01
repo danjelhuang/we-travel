@@ -42,6 +42,7 @@ import com.example.wetravel.views.JoinSessionScreen
 import com.example.wetravel.views.LandingPage
 import com.example.wetravel.views.SessionCodeScreen
 import com.example.wetravel.views.VotingResultsMainScreen
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.CoroutineScope
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -115,7 +116,8 @@ fun WeTravelApp(
     lifecycleScope: CoroutineScope,
     applicationContext: Context
 ) {
-    val userViewModel = UserViewModel(tripRepository)
+    val db = FirebaseFirestore.getInstance();
+    val userViewModel = UserViewModel(tripRepository, db)
     NavHost(
         navController = navController,
         startDestination = Screens.Login.name,
@@ -209,7 +211,8 @@ fun WeTravelApp(
             DestinationsList(
                 onAddDestinationButtonClicked = { navController.navigate(Screens.AddDestination.name) },
                 onStartVotingButtonClicked = { navController.navigate(Screens.VotingScreen.name) },
-                onSettingsButtonClicked = { navController.navigate(Screens.EditTrip.name) }
+                onSettingsButtonClicked = { navController.navigate(Screens.EditTrip.name) },
+                userViewModel = userViewModel
             )
         }
         composable(route = Screens.AddDestination.name) {
