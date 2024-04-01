@@ -393,6 +393,35 @@ class TripService {
       throw new Error('Failed to get user');
     }
   }
+
+  async updateUser(userID, tripID) {
+    try {
+      const docRef = db.collection('users').doc(userID);
+      const user = await docRef.get();
+      if (!user.exists) {
+        console.log('User does not exist');
+        return {
+          success: false,
+          message: 'User does not exist'
+        };
+      }
+
+      let tripIDs = user.data().tripIDs || [];
+
+      tripIDs.push(tripID);
+      await docRef.update({
+        tripIds: tripIDs
+      });
+      console.log("TripID added");
+      return {
+        success: true,
+        message: "Trip added to user"
+      }
+    } catch (error) {
+      console.error('Error getting user:', error);
+      throw new Error('Failed to get user');
+    }
+  }
 }
 
 module.exports = TripService;
