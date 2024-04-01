@@ -243,6 +243,7 @@ class TripService {
       }
       await docRef.set({ tripIds: [] });
       return {
+        success: true,
         id: doc.id,
         tripIds: []
       };

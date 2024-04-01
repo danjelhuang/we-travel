@@ -202,7 +202,7 @@ exports.createUser = async (req, res) => {
       res.status(404).json(user)
     } else {
       console.log("User added successfully");
-      res.status(201).json(user);
+      res.status(201).json({ success: user.success, userID: user.id, tripIDs: user.tripIds });
     }
   } catch (error) {
     console.error('Error adding user:', error);
