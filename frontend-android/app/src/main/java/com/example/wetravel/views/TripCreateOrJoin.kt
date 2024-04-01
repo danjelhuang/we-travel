@@ -98,7 +98,7 @@ fun LandingPage(
     onJoinTripButtonClicked: () -> Unit,
     userViewModel: UserViewModel
 ) {
-    val tripIDsResource by userViewModel.tripIDs.observeAsState(initial = Resource.Loading)
+    val currentUserResource by userViewModel.user.observeAsState(initial = Resource.Loading)
     Scaffold(topBar = {
         LogoTopAppBar()
     }) { innerpadding ->
