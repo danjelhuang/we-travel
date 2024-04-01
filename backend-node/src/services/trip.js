@@ -6,6 +6,7 @@ class TripService {
     try {
       const docRef = db.collection('trips').doc(tripData.tripID);
       tripData.users.push({ userID: tripData.adminUserID, votes: tripData.votesPerPerson })
+      tripData.destinationsList = {};
       await docRef.set(tripData);
       return { id: docRef.id, ...tripData };
     } catch (error) {
@@ -93,22 +94,7 @@ class TripService {
         };
       }
 
-      // const isExisting = trip.destinationsList.some(dest => dest.placeID == newDestinationID);
-
-      // if (isExisting) {
-      //   return {
-      //     success: false,
-      //     message: "Destination already exists in trip",
-      //   };
-      // } else {
-      //   await docRef.update({
-      //     destinationsList: FieldValue.arrayUnion({ placeID: newDestinationID, votes: 0 })
-      //   });
-      //   return {
-      //     success: true,
-      //     message: "Destination added successfully",
-      //   }; 
-      // }
+      
     } catch (error) {
       console.error("Error  adding destination:", error);
       throw new Error("Error adding destination to the trip");
@@ -293,7 +279,10 @@ class TripService {
       const destinationDetails = destinations[placeId];
 
       // check for verifying that a user already voted for a trip they want to remove a vote from 
-      if (destinationDetails.userVotes[userId] === 0 || undefined) {
+      console.log("here")
+      console.log(destinationDetails.userVotes[userId])
+      const currentUserVotesForGivenPlace = destinationDetails.userVotes[userId] 
+      if (currentUserVotesForGivenPlace === undefined || currentUserVotesForGivenPlace === 0) {
         console.log("Can't remove a vote from a location you didn't already vote for");
         return {
           success: false,

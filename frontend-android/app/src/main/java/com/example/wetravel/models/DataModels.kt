@@ -38,13 +38,9 @@ data class Trip(
     val adminUserID: String = "",
     val votesPerPerson: Int = 0,
     val phase: String = "",
-    val destinationsList: Map<String, DestinationDetails> = emptyMap()
+    val destinationsList: []
 )
 
-data class DestinationDetails(
-  val totalVotes: Int = 0,
-  val userVotes: Map<String, Int> = emptyMap()
-)
 
 // TODO: Remove this and convert ViewModel properties in the ViewModels.kt class
 data class ViewModel(
