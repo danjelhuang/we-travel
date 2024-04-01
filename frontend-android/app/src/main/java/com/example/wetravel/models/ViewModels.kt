@@ -70,8 +70,8 @@ class UserViewModel(
                         _userID.postValue(Resource.Success(result.getOrNull()!!.userID))
                         _tripIDs.postValue(Resource.Success(result.getOrNull()!!.tripIDs))
                     } else {
-                        _userID.postValue(Resource.Error("The Create Trip API call failed with an Error. Check the API Logs"))
-                        _tripIDs.postValue(Resource.Error("The Create Trip API call failed with an Error. Check the API Logs"))
+                        _userID.postValue(Resource.Error("The Create User API call failed with an Error. Check the API Logs"))
+                        _tripIDs.postValue(Resource.Error("The Create User API call failed with an Error. Check the API Logs"))
                     }
                 }
             } catch (e: Exception) {

@@ -218,7 +218,7 @@ exports.getUser = async (req, res) => {
       res.status(404).json(user)
     } else {
       console.log("User fetched successfully");
-      res.status(200).json(user);
+      res.status(200).json({ success: user.success, userID: user.id, tripIDs: user.tripIds });
     }
   } catch (error) {
     console.error('Error fetching user:', error);
