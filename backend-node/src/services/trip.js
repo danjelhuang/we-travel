@@ -344,7 +344,9 @@ class TripService {
           message: 'User does not exist'
         };
       }
+      console.log('User Found');
       return {
+        success: true,
         id: doc.id,
         ...doc.data()
       };

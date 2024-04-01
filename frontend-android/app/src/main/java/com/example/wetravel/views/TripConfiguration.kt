@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -16,6 +17,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -29,16 +32,18 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
+import com.example.wetravel.models.Resource
 import com.example.wetravel.models.Trip
 import com.example.wetravel.models.UserViewModel
+import com.example.wetravel.views.CreateCodeContent
 
 @Composable
 fun TripConfigurationForm(
     title: String,
     onButtonClicked: () -> Unit,
-    userViewModel: UserViewModel,
-    currentUser: String
+    userViewModel: UserViewModel
 ) {
+    val currentUserResource by userViewModel.userID.observeAsState(initial = Resource.Loading)
     // TODO: Convert all of these fields to the values from ViewModel and observe them for state changes
     val tripName = remember { mutableStateOf(TextFieldValue()) }
     val destinationCity = remember { mutableStateOf(TextFieldValue()) }
@@ -94,26 +99,39 @@ fun TripConfigurationForm(
         Spacer(modifier = Modifier.height(40.dp))
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(
-            onClick = {
-                handleButtonClick(
-                    tripName.value.text,
-                    destinationCity.value.text,
-                    finalDestinationCount.value.text,
-                    userViewModel = userViewModel,
-                    user = currentUser
-                )
-                onButtonClicked()
-            },
-            shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary
-            ),
-            modifier = Modifier
-                .fillMaxWidth(0.5f)
-                .align(Alignment.CenterHorizontally)
-        ) {
-            Text(buttonText, color = Color.White, fontFamily = dmSansFamily)
+        when (currentUserResource) {
+            is Resource.Success -> {
+                val currentUser = (currentUserResource as Resource.Success<String>).data
+                Button(
+                    onClick = {
+                        handleButtonClick(
+                            tripName.value.text,
+                            destinationCity.value.text,
+                            finalDestinationCount.value.text,
+                            userViewModel = userViewModel,
+                            user = currentUser
+                        )
+                        onButtonClicked()
+                    },
+                    shape = RoundedCornerShape(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .align(Alignment.CenterHorizontally)
+                ) {
+                    Text(buttonText, color = Color.White, fontFamily = dmSansFamily)
+                }
+            }
+            is Resource.Loading -> {
+                CircularProgressIndicator()
+            }
+            is Resource.Error -> {
+                val errorMessage = (currentUserResource as Resource.Error).message
+                // Display the error message
+                Text(text = "Error: $errorMessage")
+            }
         }
     }
 }
