@@ -50,6 +50,7 @@ data class Trip(
     val destinationsList: List<Destination> = emptyList()
 )
 
+
 // TODO: Remove this and convert ViewModel properties in the ViewModels.kt class
 data class ViewModel(
     val userId: String = "",

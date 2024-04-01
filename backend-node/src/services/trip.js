@@ -6,6 +6,7 @@ class TripService {
     try {
       const docRef = db.collection('trips').doc(tripData.tripID);
       tripData.users.push({ userID: tripData.adminUserID, votes: tripData.votesPerPerson })
+      tripData.destinationsList = {};
       await docRef.set(tripData);
       return { id: docRef.id, ...tripData };
     } catch (error) {
@@ -66,22 +67,34 @@ class TripService {
 
       const trip = doc.data();
 
-      const isExisting = trip.destinationsList.some(dest => dest.placeID == newDestinationID);
+      const destinations = trip.destinationsList || {};
 
-      if (isExisting) {
-        return {
-          success: false,
-          message: "Destination already exists in trip",
+      // Check if the destination already exists in destinationsList
+      if (!destinations[newDestinationID]) {
+        console.log(newDestinationID);
+        // Initialize new destination with 0 totalVotes and empty userVotes
+        destinations[newDestinationID] = {
+          totalVotes: 0,
+          userVotes: {}
         };
-      } else {
-        await docRef.update({
-          destinationsList: FieldValue.arrayUnion({ placeID: newDestinationID, votes: 0 })
-        });
+        
+        // Update the destinationsList map in Firestore
+        await docRef.update({ destinationsList: destinations });
+
+        console.log("Destination added successfully");
         return {
           success: true,
           message: "Destination added successfully",
         };
+      } else {
+        console.log("Destination already exists in trip");
+        return {
+          success: false,
+          message: "Destination already exists in trip",
+        };
       }
+
+      
     } catch (error) {
       console.error("Error  adding destination:", error);
       throw new Error("Error adding destination to the trip");
@@ -179,14 +192,46 @@ class TripService {
       const tripRef = db.collection('trips').doc(tripId);
       const doc = await tripRef.get();
 
-      const destinations = doc.data().destinationsList;
-      const userList = doc.data().users;
-      
-      const destinationIndex = destinations.findIndex(d => d.placeID === placeId);
-      const userIndex = userList.findIndex(u => u.userID === userId);
+      if (!doc.exists) {
+        console.log("No such trip!");
+        return {
+          success: false,
+          message: "Trip does not exist",
+        };
+      }
 
-      destinations[destinationIndex].votes = destinations[destinationIndex].votes + 1 || 1;
+      const destinations = doc.data().destinationsList;
+      
+      const userList = doc.data().users;
+
+      // validates that a user still has votes left 
+      const userIndex = userList.findIndex(u => u.userID === userId);
+      if (userList[userIndex].votes < 1) {
+        console.log("No more votes available!");
+        return {
+          success: false,
+          message: "No more votes available for this trip",
+        };
+      }
+
+      if (!destinations[placeId]) {
+        console.log("No such destination!");
+        return {
+          success: false,
+          message: "Destination does not exist",
+        };
+      }
+
+      // Update userVotes and totalVotes for the destination
+      const destinationDetails = destinations[placeId];
+      destinationDetails.totalVotes = destinationDetails.totalVotes + 1;
+      destinationDetails.userVotes[userId] = (destinationDetails.userVotes[userId] || 0) + 1;   
+
+  
+      // Update userList to remove a vote available from the current user
       userList[userIndex].votes = userList[userIndex].votes - 1 || 1;
+      
+      
    
       await tripRef.update({
         destinationsList: destinations,
@@ -202,27 +247,62 @@ class TripService {
   }
 
 
+
   async removeVote(tripId, userId, placeId) {
 
     try {
       const tripRef = db.collection('trips').doc(tripId);
       const doc = await tripRef.get();
 
-      const destinations = doc.data().destinationsList;
-      const userList = doc.data().users;
-      
-      const destinationIndex = destinations.findIndex(d => d.placeID === placeId);
-      const userIndex = userList.findIndex(u => u.userID === userId);
+      if (!doc.exists) {
+        console.log("No such trip!");
+        return {
+          success: false,
+          message: "Trip does not exist",
+        };
+      }
 
-      destinations[destinationIndex].votes = destinations[destinationIndex].votes - 1 || 1;
+      const destinations = doc.data().destinationsList;
+      
+      const userList = doc.data().users;
+
+
+      if (!destinations[placeId]) {
+        console.log("No such destination!");
+        return {
+          success: false,
+          message: "Destination does not exist",
+        };
+      }
+
+      // Update userVotes and totalVotes for the destination
+      const destinationDetails = destinations[placeId];
+
+      // check for verifying that a user already voted for a trip they want to remove a vote from 
+      const currentUserVotesForGivenPlace = destinationDetails.userVotes[userId] 
+      if (currentUserVotesForGivenPlace === undefined || currentUserVotesForGivenPlace === 0) {
+        console.log("Can't remove a vote from a location you didn't already vote for");
+        return {
+          success: false,
+          message: "Can't remove a vote from a location you didn't already vote for",
+        };
+      }
+
+      destinationDetails.totalVotes = destinationDetails.totalVotes - 1;
+      destinationDetails.userVotes[userId] = (destinationDetails.userVotes[userId] || 0) - 1;   
+  
+      // Update userList to add back a vote available from the current user
+      const userIndex = userList.findIndex(u => u.userID === userId);
       userList[userIndex].votes = userList[userIndex].votes + 1 || 1;
+      
+      
    
       await tripRef.update({
         destinationsList: destinations,
         users: userList
     });
   
-      return { success: true, message: 'Vote removed successfully from destination' };
+      return { success: true, message: 'Vote removed successfully to destination' };
   
     } catch (error) {
       console.error('Error removing vote: ', error)
