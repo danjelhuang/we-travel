@@ -25,11 +25,8 @@ class UserViewModel(
     private val _user = MutableLiveData<Resource<User>>()
     val user: LiveData<Resource<User>> = _user
 
-//    private val _userID = MutableLiveData<Resource<String>>()
-//    val userID: LiveData<Resource<String>> = _userID
-//
-//    private val _tripIDs = MutableLiveData<Resource<List<String>>>()
-//    val tripIDs: LiveData<Resource<List<String>>> = _tripIDs
+    private val _allTrips = MutableLiveData<Resource<Map<String, Trip>>>()
+    val allTrips: LiveData<Resource<Map<String, Trip>>> = _allTrips
 
     /* TODO: More Fields here for UserViewModel...*/
 
@@ -81,23 +78,25 @@ class UserViewModel(
         }
     }
 
-//    fun loadTrip(tripId: String) {
-//
-//        viewModelScope.launch {
-//            try {
-//                Log.d("load trip", "load trip called")
-//                val result = tripRepository.loadTrip(tripId)
-//                // handle data here
-//                // where to load - into the viewmodel?
-//            }
-//
-//            catch (e: Exception) {
-//                _createAccountResponse.postValue(Resource.Error("An exception occurred while calling the loadrip API"))
-//
-//            }
-//        }
-//
-//    }
+    fun getAllTrips(userID: String) {
+        _allTrips.value = Resource.Loading
 
+        viewModelScope.launch {
+            try {
+                Log.d("get all trip", "get all Trips called")
+                val result = tripRepository.getAllTrips(userID)
+                Log.d("get all Trips Return Values: ", result.toString())
+                if (result.isSuccess) {
+                    // Construct the map here
+                    val tripMap: Map<String, Trip> = result.getOrNull()!!.associateBy { it.tripID }
+                    _allTrips.postValue(Resource.Success(tripMap))
+                } else {
+                    _allTrips.postValue(Resource.Error("The Get All Trips API call failed with an Error. Check the API Logs"))
+                }
+            } catch (e: Exception) {
+                _allTrips.postValue(Resource.Error("An exception occurred while calling the Get All Trips API"))
+            }
+        }
+    }
 
 }

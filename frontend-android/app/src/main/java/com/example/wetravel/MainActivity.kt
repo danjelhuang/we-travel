@@ -133,6 +133,8 @@ fun WeTravelApp(
             LaunchedEffect(key1 = Unit) {
                 if (googleAuthUIClient.getSignedInUser() != null) {
                     userViewModel.getOrCreateUser(googleAuthUIClient.getSignedInUser()?.userId ?: "")
+                    userViewModel.getAllTrips(googleAuthUIClient.getSignedInUser()?.userId ?: "")
+
                     navController.navigate(Screens.TripCreateOrJoin.name)
                 }
             }
@@ -157,6 +159,7 @@ fun WeTravelApp(
                     ).show()
 
                     userViewModel.getOrCreateUser(googleAuthUIClient.getSignedInUser()?.userId ?: "")
+                    userViewModel.getAllTrips(googleAuthUIClient.getSignedInUser()?.userId ?: "")
                     navController.navigate(Screens.TripCreateOrJoin.name)
                     viewModel.resetState()
                 }
