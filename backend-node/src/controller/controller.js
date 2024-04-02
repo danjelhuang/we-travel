@@ -100,6 +100,7 @@ exports.addParticipantToTrip = async (req, res) => {
   try {
     const result = await tripService.addParticipantToTrip(userId.userId, tripId)
     if (!result.success) {
+      console.log(result)
       res.status(404).json(result)
     } else {
       console.log("Participant added to trip")
@@ -251,7 +252,7 @@ exports.updateUser = async (req, res) => {
       res.status(404).json(result)
     } else {
       console.log("User updated")
-      res.status(200).json(result);
+      res.status(200).json({ success: result.success, userID: result.id, tripIDs: result.tripIds });
     }
   } catch (error) {
     console.error('Error updating user: ', error);

@@ -1,6 +1,8 @@
 package com.example.wetravel.views
 
 import android.annotation.SuppressLint
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -73,10 +76,11 @@ fun EnterCodeContent(
     innerpadding: PaddingValues,
     code: String,
     onCodeChange: (String) -> Unit,
+    userViewModel: UserViewModel,
     onJoinButtonClicked: () -> Unit,
-    onBackButtonClicked: () -> Unit
+    onBackButtonClicked: () -> Unit,
+    onError: (String) -> Unit
 
-    
 ) {
     Column(
         modifier = Modifier.padding(innerpadding),
@@ -99,7 +103,12 @@ fun EnterCodeContent(
                 textStyle = TextStyle(textAlign = TextAlign.Center)
             )
             Button(
-                onClick = { onJoinButtonClicked() },
+                onClick = {
+                    handleOnJoinButtonClicked(code, userViewModel, onError = onError, onSuccess = {
+                        onJoinButtonClicked()
+                    })
+
+                },
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondary
@@ -211,9 +220,11 @@ fun SessionCodeScreen(
                 val tripCode = (tripCodeResource as Resource.Success<String>).data
                 CreateCodeContent(innerpadding, tripCode, onContinueButtonClicked)
             }
+
             is Resource.Loading -> {
                 CircularProgressIndicator()
             }
+
             is Resource.Error -> {
                 val errorMessage = (tripCodeResource as Resource.Error).message
                 // Display the error message
@@ -226,12 +237,11 @@ fun SessionCodeScreen(
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun JoinSessionScreen(onJoinButtonClicked: () -> Unit, onBackButtonClicked: () -> Unit, userViewModel: UserViewModel
+fun JoinSessionScreen(
+    onJoinButtonClicked: () -> Unit, onBackButtonClicked: () -> Unit, userViewModel: UserViewModel
 ) {
     var code by remember { mutableStateOf("") }
-
-
-
+    val context = LocalContext.current
     Scaffold(topBar = {
         LogoTopAppBar()
     }) { innerpadding ->
@@ -239,10 +249,13 @@ fun JoinSessionScreen(onJoinButtonClicked: () -> Unit, onBackButtonClicked: () -
             innerpadding,
             code,
             { code = it },
-            // replace this with below later
-            /* { handleonJoinButtonClicked(code, userViewModel)},*/
-            onJoinButtonClicked,
-            onBackButtonClicked
+            userViewModel = userViewModel,
+            onJoinButtonClicked = onJoinButtonClicked,
+            onBackButtonClicked = onBackButtonClicked,
+            onError = { errorMessage ->
+                // Show error message and do not navigate to the next screen
+                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+            }
         )
     }
 }
@@ -250,9 +263,17 @@ fun JoinSessionScreen(onJoinButtonClicked: () -> Unit, onBackButtonClicked: () -
 
 // Button on-click functions
 
-//private fun handleonJoinButtonClicked(
-//    code: String,
-//    userViewModel: UserViewModel
-//) {
-//    userViewModel.loadTrip(code)
-//}
+private fun handleOnJoinButtonClicked(
+    code: String,
+    userViewModel: UserViewModel,
+    onError: (String) -> Unit,
+    onSuccess: () -> Unit
+) {
+    Log.d("Joining using trip code", code)
+    userViewModel.joinTrip(code, onError = { errorMessage ->
+        // Call onError callback with the error message
+        onError(errorMessage)
+    }, onSuccess = {
+        onSuccess()
+    })
+}
