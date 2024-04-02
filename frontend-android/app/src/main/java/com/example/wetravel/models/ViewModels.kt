@@ -101,10 +101,10 @@ class UserViewModel(
         viewModelScope.launch {
             try {
                 Log.d("get user", "Get User called")
-                val result = userRepository.getUser(userID)
-                Log.d("Get user Return Values: ", result.toString())
-                if (result.isSuccess) {
-                    val newUser = User(result.getOrNull()!!.userID, result.getOrNull()!!.tripIDs)
+                val result1 = userRepository.getUser(userID)
+                Log.d("Get user Return Values: ", result1.toString())
+                if (result1.isSuccess) {
+                    val newUser = User(result1.getOrNull()!!.userID, result1.getOrNull()!!.tripIDs)
                     _user.postValue(Resource.Success(newUser))
                 } else {
                     Log.d("create user", "Create User called")
