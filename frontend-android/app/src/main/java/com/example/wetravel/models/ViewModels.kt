@@ -90,7 +90,7 @@ class UserViewModel(
                     _tripCode.postValue(Resource.Error("The API call failed with an Error. Check the API Logs"))
                 }
             } catch (e: Exception) {
-                _tripCode.postValue(Resource.Error("An exception occurred while calling the createTrip API"))
+                _tripCode.postValue(Resource.Error("An exception occurred while calling the updateTrip API"))
             }
         }
     }
