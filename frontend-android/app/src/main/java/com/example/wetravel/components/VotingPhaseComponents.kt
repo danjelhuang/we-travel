@@ -184,15 +184,27 @@ fun VotingDestinationEntry(destination: Destination, userViewModel: UserViewMode
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy((-8).dp)
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.coin),
-                        contentDescription = "TravelCoin",
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clickable {
-                                userViewModel.castSampleVote(destination.placeId)
-                            }
-                    )
+                    Row(
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.coin),
+                            contentDescription = "TravelCoin",
+                            modifier = Modifier
+                                .size(40.dp)
+                                .clickable {
+                                    userViewModel.castSampleVote(destination.placeId)
+                                }
+                        )
+
+                        Text(
+                            text = destination.userVotes.toString(),
+                            style = TextStyle(
+                                fontWeight = FontWeight.Bold
+                            )
+                        )
+                    }
+
 
                     // -1 vote
                     FilledTonalButton(
