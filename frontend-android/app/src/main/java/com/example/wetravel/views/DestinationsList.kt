@@ -77,7 +77,7 @@ fun DestinationsList(
 
     Scaffold(
         topBar = { DestinationsListHeader(tripName = "Toronto", onSettingsButtonClicked) },
-        bottomBar = { DestinationsListFooter(onAddDestinationButtonClicked, onStartVotingButtonClicked) }
+        bottomBar = { DestinationsListFooter(onAddDestinationButtonClicked, onStartVotingButtonClicked, userViewModel) }
     ) { innerPadding ->
         DestinationsColumn(destinations = destinations, innerPadding = innerPadding)
     }

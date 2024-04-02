@@ -441,7 +441,8 @@ fun WeTravelApp(
             BackHandler(true) { navController.navigate(Screens.TripCreateOrJoin.name) }
             DestinationsVotingList(
                 onEndVotingButtonClicked = { navController.navigate(Screens.VotingResults.name) },
-                onSettingsButtonClicked = { navController.navigate(Screens.EditTrip.name) }
+                onSettingsButtonClicked = { navController.navigate(Screens.EditTrip.name) },
+                userViewModel = userViewModel
             )
         }
         composable(route = Screens.VotingResults.name) {

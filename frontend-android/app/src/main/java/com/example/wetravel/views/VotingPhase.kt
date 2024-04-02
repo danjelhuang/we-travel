@@ -14,6 +14,7 @@ import com.example.wetravel.components.DestinationsVotingListHeader
 import com.example.wetravel.components.VotingBottomCard
 import com.example.wetravel.components.VotingDestinationEntry
 import com.example.wetravel.models.Destination
+import com.example.wetravel.models.UserViewModel
 import java.util.UUID
 
 
@@ -39,7 +40,8 @@ fun DestinationsVotingColumn(destinations: List<Destination>, innerPadding: Padd
 @Composable
 fun DestinationsVotingList(
     onEndVotingButtonClicked: () -> Unit,
-    onSettingsButtonClicked: () -> Unit
+    onSettingsButtonClicked: () -> Unit,
+    userViewModel: UserViewModel
 ) {
     // Assuming we have a list of destinations to display
     val destinations = listOf(
@@ -61,7 +63,7 @@ fun DestinationsVotingList(
 
     Scaffold(
         topBar = { DestinationsVotingListHeader(tripName = "Toronto", onSettingsButtonClicked) },
-        bottomBar = { VotingBottomCard(onEndVotingButtonClicked) }
+        bottomBar = { VotingBottomCard(onEndVotingButtonClicked, userViewModel) }
     ) { innerPadding ->
         DestinationsVotingColumn(destinations = destinations, innerPadding = innerPadding)
     }

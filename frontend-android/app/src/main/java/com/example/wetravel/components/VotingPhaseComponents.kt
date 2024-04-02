@@ -23,6 +23,8 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,6 +37,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
 import com.example.wetravel.models.Destination
+import com.example.wetravel.models.Resource
+import com.example.wetravel.models.Trip
+import com.example.wetravel.models.TripUpdateRequest
+import com.example.wetravel.models.UserViewModel
 
 // The header of the page
 @Composable
@@ -247,7 +253,9 @@ fun VotingDestinationEntry(destination: Destination, coins: Int) {
 
 // Footer of the VotingPhase
 @Composable
-fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit) {
+fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit, userViewModel: UserViewModel) {
+    val currentTripIDResource by userViewModel.tripCode.observeAsState(initial = Resource.Loading)
+    val allTripsResource by userViewModel.allTrips.observeAsState(initial = Resource.Loading)
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -283,7 +291,11 @@ fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit) {
                 )
 
                 FilledTonalButton(
-                    onClick = { onEndVotingButtonClicked() },
+                    onClick =
+                    {
+                        handleEndVotingButtonClick(currentTripIDResource, allTripsResource, userViewModel)
+                        onEndVotingButtonClicked()
+                    },
                     shape = RoundedCornerShape(20),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFFE63946),
@@ -376,4 +388,21 @@ fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit) {
             }
         }
     }
+}
+
+private fun handleEndVotingButtonClick(currentTripIDResource: Resource<String>, allTripsResource: Resource<Map<String, Trip>>, userViewModel: UserViewModel) {
+    var updatedTrip = TripUpdateRequest()
+    if (currentTripIDResource is Resource.Success && allTripsResource is Resource.Success) {
+        val currentTripID = currentTripIDResource.data
+        val currentTrip = allTripsResource.data[currentTripID]
+        updatedTrip = TripUpdateRequest(
+            tripID = currentTrip!!.tripID,
+            name = currentTrip.name,
+            city = currentTrip.city,
+            finalDestinationCount = currentTrip.finalDestinationCount,
+            votesPerPerson = currentTrip.votesPerPerson,
+            phase = "Ended"
+        )
+    }
+    userViewModel.updateTrip(updatedTrip)
 }

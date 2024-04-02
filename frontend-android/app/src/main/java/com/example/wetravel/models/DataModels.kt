@@ -80,6 +80,7 @@ data class TripUpdateRequest(
     val city: String = "",
     val finalDestinationCount: Int = 0,
     val votesPerPerson: Int = 0,
+    val phase: String = "Adding"
 )
 
 
