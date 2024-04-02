@@ -397,7 +397,7 @@ class TripService {
   async updateUser(userID, tripID) {
     try {
       const docRef = db.collection('users').doc(userID);
-      const user = await docRef.get();
+      let user = await docRef.get();
       if (!user.exists) {
         console.log('User does not exist');
         return {
@@ -406,17 +406,25 @@ class TripService {
         };
       }
 
-      let tripIDs = user.data().tripIDs || [];
+      let tripIDs = user.data().tripIds || [];
 
       tripIDs.push(tripID);
+      console.log(tripIDs)
       await docRef.update({
         tripIds: tripIDs
       });
-      console.log("TripID added");
+      console.log("TripID added to User");
+      user = await docRef.get();
+      console.log({
+        success: true,
+        id: user.id,
+        ...user.data()
+      })
       return {
         success: true,
-        message: "Trip added to user"
-      }
+        id: user.id,
+        ...user.data()
+      };
     } catch (error) {
       console.error('Error getting user:', error);
       throw new Error('Failed to get user');

@@ -21,6 +21,9 @@ interface ApiService {
     @POST("users")
     suspend fun createUser(@Body userRequestBody: UserCreationRequest): Response<User>
 
+    @GET("trips/{id}")
+    suspend fun getTrip(@Path("id") tripID: String): Response<Trip>
+
     @GET("users/{id}")
     suspend fun getUser(@Path("id") userID: String): Response<User>
 
@@ -29,6 +32,9 @@ interface ApiService {
 
     @GET("userTrips/{id}")
     suspend fun getAllTrips(@Path("id") userID: String): Response<List<Trip>>
+
+    @POST("add-participant-to-trip/{id}")
+    suspend fun addParticipantToTrip(@Path("id") tripID: String, @Body userRequestBody: UserCreationRequest): Response<Unit>
 
 }
 
@@ -58,6 +64,37 @@ class TripRepository (private val apiService: ApiService) {
             } else {
                 // Return error
                 Result.failure(RuntimeException("Get All Trip API call failed"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getTrip(tripID: String): Result<Trip> {
+        return try {
+            val response = apiService.getTrip(tripID = tripID)
+            Log.d("Response from get trips API", response.toString())
+            if (response.isSuccessful) {
+                Result.success(response.body()!!)
+            } else {
+                // Return error
+                Result.failure(RuntimeException("Get Trip API call failed"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun addParticipant(tripID: String, userID: String): Result<Unit> {
+        return try {
+            val requestBody = UserCreationRequest(userID)
+            val response = apiService.addParticipantToTrip(tripID = tripID, userRequestBody = requestBody)
+            Log.d("addParticipant", response.toString())
+            if (response.isSuccessful) {
+                Result.success(response.body()!!)
+            } else {
+                // Return error
+                Result.failure(RuntimeException("AddParticipant to Trip API call failed"))
             }
         } catch (e: Exception) {
             Result.failure(e)
