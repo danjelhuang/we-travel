@@ -189,7 +189,7 @@ private fun handleButtonClick(
         finalDestinationCount = finalDestinationCount.toInt(),
         votesPerPerson = finalDestinationCount.toInt(),
         adminUserID = user,
-        phase = "add"
+        phase = "Adding"
     )
     userViewModel.createTrip(tripData)
 }
