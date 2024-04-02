@@ -19,7 +19,7 @@ sealed class Resource<out T> {
 }
 
 class UserViewModel(
-    private val tripRepository: TripRepository, 
+    private val tripRepository: TripRepository,
     private val userRepository: UserRepository,
     private val db: FirebaseFirestore
 
@@ -32,9 +32,7 @@ class UserViewModel(
 
     private val _allTrips = MutableLiveData<Resource<Map<String, Trip>>>()
     val allTrips: LiveData<Resource<Map<String, Trip>>> = _allTrips
-
-    /* TODO: More Fields here for UserViewModel...*/
-
+    
     /////////////////////////////////////////////////
     // listener related vals
 
@@ -45,7 +43,6 @@ class UserViewModel(
     val tripCity: LiveData<String> = _tripCity
 
     private var tripListener: ListenerRegistration? = null
-
 
 
     ////////////////////////////////////////////
@@ -228,7 +225,6 @@ class UserViewModel(
                     } catch (e: Exception) {
                         _user.postValue(Resource.Error("An exception occurred while trying to join the trip."))
                     }
-
                 }
 
                 else -> {
@@ -245,7 +241,10 @@ class UserViewModel(
                     try {
                         Log.d("joinTrip", "Adding current participant to trip users")
                         val addParticipantResult =
-                            tripRepository.addParticipant(tripID = tripID, userID = currentUser.data.userID)
+                            tripRepository.addParticipant(
+                                tripID = tripID,
+                                userID = currentUser.data.userID
+                            )
 
                         if (!addParticipantResult.isSuccess) {
                             Log.d("joinTrip", "Add Participant Failed, userID not added to trip")
@@ -265,7 +264,7 @@ class UserViewModel(
 
     }
 
-    fun setTripId(newTripId: String) {
+    private fun setTripId(newTripId: String) {
         if (_tripId.value != newTripId) {
             _tripId.value = newTripId
             tripListener?.remove() // Remove the old listener
@@ -273,47 +272,43 @@ class UserViewModel(
         }
     }
 
-    fun listenToTrip(tripId: String) {
+    private fun listenToTrip(tripId: String) {
         tripListener = db.collection("trips").document(tripId)
             .addSnapshotListener { snapshot, e ->
-            if (e != null) {
-                Log.d("String","did not work lol")
-                return@addSnapshotListener
-            }
-
-            if (snapshot != null && snapshot.exists()) {
-                _tripCity.postValue(snapshot.getString("city"))
-                val currentTrips = _allTrips.value
-                Log.d("listenToTrip", "listen")
-
-                if (currentTrips is Resource.Success) {
-                    val updatedMap = currentTrips.data.toMutableMap()
-                    // Add the new trip to the map
-                    val newTrip = updatedMap[tripId]?.copy(city = snapshot.getString("city")!!)
-                    updatedMap[tripId] = newTrip!!
-                    // Post the updated map
-                    _allTrips.postValue(Resource.Success(updatedMap))
-                    Log.d("joinTrip", "Trip Get successful")
-                } else {
-                    Log.d(
-                        "joinTrip",
-                        "Cannot update trips: Current trips state is not Success."
-                    )
+                if (e != null) {
+                    Log.d("String", "did not work lol")
+                    return@addSnapshotListener
                 }
-                _allTrips
-                // make new trip
-                // populate obj w snapshot values
-                // replace all trips map by trip id
 
+                if (snapshot != null && snapshot.exists()) {
+                    _tripCity.postValue(snapshot.getString("city"))
+                    val currentTrips = _allTrips.value
+                    Log.d("listenToTrip", "listen")
+
+                    if (currentTrips is Resource.Success) {
+                        val updatedMap = currentTrips.data.toMutableMap()
+                        // Add the new trip to the map
+                        val newTrip = updatedMap[tripId]?.copy(city = snapshot.getString("city")!!)
+                        updatedMap[tripId] = newTrip!!
+                        // Post the updated map
+                        _allTrips.postValue(Resource.Success(updatedMap))
+                        Log.d("joinTrip", "Trip Get successful")
+                    } else {
+                        Log.d(
+                            "joinTrip",
+                            "Cannot update trips: Current trips state is not Success."
+                        )
+
+
+                    }
+                }
             }
-        }
     }
 
     override fun onCleared() {
         super.onCleared()
         tripListener?.remove()
     }
-
 
 
 }
