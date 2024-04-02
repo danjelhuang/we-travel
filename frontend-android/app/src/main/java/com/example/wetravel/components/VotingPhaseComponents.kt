@@ -1,5 +1,6 @@
 package com.example.wetravel.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -27,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -35,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
 import com.example.wetravel.models.Destination
+import com.example.wetravel.models.UserViewModel
 
 // The header of the page
 @Composable
@@ -118,7 +122,7 @@ fun DestinationsVotingListHeader(tripName: String, onSettingsButtonClicked: () -
 
 // The special Voting Destination Entry
 @Composable
-fun VotingDestinationEntry(destination: Destination, coins: Int) {
+fun VotingDestinationEntry(destination: Destination, userViewModel: UserViewModel) {
     // Could use Card instead if we don't want the elevation
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
@@ -130,14 +134,16 @@ fun VotingDestinationEntry(destination: Destination, coins: Int) {
         shape = RoundedCornerShape(15.dp),
         modifier = Modifier
             .fillMaxWidth()
+            .defaultMinSize(minHeight = 110.dp)
 
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
             modifier = Modifier
                 .padding(10.dp)
                 .fillMaxWidth()
         ) {
+            // Info column
             Column {
                 Text(
                     text = destination.name,
@@ -167,7 +173,7 @@ fun VotingDestinationEntry(destination: Destination, coins: Int) {
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = " $coins",
+                        text = " ${destination.totalVotes}",
                         fontSize = 14.sp
                     )
                 }
@@ -176,60 +182,93 @@ fun VotingDestinationEntry(destination: Destination, coins: Int) {
 
             Spacer(modifier = Modifier.weight(1f))
 
-            if (destination.voted) {
+            // Button Columns
+
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy((-8).dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.coin),
-                        contentDescription = "TravelCoin",
-                        modifier = Modifier.size(40.dp)
-                    )
-                    FilledTonalButton(
-                        onClick = { /*TODO*/ },
-                        shape = RoundedCornerShape(20),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFE63946),
-                            contentColor = Color.White
-                        ),
-                        modifier = Modifier
-                            .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
-                        contentPadding = PaddingValues(horizontal = 20.dp, vertical = 3.dp),
-                    ) {
-                        Text(
-                            text = "Remove",
-                            style = TextStyle(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 12.sp,
-                            )
-                        )
-                    }
-                }
-            } else {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
                     modifier = Modifier
-                        .padding(horizontal = 20.dp)
+                        .fillMaxHeight()
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.vote_icon),
-                        contentDescription = "Vote with TravelCoin",
-                        modifier = Modifier.size(40.dp)
-                    )
-                    Row {
-                        Text(
-                            text = "Vote",
-                            style = TextStyle(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 12.sp,
+                    // TravelCoin and Count
+                    if (destination.userVotes > 0) {
+                        Row(
+                            verticalAlignment = Alignment.Bottom
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.coin),
+                                contentDescription = "TravelCoin",
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .clickable {
+                                        userViewModel.castSampleVote(destination.placeId)
+                                    }
                             )
-                        )
-                        Spacer(modifier = Modifier.width(2.dp))
+                            Text(
+                                text = destination.userVotes.toString(),
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                        }
+
+                        // Decrease vote button
+                        FilledTonalButton(
+                            onClick = {
+                                userViewModel.removeSampleVote(destination.placeId)
+                            },
+                            shape = RoundedCornerShape(20),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFFE63946),
+                                contentColor = Color.White
+                            ),
+                            modifier = Modifier
+                                .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
+                            contentPadding = PaddingValues(horizontal = 20.dp, vertical = 3.dp),
+                        ) {
+                            Text(
+                                text = "Decrease",
+                                style = TextStyle(
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                )
+                            )
+                        }
+                    } else {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier
+                                .padding(horizontal = 20.dp)
+                                .clickable {
+                                    userViewModel.castSampleVote(destination.placeId)
+                                    Log.d("Changed name", userViewModel.sampleTrip.value.toString())
+                                }
+
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.vote_icon),
+                                contentDescription = "Vote with TravelCoin",
+                                modifier = Modifier.size(50.dp)
+                            )
+                            Row {
+                                Text(
+                                    text = "Vote",
+                                    style = TextStyle(
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 12.sp,
+                                    )
+                                )
+                                Spacer(modifier = Modifier.width(2.dp))
+                            }
+
+                        }
                     }
 
                 }
-            }
+
+
+
 
             Spacer(modifier = Modifier.width(10.dp))
 
@@ -237,9 +276,11 @@ fun VotingDestinationEntry(destination: Destination, coins: Int) {
             Image(
                 painter = painterResource(id = destination.imageResId),
                 contentDescription = "${destination.name} image",
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(65.dp)
                     .clip(RoundedCornerShape(8.dp))
+
             )
         }
     }
@@ -247,7 +288,8 @@ fun VotingDestinationEntry(destination: Destination, coins: Int) {
 
 // Footer of the VotingPhase
 @Composable
-fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit) {
+fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit, maxVotes: Int, userVotesRemaining:Int?) {
+    val formattedUserVotes = userVotesRemaining ?: 0
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -264,7 +306,7 @@ fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit) {
             // Voting countdown
             Column {
                 Text(
-                    text = "Voting begins in...",
+                    text = "Cast your votes!",
                     style = TextStyle(
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
@@ -272,15 +314,8 @@ fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit) {
                         color = Color(0xFFFFFFFF)
                     )
                 )
-                Text(
-                    text = "19:04:32",
-                    style = TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 40.sp,
-                        textAlign = TextAlign.Center,
-                        color = Color(0xFFE63946)
-                    )
-                )
+
+                Spacer(modifier = Modifier.height(10.dp))
 
                 FilledTonalButton(
                     onClick = { onEndVotingButtonClicked() },
@@ -300,7 +335,7 @@ fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit) {
                 }
             }
 
-            Spacer(modifier = Modifier.width(30.dp))
+            Spacer(modifier = Modifier.width(50.dp))
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -314,14 +349,14 @@ fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit) {
                         contentDescription = "User icon",
                         modifier = Modifier.size(64.dp)
                     )
-                    Spacer(modifier = Modifier.width(5.dp))
+
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy((-5).dp)
                     ) {
                         Text(
-                            text = "3/5",
+                            text = "${formattedUserVotes}/${maxVotes}",
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 36.sp,
@@ -329,6 +364,7 @@ fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit) {
                                 color = Color(0xFFFFE500)
                             )
                         )
+                        Spacer(modifier = Modifier.height(10.dp))
                         Text(
                             text = "travelCoins\nremaining",
                             style = TextStyle(
@@ -339,40 +375,6 @@ fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit) {
                     }
                 }
                 Spacer(modifier = Modifier.height(10.dp))
-
-                // Finished voters
-                Row(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.profile2users),
-                        contentDescription = "User icon",
-                        modifier = Modifier.size(60.dp)
-                    )
-                    Spacer(modifier = Modifier.width(5.dp))
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy((-5).dp)
-                    ) {
-                        Text(
-                            text = "2/5",
-                            style = TextStyle(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 36.sp,
-                                textAlign = TextAlign.Center,
-                                color = Color(0xFF1D3557)
-                            )
-                        )
-                        Text(
-                            text = "finished voting",
-                            style = TextStyle(
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center,
-                            )
-                        )
-                    }
-                }
             }
         }
     }

@@ -68,6 +68,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
 
+
 enum class Screens() {
     Login,
     CreateAccount,
@@ -441,7 +442,8 @@ fun WeTravelApp(
             BackHandler(true) { navController.navigate(Screens.TripCreateOrJoin.name) }
             DestinationsVotingList(
                 onEndVotingButtonClicked = { navController.navigate(Screens.VotingResults.name) },
-                onSettingsButtonClicked = { navController.navigate(Screens.EditTrip.name) }
+                onSettingsButtonClicked = { navController.navigate(Screens.EditTrip.name) },
+                userViewModel = userViewModel
             )
         }
         composable(route = Screens.VotingResults.name) {

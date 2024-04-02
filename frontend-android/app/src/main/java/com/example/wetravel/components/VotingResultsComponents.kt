@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -106,10 +107,11 @@ fun DestinationEntry(destination: Destination) {
         shape = RoundedCornerShape(15.dp),
         modifier = Modifier
             .fillMaxWidth()
+            .defaultMinSize(minHeight = 110.dp)
 
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
             modifier = Modifier
                 .padding(10.dp)
                 .fillMaxWidth()
@@ -205,7 +207,7 @@ fun VotingResultItineraryListComponent(index: Int, votingListItem: Destination) 
                 )
                 Spacer(modifier = Modifier.width(2.dp))
                 Text(
-                    text = "${votingListItem.numOfVotes}",
+                    text = "${votingListItem.totalVotes}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 8.sp,
                     color = Color.Black,
