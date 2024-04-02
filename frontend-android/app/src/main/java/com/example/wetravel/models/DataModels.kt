@@ -55,6 +55,7 @@ data class Trip(
 )
 
 data class TripUpdateRequest(
+    val id: String = "",
     val name: String = "",
     val city: String = "",
     val finalDestinationCount: Int = 0,
