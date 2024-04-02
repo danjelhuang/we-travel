@@ -226,7 +226,7 @@ private fun handleButtonClick(
         if (currentTripID is Resource.Success) {
             val tripID = currentTripID.data
             val tripData = TripUpdateRequest(
-                id = tripID,
+                tripID = tripID,
                 name = tripName,
                 city = destinationCity,
                 finalDestinationCount = finalDestinationCount.toInt(),
