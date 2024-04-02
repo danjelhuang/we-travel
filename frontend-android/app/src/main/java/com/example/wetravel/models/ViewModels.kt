@@ -74,19 +74,14 @@ class UserViewModel(
 
         viewModelScope.launch {
             try {
-                Log.d("update trip", "Update Trip called")
-                Log.d("tripcode", _tripCode.toString())
-                Log.d("tripcode value", _tripCode.value.toString())
-                val currentTripID = Resource.Success(_tripCode.value).data.toString()
-                Log.d("resource cast", currentTripID)
-                val result = tripRepository.updateTrip(currentTripID, trip)
+                val result = tripRepository.updateTrip(trip.id, trip)
                 Log.d("result", result.toString())
                 if (result.isSuccess) {
                     val newTrip = result.getOrNull()!!
                     val currentTrips = _allTrips.value
                     if (currentTrips is Resource.Success) {
                         val updatedTrips = currentTrips.data.toMutableMap()
-                        updatedTrips[currentTripID] = newTrip
+                        updatedTrips[trip.id] = newTrip
                         _allTrips.postValue(Resource.Success(updatedTrips))
                     } else {
                         _allTrips.postValue(Resource.Error("Failed to add new trip to all trips"))

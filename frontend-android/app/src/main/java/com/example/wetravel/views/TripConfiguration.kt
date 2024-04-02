@@ -50,7 +50,6 @@ fun TripConfigurationForm(
     val tripName = remember { mutableStateOf(TextFieldValue()) }
     val destinationCity = remember { mutableStateOf(TextFieldValue()) }
     val finalDestinationCount = remember { mutableStateOf(TextFieldValue()) }
-    val numberOfVotesPerPerson = remember { mutableStateOf(TextFieldValue()) }
     val buttonText = if (title == "create") "create" else "save changes"
     val dmSansFamily = FontFamily(
         Font(
@@ -197,12 +196,17 @@ private fun handleButtonClick(
         )
         userViewModel.createTrip(tripData)
     } else {
-        val tripData = TripUpdateRequest(
-            name = tripName,
-            city = destinationCity,
-            finalDestinationCount = finalDestinationCount.toInt(),
-            votesPerPerson = finalDestinationCount.toInt()
-        )
-        userViewModel.updateTrip(tripData)
+        val currentTripID = userViewModel.tripCode.value
+        if (currentTripID is Resource.Success) {
+            val tripID = currentTripID.data
+            val tripData = TripUpdateRequest(
+                id = tripID,
+                name = tripName,
+                city = destinationCity,
+                finalDestinationCount = finalDestinationCount.toInt(),
+                votesPerPerson = finalDestinationCount.toInt()
+            )
+            userViewModel.updateTrip(tripData)
+        }
     }
 }
