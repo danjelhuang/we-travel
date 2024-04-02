@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
 import com.example.wetravel.models.Resource
 import com.example.wetravel.models.Trip
+import com.example.wetravel.models.User
 import com.example.wetravel.models.UserViewModel
 import com.example.wetravel.views.CreateCodeContent
 
@@ -43,7 +44,7 @@ fun TripConfigurationForm(
     onButtonClicked: () -> Unit,
     userViewModel: UserViewModel
 ) {
-    val currentUserResource by userViewModel.userID.observeAsState(initial = Resource.Loading)
+    val currentUserResource by userViewModel.user.observeAsState(initial = Resource.Loading)
     // TODO: Convert all of these fields to the values from ViewModel and observe them for state changes
     val tripName = remember { mutableStateOf(TextFieldValue()) }
     val destinationCity = remember { mutableStateOf(TextFieldValue()) }
@@ -101,7 +102,7 @@ fun TripConfigurationForm(
 
         when (currentUserResource) {
             is Resource.Success -> {
-                val currentUser = (currentUserResource as Resource.Success<String>).data
+                val currentUser = (currentUserResource as Resource.Success<User>).data.userID
                 Button(
                     onClick = {
                         handleButtonClick(
@@ -186,7 +187,9 @@ private fun handleButtonClick(
         name = tripName,
         city = destinationCity,
         finalDestinationCount = finalDestinationCount.toInt(),
-        adminUserID = user
+        votesPerPerson = finalDestinationCount.toInt(),
+        adminUserID = user,
+        phase = "add"
     )
     userViewModel.createTrip(tripData)
 }

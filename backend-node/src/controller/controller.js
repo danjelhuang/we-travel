@@ -32,6 +32,22 @@ exports.loadTrip = async (req, res) => {
   }
 };
 
+exports.getAllTrips = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const trip = await tripService.getAllTrips(userId);
+    if (!trip.success) {
+      res.status(404).json(trip)
+    } else {
+      console.log("All user trips fetched successfully");
+      res.status(200).json(trip.data);
+    }
+  } catch (error) {
+    console.error('Error fetching all user trips:', error);
+    res.status(500).json({ error: 'Failed to fetch user trips' });
+  }
+};
+
 exports.addDestination = async (req, res) => {
 
   try {
@@ -225,3 +241,20 @@ exports.getUser = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch user' });
   }
 };
+
+exports.updateUser = async (req, res) => {
+  try {
+    const userID = req.params.id;
+    const tripID = req.body.tripID;
+    const result = await tripService.updateUser(userID, tripID)
+    if (!result.success) {
+      res.status(404).json(result)
+    } else {
+      console.log("User updated")
+      res.status(200).json(result);
+    }
+  } catch (error) {
+    console.error('Error updating user: ', error);
+    res.status(500).json({ error: 'Failed to update the user' });
+  }
+}

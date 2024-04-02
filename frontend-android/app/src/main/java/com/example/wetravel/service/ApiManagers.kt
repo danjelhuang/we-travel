@@ -2,12 +2,15 @@ package com.example.wetravel.service
 
 import android.util.Log
 import com.example.wetravel.models.AddDestinationRequest
+import com.example.wetravel.models.Destination
 import com.example.wetravel.models.Trip
 import com.example.wetravel.models.User
 import com.example.wetravel.models.UserCreationRequest
+import com.example.wetravel.models.UserUpdateRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
@@ -24,6 +27,12 @@ interface ApiService {
 
     @GET("users/{id}")
     suspend fun getUser(@Path("id") userID: String): Response<User>
+
+    @PATCH("users/{id}")
+    suspend fun updateUser(@Path("id") userID: String, @Body userRequestBody: UserUpdateRequest): Response<User>
+
+    @GET("userTrips/{id}")
+    suspend fun getAllTrips(@Path("id") userID: String): Response<List<Trip>>
 
 }
 
@@ -61,6 +70,21 @@ class TripRepository (private val apiService: ApiService) {
         }
     }
 
+    suspend fun getAllTrips(userID: String): Result<List<Trip>> {
+        return try {
+            val response = apiService.getAllTrips(userID = userID)
+            Log.d("Response from get all trips API", response.toString())
+            if (response.isSuccessful) {
+                Result.success(response.body()!!)
+            } else {
+                // Return error
+                Result.failure(RuntimeException("Get All Trip API call failed"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     // TODO: more functions related Trip specific stuff
 }
 
@@ -84,6 +108,22 @@ class UserRepository (private val apiService: ApiService) {
     suspend fun getUser(userID: String): Result<User> {
         return try {
             val response = apiService.getUser(userID)
+            Log.d("Response from API", response.toString())
+            if (response.isSuccessful) {
+                Result.success(response.body()!!)
+            } else {
+                // Return error
+                Result.failure(RuntimeException("Get User API call failed"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun updateUser(userID: String, tripID: String): Result<User> {
+        return try {
+            val requestBody = UserUpdateRequest(tripID)
+            val response = apiService.updateUser(userID, requestBody)
             Log.d("Response from API", response.toString())
             if (response.isSuccessful) {
                 Result.success(response.body()!!)

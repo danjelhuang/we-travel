@@ -37,6 +37,10 @@ data class UserCreationRequest(
     val userId: String
 )
 
+data class UserUpdateRequest(
+    val tripID: String
+)
+
 data class TripUsers(
     val userID: String = "",
     val votes: Int = 0,
@@ -51,7 +55,7 @@ data class Trip(
     val adminUserID: String = "",
     val votesPerPerson: Int = 0,
     val phase: String = "",
-    val destinationsList: List<Destination> = emptyList()
+    val destinationsList: List<Destination> = emptyList(),
 )
 
 

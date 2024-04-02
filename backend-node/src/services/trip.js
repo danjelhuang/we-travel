@@ -52,6 +52,44 @@ class TripService {
     }
   }
 
+  async getAllTrips(userId) {
+    try {
+      // Step 1: Retrieve the user document by userId
+      const userDoc = await db.collection('users').doc(userId).get();
+      
+      if (!userDoc.exists) {
+        console.log('No such user!');
+        return {success: false, data: []};
+      }
+      
+      const userData = userDoc.data();
+      const tripIds = userData.tripIds || [];
+      
+      // Step 2: Fetch trips using tripIds
+      const tripsPromises = tripIds.map(tripId => db.collection('trips').doc(tripId).get());
+      const tripsDocs = await Promise.all(tripsPromises);
+      
+      // Step 3: Extract the trip data from documents
+      const tripsData = tripsDocs.map(doc => {
+        if (!doc.exists) {
+          console.log('A trip document does not exist');
+          return null;
+        }
+        return { ...doc.data() };
+      }).filter(trip => trip !== null); // Filter out any null values (non-existing trip documents)
+      console.log(tripsData)
+      if (tripsData) {
+        return {success: true, data: tripsData}
+      } else {
+        return {success: false, data: []}
+      }
+
+    } catch (error) {
+      console.error("Error fetching user trips:", error);
+      throw error; // Rethrow or handle as needed
+    }
+  }
+
   async addDestination(tripId, newDestinationID) {
     try {
       const docRef = db.collection("trips").doc(tripId);
@@ -350,6 +388,35 @@ class TripService {
         id: doc.id,
         ...doc.data()
       };
+    } catch (error) {
+      console.error('Error getting user:', error);
+      throw new Error('Failed to get user');
+    }
+  }
+
+  async updateUser(userID, tripID) {
+    try {
+      const docRef = db.collection('users').doc(userID);
+      const user = await docRef.get();
+      if (!user.exists) {
+        console.log('User does not exist');
+        return {
+          success: false,
+          message: 'User does not exist'
+        };
+      }
+
+      let tripIDs = user.data().tripIDs || [];
+
+      tripIDs.push(tripID);
+      await docRef.update({
+        tripIds: tripIDs
+      });
+      console.log("TripID added");
+      return {
+        success: true,
+        message: "Trip added to user"
+      }
     } catch (error) {
       console.error('Error getting user:', error);
       throw new Error('Failed to get user');
