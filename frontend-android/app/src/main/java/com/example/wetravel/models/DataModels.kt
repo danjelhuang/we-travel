@@ -33,6 +33,10 @@ data class UserCreationRequest(
     val userId: String
 )
 
+data class UserUpdateRequest(
+    val tripID: String
+)
+
 data class TripUsers(
     val userID: String = "",
     val votes: Int = 0,

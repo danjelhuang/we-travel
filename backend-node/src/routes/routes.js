@@ -10,6 +10,9 @@ router.post('/users/', tripController.createUser);
 // get a user by id
 router.get('/users/:id', tripController.getUser);
 
+// update a user by id
+router.patch('/users/:id', tripController.updateUser);
+
 // #endregion
 
 // #region Trip Routes

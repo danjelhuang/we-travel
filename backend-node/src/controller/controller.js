@@ -241,3 +241,20 @@ exports.getUser = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch user' });
   }
 };
+
+exports.updateUser = async (req, res) => {
+  try {
+    const userID = req.params.id;
+    const tripID = req.body.tripID;
+    const result = await tripService.updateUser(userID, tripID)
+    if (!result.success) {
+      res.status(404).json(result)
+    } else {
+      console.log("User updated")
+      res.status(200).json(result);
+    }
+  } catch (error) {
+    console.error('Error updating user: ', error);
+    res.status(500).json({ error: 'Failed to update the user' });
+  }
+}
