@@ -80,6 +80,27 @@ class UserViewModel(
         }
     }
 
+
+    fun addDestinations(tripID: String, placeID: String)
+    {
+        viewModelScope.launch {
+            try {
+                Log.d("add destination", "Add Destination called")
+                val result = tripRepository.addDestination(tripID, placeID)
+                Log.d("Create trip Return Values: ", result.toString())
+                if (result.isSuccess) {
+                    // Load trip Data into tripData state var
+                    _tripCode.postValue(Resource.Success(result.getOrNull()!!.tripID)) // Shouldn't be null
+                } else {
+                    _tripCode.postValue(Resource.Error("The API call failed with an Error. Check the API Logs"))
+                }
+            } catch (e: Exception) {
+                _tripCode.postValue(Resource.Error("An exception occurred while calling the createTrip API"))
+            }
+        }
+
+    }
+
 //    fun loadTrip(tripId: String) {
 //
 //        viewModelScope.launch {

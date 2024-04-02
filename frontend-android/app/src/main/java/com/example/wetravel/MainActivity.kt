@@ -222,7 +222,9 @@ fun WeTravelApp(
         }
         composable(route = Screens.AddDestination.name) {
             AddDestinations(
-                onAddDestinationButtonClicked = { navController.navigate(Screens.DestinationsListScreen.name) }
+                onAddDestinationButtonClicked = { navController.navigate(Screens.DestinationsListScreen.name) },
+                onLeaveButtonClicked = { navController.navigate(Screens.DestinationsListScreen.name)},
+                userViewModel = userViewModel
             )
         }
         composable(route = Screens.VotingScreen.name) {

@@ -24,6 +24,10 @@ enum class VotingPhase {
     RESULTS
 }
 
+data class AddDestinationRequest(
+    val placeID: String
+)
+
 data class User(
     val userID: String = "",
     val tripIDs: List<String> = emptyList(),

@@ -1,9 +1,12 @@
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -15,24 +18,31 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -47,6 +57,7 @@ import com.google.android.libraries.places.api.model.AutocompletePrediction
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import kotlinx.coroutines.launch
+import com.example.wetravel.models.UserViewModel
 
 val dmSansFamily = FontFamily(
     Font(
@@ -54,9 +65,14 @@ val dmSansFamily = FontFamily(
     )
 )
 
+//TODO: REMOVE THIS tempTripID - just for testing
+val tempTripID = "1UM8I";
+
 @Composable
 fun AddDestinations(
-    onAddDestinationButtonClicked: () -> Unit
+    onAddDestinationButtonClicked: () -> Unit,
+    onLeaveButtonClicked: () -> Unit,
+    userViewModel: UserViewModel
 ) {
     val context = LocalContext.current
     PlacesClientManager.initialize(context)
@@ -86,24 +102,57 @@ fun AddDestinations(
         mutableStateOf<List<AutocompletePrediction>>(emptyList())
     }
 
-    var selectedPrediction by remember {
-        mutableStateOf<AutocompletePrediction?>(null)
+    var selectedPredictionId by remember {
+        mutableStateOf("")
     }
 
     Column(modifier = Modifier
-        .padding(30.dp)
+        .padding(
+            horizontal = 20.dp,
+            vertical = 10.dp
+        )
         .fillMaxWidth()
         .clickable(interactionSource = interactionSource, indication = null, onClick = {
             expanded = false
         })
     ) {
 
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Image(
+                painter = painterResource(id = R.drawable.logo_we),
+                contentDescription = "WeTravelLogo",
+                modifier = Modifier.size(100.dp)
+            )
+
+            Spacer(
+                modifier = Modifier
+                    .size(20.dp)
+            )
+
+            Row(
+                Modifier.clickable{onLeaveButtonClicked()} ,
+            ) {
+                Icon(
+                    Icons.Rounded.Close,
+                    contentDescription = "User icon",
+                    modifier = Modifier.size(32.dp),
+
+                    )
+            }
+        }
+        Spacer(modifier = Modifier.height(15.dp))
 
         Text(modifier = Modifier.padding(start = 3.dp, bottom = 2.dp),
             text = "Add Destinations",
             fontFamily = dmSansFamily,
-            fontSize = 16.sp,
+            fontSize = 28.sp,
             onTextLayout = {})
+        Spacer(modifier = Modifier.height(5.dp))
 
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(modifier = Modifier.fillMaxWidth()) {
@@ -123,7 +172,6 @@ fun AddDestinations(
                     value = category, onValueChange = {
                         category = it
                         expanded = false
-                        println("value changed")
                         if (it.isNotEmpty()) {
                             scope.launch {
                                 fetchPredictions(placesClient, it) { predictionsList ->
@@ -178,7 +226,7 @@ fun AddDestinations(
                                     prediction
                                         .getSecondaryText(null)
                                         .toString()
-                                    selectedPrediction = prediction
+                                    selectedPredictionId = prediction.placeId
                                     expanded = false
                                     predictions = emptyList()
                                 }
@@ -187,16 +235,22 @@ fun AddDestinations(
                 }
             }
         }
+
+        Spacer(modifier = Modifier.height(10.dp))
         Button(
             onClick = {
-                onAddDestinationButtonClicked()
-                println(selectedPrediction)
                 // TODO: SEND REQUEST TO BACKEND WITH TRIP ID AND selectedPrediction
+                if (selectedPredictionId !== "") {
+                    userViewModel.addDestinations(tempTripID, selectedPredictionId)
+                    onAddDestinationButtonClicked()
+                    selectedPredictionId = ""
+                }
             },
             shape = RoundedCornerShape(8.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color(red = 69, green = 123, blue = 157)
             ),
+            enabled = selectedPredictionId !== ""
         ) {
             Text(
                 "Add", fontFamily = dmSansFamily
@@ -204,7 +258,6 @@ fun AddDestinations(
         }
     }
 }
-
 
 fun fetchPredictions(
     placesClient: com.google.android.libraries.places.api.net.PlacesClient,
@@ -221,4 +274,3 @@ fun fetchPredictions(
         println("failed")
     }
 }
-
