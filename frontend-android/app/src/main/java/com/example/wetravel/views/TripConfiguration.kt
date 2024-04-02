@@ -45,6 +45,7 @@ fun TripConfigurationForm(
     userViewModel: UserViewModel
 ) {
     val currentUserResource by userViewModel.user.observeAsState(initial = Resource.Loading)
+    val currentTripID by userViewModel.tripCode.observeAsState(initial = Resource.Loading)
     // TODO: Convert all of these fields to the values from ViewModel and observe them for state changes
     val tripName = remember { mutableStateOf(TextFieldValue()) }
     val destinationCity = remember { mutableStateOf(TextFieldValue()) }
@@ -96,8 +97,34 @@ fun TripConfigurationForm(
             onValueChange = { finalDestinationCount.value = it },
             dmSansFamily
         )
-        Spacer(modifier = Modifier.height(40.dp))
-        Spacer(modifier = Modifier.height(16.dp))
+
+        if (title == "edit") {
+            when (currentTripID) {
+                is Resource.Success -> {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    val currentTrip = (currentTripID as Resource.Success<*>).data
+                    Text(
+                        text = "trip code: " + currentTrip.toString(),
+                        fontFamily = dmSansFamily,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                    )
+                }
+
+                is Resource.Loading -> {
+                    CircularProgressIndicator()
+                }
+
+                is Resource.Error -> {
+                    val errorMessage = (currentUserResource as Resource.Error).message
+                    // Display the error message
+                    Text(text = "Error: $errorMessage")
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(56.dp))
 
         when (currentUserResource) {
             is Resource.Success -> {
