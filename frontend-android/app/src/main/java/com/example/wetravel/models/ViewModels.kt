@@ -39,8 +39,29 @@ class UserViewModel(
                 val result = tripRepository.createTrip(trip)
                 Log.d("Create trip Return Values: ", result.toString())
                 if (result.isSuccess) {
-                    // Load trip Data into tripData state var
-                    _tripCode.postValue(Resource.Success(result.getOrNull()!!.tripID)) // Shouldn't be null
+                    val newTrip = result.getOrNull()!!
+                    _tripCode.postValue(Resource.Success(newTrip.tripID)) // Shouldn't be null
+                    val currentTrips = _allTrips.value
+                    if (currentTrips is Resource.Success) {
+                        val updatedTrips = currentTrips.data.toMutableMap()
+                        updatedTrips[newTrip.tripID] = newTrip
+                        _allTrips.postValue(Resource.Success(updatedTrips))
+                    } else {
+                        _allTrips.postValue(Resource.Error("Failed to add new trip to all trips"))
+                    }
+                    // call endpoint to update user
+                    Log.d("update trip fields", trip.adminUserID)
+                    val result = userRepository.updateUser(
+                        userID = trip.adminUserID,
+                        tripID = newTrip.tripID
+                    )
+                    if (result.isSuccess) {
+                        _user.postValue(Resource.Success(result.getOrNull()!!))
+                        Log.d("createTrip", "Trip created successfully")
+                    } else {
+                        Log.d("error", result.toString())
+                        _user.postValue(Resource.Error("Failed to join the trip. Check the API logs."))
+                    }
                 } else {
                     _tripCode.postValue(Resource.Error("The API call failed with an Error. Check the API Logs"))
                 }
