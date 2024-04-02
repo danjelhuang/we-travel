@@ -95,16 +95,41 @@ class UserViewModel(
         }
     }
 
+    fun updateTrip(trip: TripUpdateRequest) {
+
+        viewModelScope.launch {
+            try {
+                val result = tripRepository.updateTrip(trip.id, trip)
+                Log.d("result", result.toString())
+                if (result.isSuccess) {
+                    val newTrip = result.getOrNull()!!
+                    val currentTrips = _allTrips.value
+                    if (currentTrips is Resource.Success) {
+                        val updatedTrips = currentTrips.data.toMutableMap()
+                        updatedTrips[trip.id] = newTrip
+                        _allTrips.postValue(Resource.Success(updatedTrips))
+                    } else {
+                        _allTrips.postValue(Resource.Error("Failed to update trip"))
+                    }
+                } else {
+                    _tripCode.postValue(Resource.Error("The API call failed with an Error. Check the API Logs"))
+                }
+            } catch (e: Exception) {
+                _tripCode.postValue(Resource.Error("An exception occurred while calling the updateTrip API"))
+            }
+        }
+    }
+
     fun getOrCreateUser(userID: String) {
         _user.value = Resource.Loading
 
         viewModelScope.launch {
             try {
                 Log.d("get user", "Get User called")
-                val result = userRepository.getUser(userID)
-                Log.d("Get user Return Values: ", result.toString())
-                if (result.isSuccess) {
-                    val newUser = User(result.getOrNull()!!.userID, result.getOrNull()!!.tripIDs)
+                val result1 = userRepository.getUser(userID)
+                Log.d("Get user Return Values: ", result1.toString())
+                if (result1.isSuccess) {
+                    val newUser = User(result1.getOrNull()!!.userID, result1.getOrNull()!!.tripIDs)
                     _user.postValue(Resource.Success(newUser))
                 } else {
                     Log.d("create user", "Create User called")

@@ -34,9 +34,9 @@ import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
 import com.example.wetravel.models.Resource
 import com.example.wetravel.models.Trip
+import com.example.wetravel.models.TripUpdateRequest
 import com.example.wetravel.models.User
 import com.example.wetravel.models.UserViewModel
-import com.example.wetravel.views.CreateCodeContent
 
 @Composable
 fun TripConfigurationForm(
@@ -45,11 +45,11 @@ fun TripConfigurationForm(
     userViewModel: UserViewModel
 ) {
     val currentUserResource by userViewModel.user.observeAsState(initial = Resource.Loading)
+    val currentTripID by userViewModel.tripCode.observeAsState(initial = Resource.Loading)
     // TODO: Convert all of these fields to the values from ViewModel and observe them for state changes
     val tripName = remember { mutableStateOf(TextFieldValue()) }
     val destinationCity = remember { mutableStateOf(TextFieldValue()) }
     val finalDestinationCount = remember { mutableStateOf(TextFieldValue()) }
-    val numberOfVotesPerPerson = remember { mutableStateOf(TextFieldValue()) }
     val buttonText = if (title == "create") "create" else "save changes"
     val dmSansFamily = FontFamily(
         Font(
@@ -97,8 +97,34 @@ fun TripConfigurationForm(
             onValueChange = { finalDestinationCount.value = it },
             dmSansFamily
         )
-        Spacer(modifier = Modifier.height(40.dp))
-        Spacer(modifier = Modifier.height(16.dp))
+
+        if (title == "edit") {
+            when (currentTripID) {
+                is Resource.Success -> {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    val currentTrip = (currentTripID as Resource.Success<*>).data
+                    Text(
+                        text = "trip code: " + currentTrip.toString(),
+                        fontFamily = dmSansFamily,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                    )
+                }
+
+                is Resource.Loading -> {
+                    CircularProgressIndicator()
+                }
+
+                is Resource.Error -> {
+                    val errorMessage = (currentUserResource as Resource.Error).message
+                    // Display the error message
+                    Text(text = "Error: $errorMessage")
+                }
+            }
+        }
+
+        Spacer(modifier = Modifier.height(56.dp))
 
         when (currentUserResource) {
             is Resource.Success -> {
@@ -109,6 +135,7 @@ fun TripConfigurationForm(
                             tripName.value.text,
                             destinationCity.value.text,
                             finalDestinationCount.value.text,
+                            title,
                             userViewModel = userViewModel,
                             user = currentUser
                         )
@@ -180,16 +207,32 @@ private fun handleButtonClick(
     tripName: String,
     destinationCity: String,
     finalDestinationCount: String,
+    title: String,
     userViewModel: UserViewModel,
     user: String
 ) {
-    val tripData = Trip(
-        name = tripName,
-        city = destinationCity,
-        finalDestinationCount = finalDestinationCount.toInt(),
-        votesPerPerson = finalDestinationCount.toInt(),
-        adminUserID = user,
-        phase = "Adding"
-    )
-    userViewModel.createTrip(tripData)
+    if (title == "create") {
+        val tripData = Trip(
+            name = tripName,
+            city = destinationCity,
+            finalDestinationCount = finalDestinationCount.toInt(),
+            votesPerPerson = finalDestinationCount.toInt(),
+            adminUserID = user,
+            phase = "Adding"
+        )
+        userViewModel.createTrip(tripData)
+    } else {
+        val currentTripID = userViewModel.tripCode.value
+        if (currentTripID is Resource.Success) {
+            val tripID = currentTripID.data
+            val tripData = TripUpdateRequest(
+                id = tripID,
+                name = tripName,
+                city = destinationCity,
+                finalDestinationCount = finalDestinationCount.toInt(),
+                votesPerPerson = finalDestinationCount.toInt()
+            )
+            userViewModel.updateTrip(tripData)
+        }
+    }
 }

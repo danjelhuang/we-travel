@@ -54,6 +54,14 @@ data class Trip(
     val destinationsList: List<Destination> = emptyList(),
 )
 
+data class TripUpdateRequest(
+    val id: String = "",
+    val name: String = "",
+    val city: String = "",
+    val finalDestinationCount: Int = 0,
+    val votesPerPerson: Int = 0,
+)
+
 
 // TODO: Remove this and convert ViewModel properties in the ViewModels.kt class
 data class ViewModel(
