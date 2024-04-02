@@ -44,6 +44,9 @@ class UserViewModel(
     private val _tripCity = MutableLiveData<String>()
     val tripCity: LiveData<String> = _tripCity
 
+    private val _destinationCurrentVotes = MutableLiveData<String>()
+    val destinationCurrentVotes: LiveData<String> = _destinationCurrentVotes
+
     private var tripListener: ListenerRegistration? = null
 
 
@@ -283,6 +286,22 @@ class UserViewModel(
 
             if (snapshot != null && snapshot.exists()) {
                 _tripCity.postValue(snapshot.getString("city"))
+                ///// destinations snapshot
+                val destinationsMap: Map<String, Map<String, Long>>? = snapshot.data?.get("destinationsList") as? Map<String, Map<String, Long>>
+                Log.d("SnapshotLog", "destinationsMap: $destinationsMap")
+                destinationsMap?.let { destinations ->
+                    //map of destinations
+                    for ((destination, details) in destinations) {
+                        val totalVotes = details["totalVotes"] as? Long ?: 0
+                        val userVotesMap = details["userVotes"] as? Map<String, Long>
+
+                        // store into ViewModel
+                    }
+                }
+
+                //testing
+
+
                 val currentTrips = _allTrips.value
                 Log.d("listenToTrip", "listen")
 
