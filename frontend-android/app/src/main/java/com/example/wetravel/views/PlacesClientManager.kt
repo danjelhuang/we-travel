@@ -13,10 +13,7 @@ object PlacesClientManager {
         }
     }
 
-    fun getPlacesClient(context: Context): PlacesClient {
-        if (placesClient == null) {
-            initialize(context)
-        }
+    fun getPlacesClient(): PlacesClient {
         return placesClient!!
     }
 }

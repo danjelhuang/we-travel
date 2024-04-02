@@ -145,6 +145,28 @@ class UserViewModel(
         }
     }
 
+
+    fun addDestinations(tripID: String, placeID: String, onError: (String) -> Unit, onSuccess: () -> Unit)
+    {
+        viewModelScope.launch {
+            try {
+                Log.d("add destination", "Add Destination called")
+                val result = tripRepository.addDestination(tripID, placeID)
+                Log.d("Add Destination Return Values: ", result.toString())
+                if (result.isSuccess) {
+                    onSuccess()
+                    return@launch
+                } else {
+                    onError("Error adding destination. Destination may already exist")
+                    return@launch
+
+                }
+            } catch (e: Exception) {
+                onError("Error adding destination. Destination may already exist")
+                return@launch
+            }
+        }
+    }
     fun joinTrip(tripID: String, onError: (String) -> Unit, onSuccess: () -> Unit) {
 
         _tripCode.value = Resource.Loading
