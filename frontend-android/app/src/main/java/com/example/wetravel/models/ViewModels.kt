@@ -84,7 +84,7 @@ class UserViewModel(
                         updatedTrips[trip.id] = newTrip
                         _allTrips.postValue(Resource.Success(updatedTrips))
                     } else {
-                        _allTrips.postValue(Resource.Error("Failed to add new trip to all trips"))
+                        _allTrips.postValue(Resource.Error("Failed to update trip"))
                     }
                 } else {
                     _tripCode.postValue(Resource.Error("The API call failed with an Error. Check the API Logs"))
