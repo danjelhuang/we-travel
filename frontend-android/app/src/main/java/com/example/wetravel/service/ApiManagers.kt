@@ -1,8 +1,11 @@
 package com.example.wetravel.service
 
 import android.util.Log
+import com.example.wetravel.models.AddDestinationRequest
+import com.example.wetravel.models.AddDestinationResponse
 import com.example.wetravel.models.Destination
 import com.example.wetravel.models.Trip
+import com.example.wetravel.models.TripUpdateRequest
 import com.example.wetravel.models.User
 import com.example.wetravel.models.UserCreationRequest
 import com.example.wetravel.models.UserUpdateRequest
@@ -18,8 +21,14 @@ interface ApiService {
     @POST("trips")
     suspend fun createTrip(@Body tripConfiguration: Trip): Response<Trip>
 
+    @POST("trips/{id}/destinationsList")
+    suspend fun addDestination(@Path("id") tripID: String, @Body placeID: AddDestinationRequest) :Response<AddDestinationResponse>
+
     @POST("users")
     suspend fun createUser(@Body userRequestBody: UserCreationRequest): Response<User>
+
+    @GET("trips/{id}")
+    suspend fun getTrip(@Path("id") tripID: String): Response<Trip>
 
     @GET("users/{id}")
     suspend fun getUser(@Path("id") userID: String): Response<User>
@@ -30,6 +39,11 @@ interface ApiService {
     @GET("userTrips/{id}")
     suspend fun getAllTrips(@Path("id") userID: String): Response<List<Trip>>
 
+    @POST("add-participant-to-trip/{id}")
+    suspend fun addParticipantToTrip(@Path("id") tripID: String, @Body userRequestBody: UserCreationRequest): Response<Unit>
+
+    @PATCH("trips/{id}")
+    suspend fun updateTrip(@Path("id") tripID: String, @Body tripRequestBody: TripUpdateRequest): Response<Trip>
 }
 
 
@@ -49,6 +63,24 @@ class TripRepository (private val apiService: ApiService) {
         }
     }
 
+
+    suspend fun addDestination(tripID: String, placeID: String,) : Result<AddDestinationResponse> {
+        return try {
+            val requestBody = AddDestinationRequest(placeID)
+            val response = apiService.addDestination(tripID, requestBody)
+            Log.d("Response from Add Destinations API", response.toString())
+            if (response.isSuccessful) {
+                Result.success(response.body()!!)
+            }
+            else {
+                // Return error
+                Result.failure(RuntimeException("Add Destination API call failed"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     suspend fun getAllTrips(userID: String): Result<List<Trip>> {
         return try {
             val response = apiService.getAllTrips(userID = userID)
@@ -58,6 +90,51 @@ class TripRepository (private val apiService: ApiService) {
             } else {
                 // Return error
                 Result.failure(RuntimeException("Get All Trip API call failed"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun getTrip(tripID: String): Result<Trip> {
+        return try {
+            val response = apiService.getTrip(tripID = tripID)
+            Log.d("Response from get trips API", response.toString())
+            if (response.isSuccessful) {
+                Result.success(response.body()!!)
+            } else {
+                // Return error
+                Result.failure(RuntimeException("Get Trip API call failed"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun updateTrip(tripID: String, tripConfiguration: TripUpdateRequest): Result<Trip> {
+        return try {
+            val response = apiService.updateTrip(tripID, tripConfiguration)
+            Log.d("Response from trips API", response.toString())
+            if (response.isSuccessful) {
+                Result.success(response.body()!!)
+            } else {
+                Result.failure(RuntimeException("Update Trip API call failed"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun addParticipant(tripID: String, userID: String): Result<Unit> {
+        return try {
+            val requestBody = UserCreationRequest(userID)
+            val response = apiService.addParticipantToTrip(tripID = tripID, userRequestBody = requestBody)
+            Log.d("addParticipant", response.toString())
+            if (response.isSuccessful) {
+                Result.success(response.body()!!)
+            } else {
+                // Return error
+                Result.failure(RuntimeException("AddParticipant to Trip API call failed"))
             }
         } catch (e: Exception) {
             Result.failure(e)

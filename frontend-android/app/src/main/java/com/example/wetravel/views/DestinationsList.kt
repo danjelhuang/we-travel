@@ -1,5 +1,6 @@
 package com.example.wetravel.views
 
+import android.util.Log
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -17,6 +18,11 @@ import com.example.wetravel.components.DestinationEntry
 import com.example.wetravel.components.DestinationsListFooter
 import com.example.wetravel.components.DestinationsListHeader
 import com.example.wetravel.models.Destination
+import com.example.wetravel.models.Resource
+import com.example.wetravel.models.Trip
+import com.example.wetravel.models.User
+import com.example.wetravel.models.UserViewModel
+import java.util.UUID
 import com.example.wetravel.models.Resource
 import com.example.wetravel.models.Trip
 import com.example.wetravel.models.UserViewModel
@@ -63,6 +69,16 @@ fun DestinationsList(
 //            R.drawable.sample_destination_image, totalVotes = 0, userVotes = 0, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
 //        ),
 //    )
+
+//    val tripCodeResource by userViewModel.tripCode.observeAsState(initial = Resource.Loading)
+//    val allTrips by userViewModel.allTrips.observeAsState(initial = Resource.Loading)
+//    val user by userViewModel.user.observeAsState(initial = Resource.Loading)
+//
+//    if (tripCodeResource is Resource.Success && allTrips is Resource.Success && user is Resource.Success) {
+//        Log.d("Frontend state after Join", (tripCodeResource as Resource.Success<String>).data)
+//        Log.d("Frontend state after Join", (allTrips as Resource.Success<Map<String, Trip>>).data.toString())
+//        Log.d("Frontend state after Join", (user as Resource.Success<User>).data.toString())
+//    }
 
     Scaffold(
         topBar = { DestinationsListHeader(tripName = "Toronto", onSettingsButtonClicked) },
