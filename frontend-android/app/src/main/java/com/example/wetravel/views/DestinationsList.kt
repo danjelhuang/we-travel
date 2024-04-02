@@ -23,9 +23,6 @@ import com.example.wetravel.models.Trip
 import com.example.wetravel.models.User
 import com.example.wetravel.models.UserViewModel
 import java.util.UUID
-import com.example.wetravel.models.Resource
-import com.example.wetravel.models.Trip
-import com.example.wetravel.models.UserViewModel
 
 @Composable
 fun DestinationsColumn(destinations: List<Destination>, innerPadding: PaddingValues) {
