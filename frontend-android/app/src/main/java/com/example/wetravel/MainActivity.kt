@@ -103,6 +103,7 @@ class TripDeserializer: JsonDeserializer<Trip> {
         val adminUserID = jsonObject.getAsJsonPrimitive("adminUserID").asString
         val votesPerPerson = jsonObject.getAsJsonPrimitive("votesPerPerson").asInt
         val phase = jsonObject.getAsJsonPrimitive("phase").asString
+        val finalDestinationCount = jsonObject.getAsJsonPrimitive("finalDestinationCount").asString
 
         val parsedUsers = parseUsersList(jsonObject.get("users"))
         val parsedDestinations = parseDestinationsList(jsonObject.get("destinationsList"))
@@ -115,7 +116,8 @@ class TripDeserializer: JsonDeserializer<Trip> {
             votesPerPerson = votesPerPerson,
             phase = phase,
             users = parsedUsers,
-            destinationsList = parsedDestinations
+            destinationsList = parsedDestinations,
+            finalDestinationCount = finalDestinationCount.toInt()
         )
 
         Log.d("DESERIALIZED", trip.toString())
