@@ -321,15 +321,8 @@ fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit, maxVotes: Int, userVo
                         color = Color(0xFFFFFFFF)
                     )
                 )
-                Text(
-                    text = "19:04:32",
-                    style = TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 40.sp,
-                        textAlign = TextAlign.Center,
-                        color = Color(0xFFE63946)
-                    )
-                )
+
+                Spacer(modifier = Modifier.height(10.dp))
 
                 FilledTonalButton(
                     onClick =
@@ -353,7 +346,7 @@ fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit, maxVotes: Int, userVo
                 }
             }
 
-            Spacer(modifier = Modifier.width(30.dp))
+            Spacer(modifier = Modifier.width(50.dp))
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -367,14 +360,14 @@ fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit, maxVotes: Int, userVo
                         contentDescription = "User icon",
                         modifier = Modifier.size(64.dp)
                     )
-                    Spacer(modifier = Modifier.width(5.dp))
+
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.fillMaxWidth(),
                         verticalArrangement = Arrangement.spacedBy((-5).dp)
                     ) {
                         Text(
-                            text = "3/5",
+                            text = "${formattedUserVotes}/${maxVotes}",
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 36.sp,
@@ -382,6 +375,7 @@ fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit, maxVotes: Int, userVo
                                 color = Color(0xFFFFE500)
                             )
                         )
+                        Spacer(modifier = Modifier.height(10.dp))
                         Text(
                             text = "travelCoins\nremaining",
                             style = TextStyle(
@@ -392,40 +386,6 @@ fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit, maxVotes: Int, userVo
                     }
                 }
                 Spacer(modifier = Modifier.height(10.dp))
-
-                // Finished voters
-                Row(
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.profile2users),
-                        contentDescription = "User icon",
-                        modifier = Modifier.size(60.dp)
-                    )
-                    Spacer(modifier = Modifier.width(5.dp))
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy((-5).dp)
-                    ) {
-                        Text(
-                            text = "2/5",
-                            style = TextStyle(
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 36.sp,
-                                textAlign = TextAlign.Center,
-                                color = Color(0xFF1D3557)
-                            )
-                        )
-                        Text(
-                            text = "finished voting",
-                            style = TextStyle(
-                                fontWeight = FontWeight.Bold,
-                                textAlign = TextAlign.Center,
-                            )
-                        )
-                    }
-                }
             }
         }
     }
