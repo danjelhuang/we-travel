@@ -205,7 +205,7 @@ fun VotingResultItineraryListComponent(index: Int, votingListItem: Destination) 
                 )
                 Spacer(modifier = Modifier.width(2.dp))
                 Text(
-                    text = "${votingListItem.numOfVotes}",
+                    text = "${votingListItem.totalVotes}",
                     fontWeight = FontWeight.Bold,
                     fontSize = 8.sp,
                     color = Color.Black,

@@ -11,8 +11,8 @@ data class Destination(
     val rating: String,
     val reviewCount: Int,
     val imageResId: Int,
-    val numOfVotes: Int,
-    val voted: Boolean,
+    val totalVotes: Int,
+    val userVotes: Int,
     val description: String
 )
 

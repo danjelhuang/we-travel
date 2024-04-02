@@ -44,7 +44,7 @@ class UserPreviewParameterProvider : PreviewParameterProvider<Destination> {
     override val values = sequenceOf(
         Destination(
             UUID.randomUUID().toString(),"MoMA", "11 W 53rd St, New York", "4.6", 50,
-            R.drawable.sample_destination_image, voted = true, numOfVotes = 5, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
+            R.drawable.sample_destination_image, totalVotes = 3, userVotes = 1, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
         ),
     )
 }

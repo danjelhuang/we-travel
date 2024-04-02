@@ -176,7 +176,7 @@ fun VotingDestinationEntry(destination: Destination, coins: Int) {
 
             Spacer(modifier = Modifier.weight(1f))
 
-            if (destination.voted) {
+            if (destination.userVotes > 0) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy((-8).dp)
