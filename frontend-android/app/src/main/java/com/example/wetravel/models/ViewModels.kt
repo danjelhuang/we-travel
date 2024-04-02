@@ -5,9 +5,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.wetravel.R
 import com.example.wetravel.service.TripRepository
 import com.example.wetravel.service.UserRepository
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 // Below is a class to help us enforce state of data while we fetch from the backend
 sealed class Resource<out T> {
@@ -27,6 +29,77 @@ class UserViewModel(
 
     private val _allTrips = MutableLiveData<Resource<Map<String, Trip>>>()
     val allTrips: LiveData<Resource<Map<String, Trip>>> = _allTrips
+
+    private val _sampleTrip = MutableLiveData<Resource<Trip>>(
+        Resource.Success<Trip>(
+            Trip(
+                tripID = "tester",
+                name = "Sample Trip",
+                city = "Sample City",
+                finalDestinationCount = 5,
+                votesPerPerson = 5,
+                phase = "ADD_DESTINATIONS",
+                destinationsList = listOf(
+                    // Add your destinations here, for example:
+                    Destination(
+                        UUID.randomUUID().toString(),"MoMA", "11 W 53rd St, New York", "4.6", 50,
+                        R.drawable.sample_destination_image, totalVotes = 0, userVotes = 0, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
+                    ),
+                    // Add more destinations...
+                    Destination(
+                        UUID.randomUUID().toString(),"MoMA 2", "11 W 53rd St, New York", "4.6", 50,
+                        R.drawable.sample_destination_image, totalVotes = 0, userVotes = 0, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
+                    ),
+                    Destination(
+                        UUID.randomUUID().toString(),"MoMA", "11 W 53rd St, New York", "4.6", 50,
+                        R.drawable.sample_destination_image, totalVotes = 0, userVotes = 0, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
+                    )
+                )
+            )
+        )
+    )
+
+    val sampleTrip: LiveData<Resource<Trip>> = _sampleTrip
+
+    fun castVote(tripId: String, placeId: String) {
+
+    }
+    fun castSampleVote(id: String) {
+        // copy update and post
+        viewModelScope.launch {
+            val updatedTrip = (_sampleTrip.value as Resource.Success<Trip>).data.copy(
+                destinationsList = (_sampleTrip.value as Resource.Success<Trip>).data.destinationsList.map { d ->
+                    if (id == d.placeId) {
+                        d.copy(totalVotes = d.totalVotes + 1, userVotes = d.userVotes + 1)
+                    } else {
+                        d
+                    }
+                }
+            )
+            Log.d("UPDATED", updatedTrip.toString())
+            // Create the updated Trip
+            _sampleTrip.postValue(Resource.Success(updatedTrip))
+        }
+    }
+
+    fun removeSampleVote(id: String) {
+        // copy update and post
+        viewModelScope.launch {
+            val updatedTrip = (_sampleTrip.value as Resource.Success<Trip>).data.copy(
+                destinationsList = (_sampleTrip.value as Resource.Success<Trip>).data.destinationsList.map { d ->
+                    if (id == d.placeId) {
+                        d.copy(totalVotes = d.totalVotes - 1, userVotes = d.userVotes - 1)
+                    } else {
+                        d
+                    }
+                }
+            )
+            Log.d("UPDATED", updatedTrip.toString())
+            // Create the updated Trip
+            _sampleTrip.postValue(Resource.Success(updatedTrip))
+        }
+    }
+
 
     /* TODO: More Fields here for UserViewModel...*/
 

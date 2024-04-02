@@ -1,5 +1,6 @@
 package com.example.wetravel.components
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -35,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
 import com.example.wetravel.models.Destination
+import com.example.wetravel.models.UserViewModel
 
 // The header of the page
 @Composable
@@ -118,7 +121,7 @@ fun DestinationsVotingListHeader(tripName: String, onSettingsButtonClicked: () -
 
 // The special Voting Destination Entry
 @Composable
-fun VotingDestinationEntry(destination: Destination, coins: Int) {
+fun VotingDestinationEntry(destination: Destination, userViewModel: UserViewModel) {
     // Could use Card instead if we don't want the elevation
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
@@ -167,7 +170,7 @@ fun VotingDestinationEntry(destination: Destination, coins: Int) {
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
-                        text = " $coins",
+                        text = " ${destination.totalVotes}",
                         fontSize = 14.sp
                     )
                 }
@@ -184,10 +187,18 @@ fun VotingDestinationEntry(destination: Destination, coins: Int) {
                     Image(
                         painter = painterResource(id = R.drawable.coin),
                         contentDescription = "TravelCoin",
-                        modifier = Modifier.size(40.dp)
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clickable {
+                                userViewModel.castSampleVote(destination.placeId)
+                            }
                     )
+
+                    // -1 vote
                     FilledTonalButton(
-                        onClick = { /*TODO*/ },
+                        onClick = {
+                            userViewModel.removeSampleVote(destination.placeId)
+                        },
                         shape = RoundedCornerShape(20),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color(0xFFE63946),
@@ -198,7 +209,7 @@ fun VotingDestinationEntry(destination: Destination, coins: Int) {
                         contentPadding = PaddingValues(horizontal = 20.dp, vertical = 3.dp),
                     ) {
                         Text(
-                            text = "Remove",
+                            text = "Decrease",
                             style = TextStyle(
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 12.sp,
@@ -211,6 +222,11 @@ fun VotingDestinationEntry(destination: Destination, coins: Int) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier
                         .padding(horizontal = 20.dp)
+                        .clickable {
+                            userViewModel.castSampleVote(destination.placeId)
+                            Log.d("Changed name", userViewModel.sampleTrip.value.toString())
+                        }
+
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.vote_icon),
@@ -237,9 +253,11 @@ fun VotingDestinationEntry(destination: Destination, coins: Int) {
             Image(
                 painter = painterResource(id = destination.imageResId),
                 contentDescription = "${destination.name} image",
+                contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(65.dp)
                     .clip(RoundedCornerShape(8.dp))
+
             )
         }
     }

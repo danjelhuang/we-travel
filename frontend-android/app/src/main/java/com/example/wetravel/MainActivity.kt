@@ -55,7 +55,6 @@ import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
-import kotlin.math.log
 
 
 enum class Screens() {
@@ -309,7 +308,8 @@ fun WeTravelApp(
             DestinationsList(
                 onAddDestinationButtonClicked = { navController.navigate(Screens.AddDestination.name) },
                 onStartVotingButtonClicked = { navController.navigate(Screens.VotingScreen.name) },
-                onSettingsButtonClicked = { navController.navigate(Screens.EditTrip.name) }
+                onSettingsButtonClicked = { navController.navigate(Screens.EditTrip.name) },
+                userViewModel = userViewModel
             )
         }
         composable(route = Screens.AddDestination.name) {
@@ -320,7 +320,8 @@ fun WeTravelApp(
         composable(route = Screens.VotingScreen.name) {
             DestinationsVotingList(
                 onEndVotingButtonClicked = { navController.navigate(Screens.VotingResults.name) },
-                onSettingsButtonClicked = { navController.navigate(Screens.EditTrip.name) }
+                onSettingsButtonClicked = { navController.navigate(Screens.EditTrip.name) },
+                userViewModel = userViewModel
             )
         }
         composable(route = Screens.VotingResults.name) {
