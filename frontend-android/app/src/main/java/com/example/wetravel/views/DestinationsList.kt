@@ -71,7 +71,8 @@ fun DestinationsList(
 
     when (allTrips) {
         is Resource.Success -> {
-            val tripName = (allTrips as Resource.Success<Map<String, Trip>>).data[(tripCode as Resource.Success<String>).data]?.city
+            // tripCode should be in Resource.Success
+            val tripName = (allTrips as Resource.Success<Map<String, Trip>>).data[(tripCode as Resource.Success<String>).data]?.name
             Scaffold(
                 topBar = { DestinationsListHeader(tripName = tripName!!, onSettingsButtonClicked) },
                 bottomBar = { DestinationsListFooter(onAddDestinationButtonClicked, onStartVotingButtonClicked) }

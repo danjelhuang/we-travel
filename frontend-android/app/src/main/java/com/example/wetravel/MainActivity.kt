@@ -1,7 +1,8 @@
 package com.example.wetravel
 
 import AddDestinations
-import TripConfigurationForm
+import TripCreateForm
+import TripEditForm
 import TripLoginSignup
 import android.app.Activity.RESULT_OK
 import android.content.Context
@@ -291,8 +292,7 @@ fun WeTravelApp(
         }
         composable(route = Screens.TripConfiguration.name) {
             BackHandler(true) { navController.navigate(Screens.TripCreateOrJoin.name) }
-            TripConfigurationForm(
-                "create",
+            TripCreateForm(
                 onButtonClicked = { navController.navigate(Screens.SessionCode.name) },
                 userViewModel = userViewModel
             )
@@ -338,8 +338,7 @@ fun WeTravelApp(
             VotingResultsMainScreen()
         }
         composable(route = Screens.EditTrip.name) {
-            TripConfigurationForm(
-                "edit",
+            TripEditForm(
                 onButtonClicked = { navController.popBackStack() },
                 userViewModel = userViewModel
             )

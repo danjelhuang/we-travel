@@ -32,7 +32,7 @@ class UserViewModel(
 
     private val _allTrips = MutableLiveData<Resource<Map<String, Trip>>>()
     val allTrips: LiveData<Resource<Map<String, Trip>>> = _allTrips
-    
+
     /////////////////////////////////////////////////
     // listener related vals
 
@@ -42,8 +42,13 @@ class UserViewModel(
     private val _tripCity = MutableLiveData<String>()
     val tripCity: LiveData<String> = _tripCity
 
-    private var tripListener: ListenerRegistration? = null
+    private val _tripName = MutableLiveData<String>()
+    val tripName: LiveData<String> = _tripName
 
+    private val _tripFinalDestinationCount = MutableLiveData<Int>()
+    val tripFinalDestinationCount: LiveData<Int> = _tripFinalDestinationCount
+
+    private var tripListener: ListenerRegistration? = null
 
     ////////////////////////////////////////////
 
@@ -99,20 +104,12 @@ class UserViewModel(
                 val result = tripRepository.updateTrip(trip.tripID, trip)
                 Log.d("result", result.toString())
                 if (result.isSuccess) {
-                    val newTrip = result.getOrNull()!!
-                    val currentTrips = _allTrips.value
-                    if (currentTrips is Resource.Success) {
-                        val updatedTrips = currentTrips.data.toMutableMap()
-                        updatedTrips[trip.tripID] = newTrip
-                        _allTrips.postValue(Resource.Success(updatedTrips))
-                    } else {
-                        _allTrips.postValue(Resource.Error("Failed to update trip"))
-                    }
+                    Log.d("updateTrip", "Trip Updated successfully")
                 } else {
-                    _tripCode.postValue(Resource.Error("The API call failed with an Error. Check the API Logs"))
+                    Log.d("updateTrip", "Trip Update API call Failed")
                 }
             } catch (e: Exception) {
-                _tripCode.postValue(Resource.Error("An exception occurred while calling the updateTrip API"))
+                Log.d("updateTrip", "An exception occurred while calling the updateTrip API: $e")
             }
         }
     }
@@ -276,26 +273,32 @@ class UserViewModel(
         tripListener = db.collection("trips").document(tripId)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
-                    Log.d("String", "did not work lol")
+                    Log.d("listenToTrip", "did not work lol")
                     return@addSnapshotListener
                 }
 
                 if (snapshot != null && snapshot.exists()) {
-                    _tripCity.postValue(snapshot.getString("city"))
                     val currentTrips = _allTrips.value
                     Log.d("listenToTrip", "listen")
 
                     if (currentTrips is Resource.Success) {
                         val updatedMap = currentTrips.data.toMutableMap()
-                        // Add the new trip to the map
-                        val newTrip = updatedMap[tripId]?.copy(city = snapshot.getString("city")!!)
+                        // Update all trip fields related to trip settings
+                        val newTrip = updatedMap[tripId]?.copy(
+                            name = snapshot.getString("name")!!,
+                            city = snapshot.getString("city")!!,
+                            finalDestinationCount = snapshot.getLong("finalDestinationCount")!!
+                                .toInt(),
+                            votesPerPerson = snapshot.getLong("votesPerPerson")!!.toInt()
+                        )
+
+                        // Update the map and post the updated map
                         updatedMap[tripId] = newTrip!!
-                        // Post the updated map
                         _allTrips.postValue(Resource.Success(updatedMap))
-                        Log.d("joinTrip", "Trip Get successful")
+                        Log.d("listenToTrip", "Trip Get successful")
                     } else {
                         Log.d(
-                            "joinTrip",
+                            "listenToTrip",
                             "Cannot update trips: Current trips state is not Success."
                         )
 
