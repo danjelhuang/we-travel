@@ -74,14 +74,14 @@ class UserViewModel(
 
         viewModelScope.launch {
             try {
-                val result = tripRepository.updateTrip(trip.id, trip)
+                val result = tripRepository.updateTrip(trip.tripID, trip)
                 Log.d("result", result.toString())
                 if (result.isSuccess) {
                     val newTrip = result.getOrNull()!!
                     val currentTrips = _allTrips.value
                     if (currentTrips is Resource.Success) {
                         val updatedTrips = currentTrips.data.toMutableMap()
-                        updatedTrips[trip.id] = newTrip
+                        updatedTrips[trip.tripID] = newTrip
                         _allTrips.postValue(Resource.Success(updatedTrips))
                     } else {
                         _allTrips.postValue(Resource.Error("Failed to update trip"))
