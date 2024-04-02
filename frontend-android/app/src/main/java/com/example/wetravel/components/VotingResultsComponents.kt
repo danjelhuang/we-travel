@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -106,10 +107,11 @@ fun DestinationEntry(destination: Destination) {
         shape = RoundedCornerShape(15.dp),
         modifier = Modifier
             .fillMaxWidth()
+            .defaultMinSize(minHeight = 110.dp)
 
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
             modifier = Modifier
                 .padding(10.dp)
                 .fillMaxWidth()

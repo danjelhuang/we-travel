@@ -30,6 +30,7 @@ class UserViewModel(
     private val _allTrips = MutableLiveData<Resource<Map<String, Trip>>>()
     val allTrips: LiveData<Resource<Map<String, Trip>>> = _allTrips
 
+    // Sample trip for frontend voting scaffolding
     private val _sampleTrip = MutableLiveData<Resource<Trip>>(
         Resource.Success<Trip>(
             Trip(
@@ -39,6 +40,12 @@ class UserViewModel(
                 finalDestinationCount = 5,
                 votesPerPerson = 5,
                 phase = "ADD_DESTINATIONS",
+                users = listOf(
+                    TripUsers(
+                        userID = "local",
+                        votes = 5
+                    )
+                ),
                 destinationsList = listOf(
                     // Add your destinations here, for example:
                     Destination(
@@ -61,9 +68,7 @@ class UserViewModel(
 
     val sampleTrip: LiveData<Resource<Trip>> = _sampleTrip
 
-    fun castVote(tripId: String, placeId: String) {
-
-    }
+    // Cast a vote to the sample trip
     fun castSampleVote(id: String) {
         // copy update and post
         viewModelScope.launch {
@@ -74,7 +79,15 @@ class UserViewModel(
                     } else {
                         d
                     }
+                },
+                users = (_sampleTrip.value as Resource.Success<Trip>).data.users.map { u ->
+                    if (u.userID == "local") {
+                        u.copy(votes = u.votes - 1)
+                    } else {
+                        u
+                    }
                 }
+
             )
             Log.d("UPDATED", updatedTrip.toString())
             // Create the updated Trip
@@ -92,12 +105,29 @@ class UserViewModel(
                     } else {
                         d
                     }
+                },
+                users = (_sampleTrip.value as Resource.Success<Trip>).data.users.map { u ->
+                    if (u.userID == "local") {
+                        u.copy(votes = u.votes + 1)
+                    } else {
+                        u
+                    }
                 }
             )
             Log.d("UPDATED", updatedTrip.toString())
             // Create the updated Trip
             _sampleTrip.postValue(Resource.Success(updatedTrip))
         }
+    }
+
+    // TODO: API call for casting a vote; requires destinations
+    fun castVote(tripId: String, placeId: String) {
+
+    }
+
+    // TODO: API call for removing a vote; requires destinations
+    fun removeVote(tripId: String, placeId: String) {
+
     }
 
 

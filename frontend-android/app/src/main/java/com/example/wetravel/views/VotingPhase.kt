@@ -45,28 +45,18 @@ fun DestinationsVotingList(
     onSettingsButtonClicked: () -> Unit,
     userViewModel: UserViewModel
 ) {
+    // Trip from userViewModel
     val sampleTrip by userViewModel.sampleTrip.observeAsState()
-    // Assuming we have a list of destinations to display
-//    val destinations = listOf(
-//        // Add your destinations here, for example:
-//        Destination(
-//            UUID.randomUUID().toString(), "MoMA", "11 W 53rd St, New York", "4.6", 50,
-//            R.drawable.sample_destination_image, totalVotes = 0, userVotes = 0, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
-//        ),
-//        // Add more destinations...
-//        Destination(
-//            UUID.randomUUID().toString(), "MoMA", "11 W 53rd St, New York", "4.6", 50,
-//            R.drawable.sample_destination_image, totalVotes = 0, userVotes = 0, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
-//        ),
-//        Destination(
-//            UUID.randomUUID().toString(), "MoMA", "11 W 53rd St, New York", "4.6", 50,
-//            R.drawable.sample_destination_image, totalVotes = 0, userVotes = 0, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
-//        ),
-//    )
 
     Scaffold(
         topBar = { DestinationsVotingListHeader(tripName = (sampleTrip as Resource.Success<Trip>).data.city, onSettingsButtonClicked) },
-        bottomBar = { VotingBottomCard(onEndVotingButtonClicked) }
+        bottomBar = {
+            VotingBottomCard(
+                onEndVotingButtonClicked,
+                maxVotes = (sampleTrip as Resource.Success<Trip>).data.votesPerPerson,
+                userVotesRemaining = (sampleTrip as Resource.Success<Trip>).data.users.find { it.userID == "local" }?.votes,
+            )
+        }
     ) { innerPadding ->
 
         DestinationsVotingColumn(destinations = (sampleTrip as Resource.Success<Trip>).data.destinationsList, innerPadding = innerPadding, userViewModel = userViewModel)
