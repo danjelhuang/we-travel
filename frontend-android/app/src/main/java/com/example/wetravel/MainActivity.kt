@@ -68,6 +68,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
 
+
 enum class Screens() {
     Login,
     CreateAccount,
