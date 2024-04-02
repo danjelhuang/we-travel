@@ -70,6 +70,11 @@ class UserViewModel(
 
     // Cast a vote to the sample trip
     fun castSampleVote(id: String) {
+        // Don't do anything if the user doesn't have votes left
+        val votesRemaining = (_sampleTrip.value as Resource.Success<Trip>).data.users.find { it.userID == "local" }?.votes
+        if ((votesRemaining ?:0) < 1) {
+            return
+        }
         // copy update and post
         viewModelScope.launch {
             val updatedTrip = (_sampleTrip.value as Resource.Success<Trip>).data.copy(
@@ -96,6 +101,11 @@ class UserViewModel(
     }
 
     fun removeSampleVote(id: String) {
+        // To be safe, don't allow users to remove votes if they have full votes
+        val votesRemaining = (_sampleTrip.value as Resource.Success<Trip>).data.users.find { it.userID == "local" }?.votes
+        if ((votesRemaining ?:0) >= (_sampleTrip.value as Resource.Success<Trip>).data.votesPerPerson) {
+            return
+        }
         // copy update and post
         viewModelScope.launch {
             val updatedTrip = (_sampleTrip.value as Resource.Success<Trip>).data.copy(
