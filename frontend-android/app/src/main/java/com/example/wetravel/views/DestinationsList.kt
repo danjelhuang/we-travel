@@ -47,6 +47,15 @@ fun DestinationsList(
     onSettingsButtonClicked: () -> Unit,
     userViewModel: UserViewModel
 ) {
+    val tripCodeResource by userViewModel.tripCode.observeAsState(initial = Resource.Loading)
+    val allTrips by userViewModel.allTrips.observeAsState(initial = Resource.Loading)
+    val user by userViewModel.user.observeAsState(initial = Resource.Loading)
+
+    if (tripCodeResource is Resource.Success && allTrips is Resource.Success && user is Resource.Success) {
+        Log.d("Frontend state after Join", (tripCodeResource as Resource.Success<String>).data)
+        Log.d("Frontend state after Join", (allTrips as Resource.Success<Map<String, Trip>>).data.toString())
+        Log.d("Frontend state after Join", (user as Resource.Success<User>).data.toString())
+    }
     // Assuming we have a list of destinations to display
     val destinations = listOf(
         // Add your destinations here, for example:

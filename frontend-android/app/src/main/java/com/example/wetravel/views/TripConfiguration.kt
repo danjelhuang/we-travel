@@ -1,3 +1,4 @@
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -34,9 +35,9 @@ import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
 import com.example.wetravel.models.Resource
 import com.example.wetravel.models.Trip
+import com.example.wetravel.models.TripUpdateRequest
 import com.example.wetravel.models.User
 import com.example.wetravel.models.UserViewModel
-import com.example.wetravel.views.CreateCodeContent
 
 @Composable
 fun TripConfigurationForm(
@@ -109,6 +110,7 @@ fun TripConfigurationForm(
                             tripName.value.text,
                             destinationCity.value.text,
                             finalDestinationCount.value.text,
+                            title,
                             userViewModel = userViewModel,
                             user = currentUser
                         )
@@ -180,16 +182,27 @@ private fun handleButtonClick(
     tripName: String,
     destinationCity: String,
     finalDestinationCount: String,
+    title: String,
     userViewModel: UserViewModel,
     user: String
 ) {
-    val tripData = Trip(
-        name = tripName,
-        city = destinationCity,
-        finalDestinationCount = finalDestinationCount.toInt(),
-        votesPerPerson = finalDestinationCount.toInt(),
-        adminUserID = user,
-        phase = "Adding"
-    )
-    userViewModel.createTrip(tripData)
+    if (title == "create") {
+        val tripData = Trip(
+            name = tripName,
+            city = destinationCity,
+            finalDestinationCount = finalDestinationCount.toInt(),
+            votesPerPerson = finalDestinationCount.toInt(),
+            adminUserID = user,
+            phase = "Adding"
+        )
+        userViewModel.createTrip(tripData)
+    } else {
+        val tripData = TripUpdateRequest(
+            name = tripName,
+            city = destinationCity,
+            finalDestinationCount = finalDestinationCount.toInt(),
+            votesPerPerson = finalDestinationCount.toInt()
+        )
+        userViewModel.updateTrip(tripData)
+    }
 }

@@ -70,6 +70,36 @@ class UserViewModel(
         }
     }
 
+    fun updateTrip(trip: TripUpdateRequest) {
+
+        viewModelScope.launch {
+            try {
+                Log.d("update trip", "Update Trip called")
+                Log.d("tripcode", _tripCode.toString())
+                Log.d("tripcode value", _tripCode.value.toString())
+                val currentTripID = Resource.Success(_tripCode.value).data.toString()
+                Log.d("resource cast", currentTripID)
+                val result = tripRepository.updateTrip(currentTripID, trip)
+                Log.d("result", result.toString())
+                if (result.isSuccess) {
+                    val newTrip = result.getOrNull()!!
+                    val currentTrips = _allTrips.value
+                    if (currentTrips is Resource.Success) {
+                        val updatedTrips = currentTrips.data.toMutableMap()
+                        updatedTrips[currentTripID] = newTrip
+                        _allTrips.postValue(Resource.Success(updatedTrips))
+                    } else {
+                        _allTrips.postValue(Resource.Error("Failed to add new trip to all trips"))
+                    }
+                } else {
+                    _tripCode.postValue(Resource.Error("The API call failed with an Error. Check the API Logs"))
+                }
+            } catch (e: Exception) {
+                _tripCode.postValue(Resource.Error("An exception occurred while calling the createTrip API"))
+            }
+        }
+    }
+
     fun getOrCreateUser(userID: String) {
         _user.value = Resource.Loading
 

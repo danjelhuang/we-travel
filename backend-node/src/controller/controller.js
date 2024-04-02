@@ -75,6 +75,7 @@ exports.updateTrip = async (req, res) => {
   const tripId = req.params.id;
   const updates = req.body;
   try {
+    console.log(tripId, updates)
     const result = await tripService.updateTrip(updates, tripId)
     if (!result.success) {
       res.status(404).json(result)

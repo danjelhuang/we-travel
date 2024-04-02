@@ -3,6 +3,7 @@ package com.example.wetravel.service
 import android.util.Log
 import com.example.wetravel.models.Destination
 import com.example.wetravel.models.Trip
+import com.example.wetravel.models.TripUpdateRequest
 import com.example.wetravel.models.User
 import com.example.wetravel.models.UserCreationRequest
 import com.example.wetravel.models.UserUpdateRequest
@@ -36,6 +37,8 @@ interface ApiService {
     @POST("add-participant-to-trip/{id}")
     suspend fun addParticipantToTrip(@Path("id") tripID: String, @Body userRequestBody: UserCreationRequest): Response<Unit>
 
+    @PATCH("trips/{id}")
+    suspend fun updateTrip(@Path("id") tripID: String, @Body tripRequestBody: TripUpdateRequest): Response<Trip>
 }
 
 
@@ -79,6 +82,20 @@ class TripRepository (private val apiService: ApiService) {
             } else {
                 // Return error
                 Result.failure(RuntimeException("Get Trip API call failed"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun updateTrip(tripID: String, tripConfiguration: TripUpdateRequest): Result<Trip> {
+        return try {
+            val response = apiService.updateTrip(tripID, tripConfiguration)
+            Log.d("Response from trips API", response.toString())
+            if (response.isSuccessful) {
+                Result.success(response.body()!!)
+            } else {
+                Result.failure(RuntimeException("Update Trip API call failed"))
             }
         } catch (e: Exception) {
             Result.failure(e)
