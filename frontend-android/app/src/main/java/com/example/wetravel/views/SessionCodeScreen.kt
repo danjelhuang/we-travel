@@ -99,7 +99,7 @@ fun EnterCodeContent(
                 textStyle = TextStyle(textAlign = TextAlign.Center)
             )
             Button(
-                onClick = { onJoinButtonClicked() },
+                onClick = { viewModel.joinTripByCode(code) },
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondary
