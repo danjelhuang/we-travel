@@ -25,9 +25,11 @@ class TripService {
       }
 
       await docRef.update(updates);
+      let trip = await docRef.get();
       return {
         success: true,
-        message: "Trip updated successfully",
+        id: doc.id,
+        ...trip.data()
       };
     } catch (error) {
       console.error("Error updating trip: ", error);
@@ -409,17 +411,11 @@ class TripService {
       let tripIDs = user.data().tripIds || [];
 
       tripIDs.push(tripID);
-      console.log(tripIDs)
       await docRef.update({
         tripIds: tripIDs
       });
       console.log("TripID added to User");
       user = await docRef.get();
-      console.log({
-        success: true,
-        id: user.id,
-        ...user.data()
-      })
       return {
         success: true,
         id: user.id,

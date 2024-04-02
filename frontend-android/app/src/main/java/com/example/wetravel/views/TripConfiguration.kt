@@ -34,9 +34,9 @@ import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
 import com.example.wetravel.models.Resource
 import com.example.wetravel.models.Trip
+import com.example.wetravel.models.TripUpdateRequest
 import com.example.wetravel.models.User
 import com.example.wetravel.models.UserViewModel
-import com.example.wetravel.views.CreateCodeContent
 
 @Composable
 fun TripConfigurationForm(
@@ -49,7 +49,6 @@ fun TripConfigurationForm(
     val tripName = remember { mutableStateOf(TextFieldValue()) }
     val destinationCity = remember { mutableStateOf(TextFieldValue()) }
     val finalDestinationCount = remember { mutableStateOf(TextFieldValue()) }
-    val numberOfVotesPerPerson = remember { mutableStateOf(TextFieldValue()) }
     val buttonText = if (title == "create") "create" else "save changes"
     val dmSansFamily = FontFamily(
         Font(
@@ -109,6 +108,7 @@ fun TripConfigurationForm(
                             tripName.value.text,
                             destinationCity.value.text,
                             finalDestinationCount.value.text,
+                            title,
                             userViewModel = userViewModel,
                             user = currentUser
                         )
@@ -180,16 +180,32 @@ private fun handleButtonClick(
     tripName: String,
     destinationCity: String,
     finalDestinationCount: String,
+    title: String,
     userViewModel: UserViewModel,
     user: String
 ) {
-    val tripData = Trip(
-        name = tripName,
-        city = destinationCity,
-        finalDestinationCount = finalDestinationCount.toInt(),
-        votesPerPerson = finalDestinationCount.toInt(),
-        adminUserID = user,
-        phase = "Adding"
-    )
-    userViewModel.createTrip(tripData)
+    if (title == "create") {
+        val tripData = Trip(
+            name = tripName,
+            city = destinationCity,
+            finalDestinationCount = finalDestinationCount.toInt(),
+            votesPerPerson = finalDestinationCount.toInt(),
+            adminUserID = user,
+            phase = "Adding"
+        )
+        userViewModel.createTrip(tripData)
+    } else {
+        val currentTripID = userViewModel.tripCode.value
+        if (currentTripID is Resource.Success) {
+            val tripID = currentTripID.data
+            val tripData = TripUpdateRequest(
+                id = tripID,
+                name = tripName,
+                city = destinationCity,
+                finalDestinationCount = finalDestinationCount.toInt(),
+                votesPerPerson = finalDestinationCount.toInt()
+            )
+            userViewModel.updateTrip(tripData)
+        }
+    }
 }
