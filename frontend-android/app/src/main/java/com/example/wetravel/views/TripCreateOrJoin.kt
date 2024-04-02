@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,71 +23,28 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.wetravel.R
 import com.example.wetravel.components.LogoTopAppBar
-import com.example.wetravel.components.Trip
 import com.example.wetravel.components.TripComponent
 import com.example.wetravel.models.Resource
+import com.example.wetravel.models.Trip
+import com.example.wetravel.models.User
 import com.example.wetravel.models.UserViewModel
 import com.example.wetravel.presentation.sign_in.UserData
-
-// TODO: link this with data model
-val trips = listOf(
-    Trip(
-        1,
-        "besties takeover ny fjwaieofjiwaoejfioawefjiowjviowejviowejviowahviowehiovawjiova",
-        "New York",
-        listOf(0, 1, 2, 3, 4),
-        0,
-        R.drawable.sample_destination_image
-    ),
-    Trip(
-        1, "end of term trip", "Tokyo", listOf(0, 1, 2), 0, R.drawable.sample_destination_image
-    ),
-    Trip(
-        1,
-        "weekend trip",
-        "Toronto",
-        listOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10),
-        0,
-        R.drawable.sample_destination_image
-    ),
-    Trip(
-        1, "end of term trip", "Tokyo", listOf(0, 1, 2), 0, R.drawable.sample_destination_image
-    ),
-    Trip(
-        1, "end of term trip", "Tokyo", listOf(0, 1, 2), 0, R.drawable.sample_destination_image
-    ),
-    Trip(
-        1, "end of term trip", "Tokyo", listOf(0, 1, 2), 0, R.drawable.sample_destination_image
-    ),
-    Trip(
-        1, "end of term trip", "Tokyo", listOf(0, 1, 2), 0, R.drawable.sample_destination_image
-    ),
-    Trip(
-        1, "end of term trip", "Tokyo", listOf(0, 1, 2), 0, R.drawable.sample_destination_image
-    ),
-    Trip(
-        1, "end of term trip", "Tokyo", listOf(0, 1, 2), 0, R.drawable.sample_destination_image
-    ),
-    Trip(
-        1, "end of term trip", "Tokyo", listOf(0, 1, 2), 0, R.drawable.sample_destination_image
-    ),
-)
-//val trips: List<Trip> = listOf()
 
 @Composable
 fun LandingPage(
@@ -98,13 +54,21 @@ fun LandingPage(
     onJoinTripButtonClicked: () -> Unit,
     userViewModel: UserViewModel
 ) {
+    val userResource by userViewModel.user.observeAsState(initial = Resource.Loading)
+    if (userResource is Resource.Success<*>) {
+        val user = (userResource as Resource.Success<User>).data
+
+        LaunchedEffect(user.userID) {
+            userViewModel.getAllTrips(user.userID)
+        }
+    }
 
     Scaffold(topBar = {
         LogoTopAppBar()
     }) { innerpadding ->
         Column(modifier = Modifier.padding(innerpadding)) {
             ProfileSection(userData, onSignOut)
-            TripList(trips, Modifier.weight(1f))
+            TripList(userViewModel, Modifier.weight(1f))
             CreateOrJoinTripBottomBar(onCreateTripButtonClicked, onJoinTripButtonClicked)
         }
     }
@@ -112,28 +76,58 @@ fun LandingPage(
 
 @Composable
 fun TripList(
-    trips: List<Trip>, modifier: Modifier
+    userViewModel: UserViewModel, modifier: Modifier
 ) {
-    if (trips.isNotEmpty()) {
-        LazyColumn(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(15.dp),
-            modifier = modifier.padding(10.dp)
-        ) {
-            itemsIndexed(trips) { _, trip ->
-                TripComponent(trip = trip)
+    val tripsResource by userViewModel.allTrips.observeAsState(initial = Resource.Loading)
+    val userResource by userViewModel.user.observeAsState(initial = Resource.Loading)
+    when {
+        tripsResource is Resource.Success<*> && userResource is Resource.Success<*> -> {
+            val trips = ArrayList((tripsResource as Resource.Success<Map<String, Trip>>).data.values)
+            val user = (userResource as Resource.Success<User>).data
+            Log.d("user", user.toString())
+            if (trips.isNotEmpty()) {
+                LazyColumn(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(15.dp),
+                    modifier = modifier.padding(10.dp)
+                ) {
+                    itemsIndexed(trips) { _, trip ->
+                        TripComponent(trip = trip,
+                            user.userID == trip.adminUserID,
+                            if (trip.phase == "Ended") "Ended" else trip.phase + " Phase")
+                    }
+                }
+            } else {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center,
+                    modifier = modifier.fillMaxWidth()
+                ) {
+                    Text(text = "Create or Join a trip", textAlign = TextAlign.Center)
+                }
             }
         }
-    } else {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = modifier.fillMaxWidth()
-        ) {
-            Text(text = "Create or Join a trip")
+        tripsResource is Resource.Loading || userResource is Resource.Loading -> {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = modifier.fillMaxWidth()
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+        tripsResource is Resource.Error || userResource is Resource.Error -> {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = modifier.fillMaxWidth()
+            ) {
+                val tripsErrorMessage = (tripsResource as Resource.Error).message
+                val userErrorMessage = (userResource as Resource.Error).message
+                Text(text = "Error: $tripsErrorMessage, $userErrorMessage", textAlign = TextAlign.Center)
+            }
         }
     }
-    
 }
 
 @Composable
