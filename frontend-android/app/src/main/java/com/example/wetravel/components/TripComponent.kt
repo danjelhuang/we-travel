@@ -1,14 +1,16 @@
 package com.example.wetravel.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -19,25 +21,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
-
-data class Trip(
-    val id: Int,
-    val name: String,
-    val city: String,
-    val participants: List<Int>,
-    val phase: Int,
-    val imageResId: Int
-)
+import com.example.wetravel.models.Trip
 
 @Composable
-fun TripComponent(trip: Trip) {
-    // Could use Card instead if we don't want the elevation
+fun TripComponent(trip: Trip, isAdmin: Boolean, phase: String) {
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
             defaultElevation = 2.dp
@@ -71,7 +65,7 @@ fun TripComponent(trip: Trip) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
                             painter = painterResource(id = R.drawable.destination_pin),
-                            contentDescription = "Location pin widget",
+                            contentDescription = "Location pin Icon",
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
@@ -81,23 +75,40 @@ fun TripComponent(trip: Trip) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
                             painter = painterResource(id = R.drawable.profile2users),
-                            contentDescription = "Participants widget",
+                            contentDescription = "Participants Icon",
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
-                            text = " ${trip.participants.size}", fontSize = 12.sp
+                            text = " ${trip.users.size}", fontSize = 12.sp
                         )
+                    }
+                    if (isAdmin) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Image(
+                                painter = painterResource(id = R.drawable.crown_icon),
+                                contentDescription = "Admin Icon",
+                                modifier = Modifier.size(16.dp),
+                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.primary)
+                            )
+
+                            Text(
+                                text = "Admin", fontSize = 12.sp
+                            )
+                        }
                     }
                 }
             }
-            Image(
-                painter = painterResource(id = trip.imageResId),
-                contentDescription = "${trip.name} image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(65.dp)
-                    .clip(RoundedCornerShape(8.dp))
-            )
+            Row(modifier = Modifier
+                .padding(10.dp)
+                .width(120.dp)
+                .height(30.dp)
+                .clip(RoundedCornerShape(8.dp))
+                .border(BorderStroke(2.dp, Color.Black), shape = RoundedCornerShape(8.dp)),
+                Arrangement.Center,
+                Alignment.CenterVertically
+            ) {
+                Text(text = phase, textAlign = TextAlign.Center)
+            }
         }
     }
 }

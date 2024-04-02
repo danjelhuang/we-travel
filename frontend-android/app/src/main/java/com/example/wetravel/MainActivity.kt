@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.IntentSenderRequest
@@ -55,8 +56,6 @@ import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
-import kotlin.math.log
-
 
 enum class Screens() {
     Login,
@@ -104,6 +103,7 @@ class TripDeserializer: JsonDeserializer<Trip> {
         val adminUserID = jsonObject.getAsJsonPrimitive("adminUserID").asString
         val votesPerPerson = jsonObject.getAsJsonPrimitive("votesPerPerson").asInt
         val phase = jsonObject.getAsJsonPrimitive("phase").asString
+        val finalDestinationCount = jsonObject.getAsJsonPrimitive("finalDestinationCount").asString
 
         val parsedUsers = parseUsersList(jsonObject.get("users"))
         val parsedDestinations = parseDestinationsList(jsonObject.get("destinationsList"))
@@ -116,7 +116,8 @@ class TripDeserializer: JsonDeserializer<Trip> {
             votesPerPerson = votesPerPerson,
             phase = phase,
             users = parsedUsers,
-            destinationsList = parsedDestinations
+            destinationsList = parsedDestinations,
+            finalDestinationCount = finalDestinationCount.toInt()
         )
 
         Log.d("DESERIALIZED", trip.toString())
@@ -222,8 +223,6 @@ fun WeTravelApp(
             LaunchedEffect(key1 = Unit) {
                 if (googleAuthUIClient.getSignedInUser() != null) {
                     userViewModel.getOrCreateUser(googleAuthUIClient.getSignedInUser()?.userId ?: "")
-                    userViewModel.getAllTrips(googleAuthUIClient.getSignedInUser()?.userId ?: "")
-
                     navController.navigate(Screens.TripCreateOrJoin.name)
                 }
             }
@@ -248,7 +247,6 @@ fun WeTravelApp(
                     ).show()
 
                     userViewModel.getOrCreateUser(googleAuthUIClient.getSignedInUser()?.userId ?: "")
-                    userViewModel.getAllTrips(googleAuthUIClient.getSignedInUser()?.userId ?: "")
                     navController.navigate(Screens.TripCreateOrJoin.name)
                     viewModel.resetState()
                 }
@@ -283,9 +281,11 @@ fun WeTravelApp(
                 userViewModel = userViewModel)
         }
         composable(route = Screens.CreateAccount.name) {
+            BackHandler(true) { navController.navigate(Screens.TripCreateOrJoin.name) }
             CreateAccountForm(onCreateAccountButtonClicked = { navController.navigate(Screens.TripCreateOrJoin.name) })
         }
         composable(route = Screens.TripConfiguration.name) {
+            BackHandler(true) { navController.navigate(Screens.TripCreateOrJoin.name) }
             TripConfigurationForm(
                 "create",
                 onButtonClicked = { navController.navigate(Screens.SessionCode.name) },
@@ -293,6 +293,7 @@ fun WeTravelApp(
             )
         }
         composable(route = Screens.JoinSession.name) {
+            BackHandler(true) { navController.navigate(Screens.TripCreateOrJoin.name) }
             JoinSessionScreen(
                 onJoinButtonClicked = { navController.navigate(Screens.DestinationsListScreen.name) },
                 onBackButtonClicked = { navController.navigate(Screens.TripCreateOrJoin.name) },
@@ -300,16 +301,19 @@ fun WeTravelApp(
             )
         }
         composable(route = Screens.SessionCode.name) {
+            BackHandler(true) { navController.navigate(Screens.TripCreateOrJoin.name) }
             SessionCodeScreen(
                 onContinueButtonClicked = { navController.navigate(Screens.DestinationsListScreen.name) },
                 userViewModel = userViewModel
             )
         }
         composable(route = Screens.DestinationsListScreen.name) {
+            BackHandler(true) { navController.navigate(Screens.TripCreateOrJoin.name) }
             DestinationsList(
                 onAddDestinationButtonClicked = { navController.navigate(Screens.AddDestination.name) },
                 onStartVotingButtonClicked = { navController.navigate(Screens.VotingScreen.name) },
-                onSettingsButtonClicked = { navController.navigate(Screens.EditTrip.name) }
+                onSettingsButtonClicked = { navController.navigate(Screens.EditTrip.name) },
+                userViewModel = userViewModel
             )
         }
         composable(route = Screens.AddDestination.name) {
@@ -320,12 +324,14 @@ fun WeTravelApp(
             )
         }
         composable(route = Screens.VotingScreen.name) {
+            BackHandler(true) { navController.navigate(Screens.TripCreateOrJoin.name) }
             DestinationsVotingList(
                 onEndVotingButtonClicked = { navController.navigate(Screens.VotingResults.name) },
                 onSettingsButtonClicked = { navController.navigate(Screens.EditTrip.name) }
             )
         }
         composable(route = Screens.VotingResults.name) {
+            BackHandler(true) { navController.navigate(Screens.TripCreateOrJoin.name) }
             VotingResultsMainScreen()
         }
         composable(route = Screens.EditTrip.name) {
