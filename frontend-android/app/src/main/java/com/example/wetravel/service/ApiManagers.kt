@@ -2,6 +2,7 @@ package com.example.wetravel.service
 
 import android.util.Log
 import com.example.wetravel.models.AddDestinationRequest
+import com.example.wetravel.models.AddDestinationResponse
 import com.example.wetravel.models.Destination
 import com.example.wetravel.models.Trip
 import com.example.wetravel.models.TripUpdateRequest
@@ -21,7 +22,7 @@ interface ApiService {
     suspend fun createTrip(@Body tripConfiguration: Trip): Response<Trip>
 
     @POST("trips/{id}/destinationsList")
-    suspend fun addDestination(@Path("id") tripID: String, @Body placeID: AddDestinationRequest) :Response<Trip>
+    suspend fun addDestination(@Path("id") tripID: String, @Body placeID: AddDestinationRequest) :Response<AddDestinationResponse>
 
     @POST("users")
     suspend fun createUser(@Body userRequestBody: UserCreationRequest): Response<User>
@@ -63,14 +64,15 @@ class TripRepository (private val apiService: ApiService) {
     }
 
 
-    suspend fun addDestination(tripID: String, placeID: String) : Result<Trip> {
+    suspend fun addDestination(tripID: String, placeID: String,) : Result<AddDestinationResponse> {
         return try {
             val requestBody = AddDestinationRequest(placeID)
             val response = apiService.addDestination(tripID, requestBody)
-            Log.d("Response from trips API", response.toString())
+            Log.d("Response from Add Destinations API", response.toString())
             if (response.isSuccessful) {
                 Result.success(response.body()!!)
-            } else {
+            }
+            else {
                 // Return error
                 Result.failure(RuntimeException("Add Destination API call failed"))
             }

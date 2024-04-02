@@ -146,7 +146,7 @@ class UserViewModel(
     }
 
 
-    fun addDestinations(tripID: String, placeID: String)
+    fun addDestinations(tripID: String, placeID: String, onError: (String) -> Unit, onSuccess: () -> Unit)
     {
         viewModelScope.launch {
             try {
@@ -154,16 +154,18 @@ class UserViewModel(
                 val result = tripRepository.addDestination(tripID, placeID)
                 Log.d("Add Destination Return Values: ", result.toString())
                 if (result.isSuccess) {
-                    // Load trip Data into tripData state var
-                    _tripCode.postValue(Resource.Success(result.getOrNull()!!.tripID)) // Shouldn't be null
+                    onSuccess()
+                    return@launch
                 } else {
-                    _tripCode.postValue(Resource.Error("The API call failed with an Error. Check the API Logs"))
+                    onError("Error adding destination. Destination may already exist")
+                    return@launch
+
                 }
             } catch (e: Exception) {
-                _tripCode.postValue(Resource.Error("An exception occurred while calling the createTrip API"))
+                onError("Error adding destination. Destination may already exist")
+                return@launch
             }
         }
-
     }
     fun joinTrip(tripID: String, onError: (String) -> Unit, onSuccess: () -> Unit) {
 
