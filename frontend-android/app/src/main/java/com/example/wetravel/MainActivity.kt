@@ -45,6 +45,7 @@ import com.example.wetravel.views.LandingPage
 import com.example.wetravel.views.SessionCodeScreen
 import com.example.wetravel.views.VotingResultsMainScreen
 import com.google.android.gms.auth.api.identity.Identity
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
@@ -209,7 +210,11 @@ fun WeTravelApp(
     lifecycleScope: CoroutineScope,
     applicationContext: Context
 ) {
-    val userViewModel = UserViewModel(tripRepository = tripRepository, userRepository = userRepository)
+    val db = FirebaseFirestore.getInstance();
+    val userViewModel = UserViewModel(
+        tripRepository = tripRepository, 
+        userRepository = userRepository,
+        db)
     NavHost(
         navController = navController,
         startDestination = Screens.Login.name,

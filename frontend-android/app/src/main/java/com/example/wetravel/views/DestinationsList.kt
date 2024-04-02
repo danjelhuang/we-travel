@@ -47,6 +47,9 @@ fun DestinationsList(
     onSettingsButtonClicked: () -> Unit,
     userViewModel: UserViewModel
 ) {
+    val allTrips by userViewModel.allTrips.observeAsState()
+    val tripCode by userViewModel.tripCode.observeAsState()
+
     // Assuming we have a list of destinations to display
     val destinations = listOf(
         // Add your destinations here, for example:
@@ -65,6 +68,21 @@ fun DestinationsList(
         ),
     )
 
+
+    when (allTrips) {
+        is Resource.Success -> {
+            val tripName = (allTrips as Resource.Success<Map<String, Trip>>).data[(tripCode as Resource.Success<String>).data]?.city
+            Scaffold(
+                topBar = { DestinationsListHeader(tripName = tripName!!, onSettingsButtonClicked) },
+                bottomBar = { DestinationsListFooter(onAddDestinationButtonClicked, onStartVotingButtonClicked) }
+            ) { innerPadding ->
+                DestinationsColumn(destinations = destinations, innerPadding = innerPadding)
+            }
+        } else -> {
+            Log.d("DestinationList", "all trips not at success state")
+        }
+    }
+
 //    val tripCodeResource by userViewModel.tripCode.observeAsState(initial = Resource.Loading)
 //    val allTrips by userViewModel.allTrips.observeAsState(initial = Resource.Loading)
 //    val user by userViewModel.user.observeAsState(initial = Resource.Loading)
@@ -75,12 +93,7 @@ fun DestinationsList(
 //        Log.d("Frontend state after Join", (user as Resource.Success<User>).data.toString())
 //    }
 
-    Scaffold(
-        topBar = { DestinationsListHeader(tripName = "Toronto", onSettingsButtonClicked) },
-        bottomBar = { DestinationsListFooter(onAddDestinationButtonClicked, onStartVotingButtonClicked) }
-    ) { innerPadding ->
-        DestinationsColumn(destinations = destinations, innerPadding = innerPadding)
-    }
+
 }
 
 

@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.wetravel.service.TripRepository
 import com.example.wetravel.service.UserRepository
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.launch
 
 // Below is a class to help us enforce state of data while we fetch from the backend
@@ -17,7 +19,10 @@ sealed class Resource<out T> {
 }
 
 class UserViewModel(
-    private val tripRepository: TripRepository, private val userRepository: UserRepository
+    private val tripRepository: TripRepository, 
+    private val userRepository: UserRepository,
+    private val db: FirebaseFirestore
+
 ) : ViewModel() {
     private val _tripCode = MutableLiveData<Resource<String>>()
     val tripCode: LiveData<Resource<String>> = _tripCode
@@ -29,6 +34,21 @@ class UserViewModel(
     val allTrips: LiveData<Resource<Map<String, Trip>>> = _allTrips
 
     /* TODO: More Fields here for UserViewModel...*/
+
+    /////////////////////////////////////////////////
+    // listener related vals
+
+    private val _tripId = MutableLiveData<String>()
+    val tripId: LiveData<String> = _tripId
+
+    private val _tripCity = MutableLiveData<String>()
+    val tripCity: LiveData<String> = _tripCity
+
+    private var tripListener: ListenerRegistration? = null
+
+
+
+    ////////////////////////////////////////////
 
     fun createTrip(trip: Trip) {
         _tripCode.value = Resource.Loading
@@ -45,6 +65,11 @@ class UserViewModel(
                         val updatedTrips = currentTrips.data.toMutableMap()
                         updatedTrips[newTrip.tripID] = newTrip
                         _allTrips.postValue(Resource.Success(updatedTrips))
+
+                        /// listener
+
+                        setTripId(newTrip.tripID)
+
                     } else {
                         _allTrips.postValue(Resource.Error("Failed to add new trip to all trips"))
                     }
@@ -214,5 +239,56 @@ class UserViewModel(
         }
 
     }
+
+    fun setTripId(newTripId: String) {
+        if (_tripId.value != newTripId) {
+            _tripId.value = newTripId
+            tripListener?.remove() // Remove the old listener
+            listenToTrip(newTripId) // Start listening to the new trip ID
+        }
+    }
+
+    fun listenToTrip(tripId: String) {
+        tripListener = db.collection("trips").document(tripId)
+            .addSnapshotListener { snapshot, e ->
+            if (e != null) {
+                Log.d("String","did not work lol")
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null && snapshot.exists()) {
+                _tripCity.postValue(snapshot.getString("city"))
+                val currentTrips = _allTrips.value
+                Log.d("listenToTrip", "listen")
+
+                if (currentTrips is Resource.Success) {
+                    val updatedMap = currentTrips.data.toMutableMap()
+                    // Add the new trip to the map
+                    val newTrip = updatedMap[tripId]?.copy(city = snapshot.getString("city")!!)
+                    updatedMap[tripId] = newTrip!!
+                    // Post the updated map
+                    _allTrips.postValue(Resource.Success(updatedMap))
+                    Log.d("joinTrip", "Trip Get successful")
+                } else {
+                    Log.d(
+                        "joinTrip",
+                        "Cannot update trips: Current trips state is not Success."
+                    )
+                }
+                _allTrips
+                // make new trip
+                // populate obj w snapshot values
+                // replace all trips map by trip id
+
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        tripListener?.remove()
+    }
+
+
 
 }
