@@ -18,8 +18,6 @@ import com.example.wetravel.models.Destination
 import com.example.wetravel.models.Resource
 import com.example.wetravel.models.Trip
 import com.example.wetravel.models.UserViewModel
-import com.example.wetravel.models.UserViewModel
-import java.util.UUID
 
 
 // The column of destination entries
@@ -56,8 +54,7 @@ fun DestinationsVotingList(
             VotingBottomCard(
                 onEndVotingButtonClicked,
                 maxVotes = (sampleTrip as Resource.Success<Trip>).data.votesPerPerson,
-                userVotesRemaining = (sampleTrip as Resource.Success<Trip>).data.users.find { it.userID == "local" }?.votes,
-            )
+                userVotesRemaining = (sampleTrip as Resource.Success<Trip>).data.users.find { it.userID == "local" }?.votes, userViewModel)
         }
     ) { innerPadding ->
 
