@@ -32,7 +32,13 @@ import com.example.wetravel.models.UserViewModel
 
 // The column of destination entries
 @Composable
-fun DestinationsVotingColumn(destinations: List<Destination>, innerPadding: PaddingValues, userViewModel: UserViewModel) {
+fun DestinationsVotingColumn(
+    destinations: List<Destination>,
+    innerPadding: PaddingValues,
+    userViewModel: UserViewModel,
+    tripID: String,
+    userID: String
+) {
     LazyColumn(
         modifier = Modifier
             .padding(innerPadding),
@@ -41,7 +47,12 @@ fun DestinationsVotingColumn(destinations: List<Destination>, innerPadding: Padd
             Row(
                 modifier = Modifier.padding(vertical = 8.dp, horizontal = 10.dp)
             ) {
-                VotingDestinationEntry(destination = destination, userViewModel = userViewModel)
+                VotingDestinationEntry(
+                    destination = destination,
+                    userViewModel = userViewModel,
+                    tripID = tripID,
+                    userID = userID
+                )
             }
 
         }
@@ -66,13 +77,7 @@ fun DestinationsVotingList(
         tripCodeResource is Resource.Success<*> && tripsResource is Resource.Success<*> && userResource is Resource.Success<*> -> {
             val tripCode = (tripCodeResource as Resource.Success<String>).data
             val trip = (tripsResource as Resource.Success<Map<String, Trip>>).data[tripCode]
-            val tripUsers = trip?.users
-            val user = (userResource as Resource.Success<User>).data
-
-
-//            Log.d("CLASS CHECK", "Trip users type: ${trip?.users?.javaClass}")
-            Log.d("USERS", "${tripUsers?.find { it.userID == user.userID }}")
-//            Log.d("LOOKING FOR THIS", "${trip?.users?.find { it.userID == user.userID }?.votes}")
+            val userID = (userResource as Resource.Success<User>).data.userID
 
             Scaffold(
                 topBar = { DestinationsVotingListHeader(
@@ -81,18 +86,22 @@ fun DestinationsVotingList(
                     onSettingsButtonClicked = onSettingsButtonClicked,
                 )},
 
-                //trip?.users?.find { it.userID == user.userID }?.votes ?: -1,
                 bottomBar = {
                     // TODO: Disable end voting for non-admin users
                     VotingBottomCard(
                         onEndVotingButtonClicked,
                         maxVotes = trip?.votesPerPerson ?: -1,
-                        userVotesRemaining = tripUsers?.find { it.userID == user.userID }?.votes ?: -1,
+                        destinations = trip?.destinationsList ?: listOf(),
                         userViewModel = userViewModel
                     )
                 }
             ) { innerPadding ->
-                DestinationsVotingColumn(destinations = trip?.destinationsList ?: emptyList(), innerPadding = innerPadding, userViewModel = userViewModel)
+                DestinationsVotingColumn(
+                    destinations = trip?.destinationsList ?: emptyList(),
+                    innerPadding = innerPadding,
+                    userViewModel = userViewModel,
+                    tripID = tripCode,
+                    userID = userID)
             }
         }
 

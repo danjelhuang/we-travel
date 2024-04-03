@@ -42,6 +42,13 @@ interface ApiService {
     @POST("add-participant-to-trip/{id}")
     suspend fun addParticipantToTrip(@Path("id") tripID: String, @Body userRequestBody: UserCreationRequest): Response<Unit>
 
+    @POST("trips/{id}/addVote/{placeId}/{userId}")
+    suspend fun addVote(@Path("id") tripID: String, @Path("placeId") placeID: String, @Path("userId") userID: String): Response<Unit>
+
+    @POST("trips/{id}/removeVote/{placeId}/{userId}")
+    suspend fun removeVote(@Path("id") tripID: String, @Path("placeId") placeID: String, @Path("userId") userID: String): Response<Unit>
+
+
     @PATCH("trips/{id}")
     suspend fun updateTrip(@Path("id") tripID: String, @Body tripRequestBody: TripUpdateRequest): Response<Trip>
 }
@@ -135,6 +142,37 @@ class TripRepository (private val apiService: ApiService) {
             } else {
                 // Return error
                 Result.failure(RuntimeException("AddParticipant to Trip API call failed"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun addVote(tripID: String, userID: String, placeID: String): Result<Unit> {
+        return try {
+            // TODO
+            val response = apiService.addVote(tripID = tripID, userID = userID, placeID = placeID)
+            Log.d("Cast vote", response.toString())
+            if (response.isSuccessful) {
+                Result.success(response.body()!!)
+            } else {
+                // Return error
+                Result.failure(RuntimeException("Casting vote to ${placeID} in ${tripID} failed"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun removeVote(tripID: String, userID: String, placeID: String): Result<Unit> {
+        return try {
+            val response = apiService.removeVote(tripID = tripID, userID = userID, placeID = placeID)
+            Log.d("Remove vote", response.toString())
+            if (response.isSuccessful) {
+                Result.success(response.body()!!)
+            } else {
+                // Return error
+                Result.failure(RuntimeException("Remove vote from ${placeID} in ${tripID} failed"))
             }
         } catch (e: Exception) {
             Result.failure(e)

@@ -127,7 +127,12 @@ fun DestinationsVotingListHeader(tripName: String, numParticipants: Int, onSetti
 
 // The special Voting Destination Entry
 @Composable
-fun VotingDestinationEntry(destination: Destination, userViewModel: UserViewModel) {
+fun VotingDestinationEntry(
+    destination: Destination,
+    userViewModel: UserViewModel,
+    tripID: String,
+    userID: String
+) {
     // Could use Card instead if we don't want the elevation
     ElevatedCard(
         elevation = CardDefaults.cardElevation(
@@ -206,7 +211,7 @@ fun VotingDestinationEntry(destination: Destination, userViewModel: UserViewMode
                                 modifier = Modifier
                                     .size(40.dp)
                                     .clickable {
-                                        userViewModel.castSampleVote(destination.placeId)
+                                        userViewModel.addVote(tripID = tripID, userID = userID, placeID = destination.placeId)
                                     }
                             )
                             Text(
@@ -220,7 +225,7 @@ fun VotingDestinationEntry(destination: Destination, userViewModel: UserViewMode
                         // Decrease vote button
                         FilledTonalButton(
                             onClick = {
-                                userViewModel.removeSampleVote(destination.placeId)
+                                userViewModel.removeVote(tripID = tripID, userID = userID, placeID = destination.placeId)
                             },
                             shape = RoundedCornerShape(20),
                             colors = ButtonDefaults.buttonColors(
@@ -246,8 +251,7 @@ fun VotingDestinationEntry(destination: Destination, userViewModel: UserViewMode
                             modifier = Modifier
                                 .padding(horizontal = 20.dp)
                                 .clickable {
-                                    userViewModel.castSampleVote(destination.placeId)
-                                    Log.d("Changed name", userViewModel.sampleTrip.value.toString())
+                                    userViewModel.addVote(tripID = tripID, userID = userID, placeID = destination.placeId)
                                 }
 
                         ) {
@@ -293,8 +297,8 @@ fun VotingDestinationEntry(destination: Destination, userViewModel: UserViewMode
 
 // Footer of the VotingPhase
 @Composable
-fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit, maxVotes: Int, userVotesRemaining:Int?, userViewModel: UserViewModel) {
-    val formattedUserVotes = userVotesRemaining ?: 0
+fun VotingBottomCard(onEndVotingButtonClicked: () -> Unit, maxVotes: Int, destinations: List<Destination>, userViewModel: UserViewModel) {
+    val formattedUserVotes: Int = maxVotes - destinations.sumOf { it.userVotes }
     val currentTripIDResource by userViewModel.tripCode.observeAsState(initial = Resource.Loading)
     val allTripsResource by userViewModel.allTrips.observeAsState(initial = Resource.Loading)
     Box(
