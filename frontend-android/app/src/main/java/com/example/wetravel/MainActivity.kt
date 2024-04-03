@@ -63,6 +63,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonParseException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
@@ -218,105 +219,74 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-// use Places API to get Destination Details
-fun getPlaceDetails(placeID: String, callback : (Destination) -> Unit)  {
-
+suspend fun getPlaceDetails(placeID: String): Destination {
     val placesClient = MainActivity.placesClient
-    val placeFields = listOf(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.RATING,
-        Place.Field.USER_RATINGS_TOTAL, Place.Field.TYPES, Place.Field.PHOTO_METADATAS)
+    val placeFields = listOf(
+        Place.Field.NAME,
+        Place.Field.ADDRESS,
+        Place.Field.RATING,
+        Place.Field.USER_RATINGS_TOTAL,
+        Place.Field.TYPES,
+        Place.Field.PHOTO_METADATAS
+    )
 
     val request = FetchPlaceRequest.newInstance(placeID, placeFields)
-    placesClient.fetchPlace(request)
-        .addOnSuccessListener { response: FetchPlaceResponse ->
-            val place = response.place
-            val placeName = place.name ?: ""
-            val placeAddress = place.address ?: ""
-            val placeRating = place.rating ?: -1.0
-            val placeReviewCount = place.userRatingsTotal ?: -1
-            val placeType = place.placeTypes?.get(0) ?: ""
-            var placeImageBitmap: Bitmap? = null
 
+    return try {
+        val response = placesClient.fetchPlace(request).await()
+        val place = response.place
 
-            // Check if the place has a photo metadata available
-            if (place.photoMetadatas != null && place.photoMetadatas!!.isNotEmpty()) {
-                // Get the first photo metadata
-                val photoMetadata = place.photoMetadatas!![0]
+        val placeName = place.name ?: ""
+        val placeAddress = place.address ?: ""
+        val placeRating = place.rating ?: -1.0
+        val placeReviewCount = place.userRatingsTotal ?: -1
+        val placeType = place.placeTypes?.getOrNull(0) ?: ""
 
-                // Get the bitmap image data
-                val photoRequest = FetchPhotoRequest.builder(photoMetadata)
-                    .setMaxWidth(550)
-                    .setMaxHeight(550)
-                    .build()
+        var placeImageBitmap: Bitmap? = null
 
-                placesClient.fetchPhoto(photoRequest)
-                    .addOnSuccessListener { fetchPhotoResponse: FetchPhotoResponse ->
-                        placeImageBitmap = fetchPhotoResponse.bitmap
-                        println("bitmap loaded")
-                       callback.invoke(
-                            Destination(
-                                placeId = placeID,
-                                name = placeName,
-                                address = placeAddress,
-                                rating = placeRating,
-                                reviewCount = placeReviewCount,
-                                type = placeType,
-                                imageBitmap = placeImageBitmap,
-                                totalVotes = 0,
-                                userVotes = 0
-                            )
-                        )
-                    }
+        // Check if the place has a photo metadata available
+        if (place.photoMetadatas != null && place.photoMetadatas!!.isNotEmpty()) {
+            // Get the first photo metadata
+            val photoMetadata = place.photoMetadatas!![0]
 
-                    .addOnFailureListener { exception ->
-                        println("Fetch Photo failed")
-                        callback.invoke(
-                            Destination (
-                                placeId = placeID,
-                                name = placeName,
-                                address = placeAddress,
-                                rating = placeRating,
-                                reviewCount = placeReviewCount,
-                                type = placeType,
-                                imageBitmap = placeImageBitmap,
-                                totalVotes = 0,
-                                userVotes = 0
-                            )
-                        )
-                }
-            } else {
-                callback.invoke(
-                    Destination (
-                        placeId = placeID,
-                        name = placeName,
-                        address = placeAddress,
-                        rating = placeRating,
-                        reviewCount = placeReviewCount,
-                        type = placeType,
-                        imageBitmap = null,
-                        totalVotes = 0,
-                        userVotes = 0
-                    )
-                )
-            }
+            // Get the bitmap image data
+            val photoRequest = FetchPhotoRequest.builder(photoMetadata)
+                .setMaxWidth(550)
+                .setMaxHeight(550)
+                .build()
+
+            val fetchPhotoResponse = placesClient.fetchPhoto(photoRequest).await()
+            placeImageBitmap = fetchPhotoResponse.bitmap
         }
-        .addOnFailureListener { e: Exception ->
-            println("FETCH PLACE DETAILS FAILED")
-            callback.invoke(
-                Destination (
-                    placeId = placeID,
-                    name = "",
-                    address = "",
-                    rating = -1.0,
-                    reviewCount = -1,
-                    type = "",
-                    imageBitmap = null,
-                    totalVotes = 0,
-                    userVotes = 0
-             )
-            )
-        }
+
+        Destination(
+            placeId = placeID,
+            name = placeName,
+            address = placeAddress,
+            rating = placeRating,
+            reviewCount = placeReviewCount,
+            type = placeType,
+            imageBitmap = placeImageBitmap,
+            totalVotes = 0,
+            userVotes = 0
+        )
+    } catch (e: Exception) {
+        // Handle failure
+        println("FETCH PLACE DETAILS FAILED: $e")
+        Destination(
+            placeId = placeID,
+            name = "",
+            address = "",
+            rating = -1.0,
+            reviewCount = -1,
+            type = "",
+            imageBitmap = null,
+            totalVotes = 0,
+            userVotes = 0
+        )
+    }
 }
+
 
 @Composable
 fun WeTravelApp(
