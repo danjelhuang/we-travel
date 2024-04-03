@@ -24,7 +24,6 @@ sealed class Resource<out T> {
 
 class UserViewModel(
     private val tripRepository: TripRepository,
-    private val tripRepository: TripRepository,
     private val userRepository: UserRepository,
     private val db: FirebaseFirestore
 
