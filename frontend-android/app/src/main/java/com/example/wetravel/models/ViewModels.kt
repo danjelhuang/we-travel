@@ -465,7 +465,7 @@ class UserViewModel(
                             Log.d("listenToTrip", "Updated trip: $newTrip")
                         }
 
-                        updatedMap[tripId] = newTrip!!
+                        updatedMap[tripId] = newTrip
                         // Post the updated map
                         _allTrips.postValue(Resource.Success(updatedMap))
 
