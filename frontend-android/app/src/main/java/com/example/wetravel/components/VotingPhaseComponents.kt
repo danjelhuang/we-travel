@@ -277,16 +277,16 @@ fun VotingDestinationEntry(destination: Destination, userViewModel: UserViewMode
 
             Spacer(modifier = Modifier.width(10.dp))
 
-
-            Image(
-                painter = painterResource(id = destination.imageResId),
-                contentDescription = "${destination.name} image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(65.dp)
-                    .clip(RoundedCornerShape(8.dp))
-
-            )
+            // TODO: LOAD BITMAP IMAGE
+//            Image(
+//                painter = painterResource(id = destination.imageResId),
+//                contentDescription = "${destination.name} image",
+//                contentScale = ContentScale.Crop,
+//                modifier = Modifier
+//                    .size(65.dp)
+//                    .clip(RoundedCornerShape(8.dp))
+//
+//            )
         }
     }
 }

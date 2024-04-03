@@ -157,15 +157,16 @@ fun DestinationEntry(destination: Destination) {
 
             Spacer(modifier = Modifier.weight(1f))
 
+            // TODO: LOAD BITMAP IMAGE
             // Destination image
-            Image(
-                painter = painterResource(id = destination.imageResId),
-                contentDescription = "${destination.name} image",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(65.dp)
-                    .clip(RoundedCornerShape(8.dp))
-            )
+//            Image(
+//                painter = painterResource(id = destination.imageResId),
+//                contentDescription = "${destination.name} image",
+//                contentScale = ContentScale.Crop,
+//                modifier = Modifier
+//                    .size(65.dp)
+//                    .clip(RoundedCornerShape(8.dp))
+//            )
         }
     }
 }
