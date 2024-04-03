@@ -19,7 +19,7 @@ sealed class Resource<out T> {
 }
 
 class UserViewModel(
-    private val tripRepository: TripRepository, 
+    private val tripRepository: TripRepository,
     private val userRepository: UserRepository,
     private val db: FirebaseFirestore
 
@@ -41,6 +41,10 @@ class UserViewModel(
     private val _tripId = MutableLiveData<String>()
     val tripId: LiveData<String> = _tripId
 
+    private val _snapshotUser = MutableLiveData<User>()
+    val snapshotUser: LiveData<User> = _snapshotUser
+
+
     private val _tripCity = MutableLiveData<String>()
     val tripCity: LiveData<String> = _tripCity
 
@@ -49,6 +53,7 @@ class UserViewModel(
 
     private var tripListener: ListenerRegistration? = null
 
+    _user.userID
 
 
     ////////////////////////////////////////////
@@ -248,7 +253,10 @@ class UserViewModel(
                     try {
                         Log.d("joinTrip", "Adding current participant to trip users")
                         val addParticipantResult =
-                            tripRepository.addParticipant(tripID = tripID, userID = currentUser.data.userID)
+                            tripRepository.addParticipant(
+                                tripID = tripID,
+                                userID = currentUser.data.userID
+                            )
 
                         if (!addParticipantResult.isSuccess) {
                             Log.d("joinTrip", "Add Participant Failed, userID not added to trip")
@@ -277,62 +285,163 @@ class UserViewModel(
     }
 
     fun listenToTrip(tripId: String) {
+
+        //val mystring = _snapshotUser.value.userID
+
+        // remove any existing listener?
+
         tripListener = db.collection("trips").document(tripId)
             .addSnapshotListener { snapshot, e ->
-            if (e != null) {
-                Log.d("String","did not work lol")
-                return@addSnapshotListener
-            }
+                if (e != null) {
+                    Log.d("String", "did not work lol")
+                    return@addSnapshotListener
+                }
 
-            if (snapshot != null && snapshot.exists()) {
-                _tripCity.postValue(snapshot.getString("city"))
-                ///// destinations snapshot
-                val destinationsMap: Map<String, Map<String, Long>>? = snapshot.data?.get("destinationsList") as? Map<String, Map<String, Long>>
-                Log.d("SnapshotLog", "destinationsMap: $destinationsMap")
-                destinationsMap?.let { destinations ->
-                    //map of destinations
-                    for ((destination, details) in destinations) {
-                        val totalVotes = details["totalVotes"] as? Long ?: 0
-                        val userVotesMap = details["userVotes"] as? Map<String, Long>
+                if (snapshot != null && snapshot.exists()) {
 
-                        // store into ViewModel
+
+                    val currentTrips = _allTrips.value
+                    Log.d("listenToTrip", "listen")
+
+                    if (currentTrips is Resource.Success) {
+
+                        // Snapshots
+
+                        val updatedMap = currentTrips.data.toMutableMap()
+                        val existingTrip = updatedMap[tripId]
+                        val currentUserId = (_user.value as Resource.Success<User>).data.userID
+
+                        // Add the new trip to the map
+
+                        // trip details: name, city, finalDestinationCount, votesPerPerson, phase
+
+                        val newTrip = existingTrip?.copy(
+                            name = snapshot.getString("name")!!,
+                            city = snapshot.getString("city")!!,
+                            finalDestinationCount = (snapshot.getLong("finalDestinationCount")
+                                ?: 0L).toInt(),
+                            votesPerPerson = (snapshot.getLong("votesPerPerson") ?: 0L).toInt(),
+                            phase = snapshot.getString("phase")!!
+                        )
+
+                        // destinationList details
+                        val destinationsMap = snapshot.get("destinationsList") as? Map<*, *>
+                        val destinationsCount = destinationsMap?.size ?: 0
+                        val existingDestinationsCount = existingTrip?.destinationsList?.size ?: 0
+
+
+                        // if a new destination has been added to destinationslist
+
+                        if (destinationsCount != existingDestinationsCount) {
+                            // a new destination has been added
+                            // val newDest = Destination();
+                            // newDest = shannons google maps API call
+                            // update the userId field in newTrip
+                        } else {
+
+                            // iterate through snapshot destinationsMap
+                            // for each Destination in destinationsMap,
+                            //       1. copy the totalVotes field into the newTrip
+                            //       2. look for the element in the userVotes map that matches userId in _snapshotUser.value.userID
+                            //       3. copy the corresponding integer value in <<userId: int>> to newTrip[Destination].userVotes
+
+                            val destinationList =
+                                snapshot.get("destinationList") as? List<Map<String, Any>>
+                                    ?: emptyList()
+
+                            // Iterating through the list to access individual items
+                            destinationList.forEach { destination ->
+                                destination.forEach { (placeID, details) ->
+                                    val detailsMap = details as Map<String, Any>
+                                    val totalVotes = detailsMap["totalVotes"] as? Int ?: 0
+                                    val userVotes =
+                                        detailsMap["userVotes"] as? Map<String, Int> ?: emptyMap()
+
+                                    // Log or use your data here
+                                    Log.d(
+                                        "FirestoreData",
+                                        "Place ID: $placeID, Total Votes: $totalVotes, User Votes: $userVotes"
+                                    )
+                                    
+                                    val tempTrip = newTrip?.copy(
+                                        totalVotes = totalVotes
+                                    )
+                                    newTrip.destinationsList[placeID].totalVotes =  totalVotes
+                                }
+                            }
+
+
+                            for ((destinationName, details) in destinationsMap) {
+
+                                val destinationDetails = details as Map<String, Any>
+
+                                val totalVotes =
+                                    (destinationDetails["totalVotes"] as? Number)?.toInt()
+                                        ?: continue
+                                val userVotesMap =
+                                    destinationDetails["userVotes"] as? Map<String, Number>
+                                        ?: continue
+
+                                val updatedDestination =
+                                    newTrip.destinationsMap[destinationName]?.copy(totalVotes = totalVotes)
+                                        ?: Destination()
+
+                                // Find the userVotes for the current user and update the destination object
+                                val userVotes = userVotesMap[currentUserId]?.toInt()
+                                    ?: 0 // Defaults to 0 if the user has no votes
+                                updatedDestination.userVotes[currentUserId] =
+                                    userVotes // Update or set the userVotes for this user
+
+                                // Put the updated destination back into the newTrip destinations map
+                                newTrip.destinationsMap[destinationName] = updatedDestination
+
+                            }
+
+
+                        }
+
+                        updatedMap[tripId] = newTrip!!
+                        // Post the updated map
+                        _allTrips.postValue(Resource.Success(updatedMap))
+
+                        Map<String, Obj<Int, Map<String, Int>>>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                        Log.d("joinTrip", "Trip Get successful")
+                    } else {
+                        Log.d(
+                            "joinTrip",
+                            "Cannot update trips: Current trips state is not Success."
+                        )
                     }
+                    _allTrips
+                    // make new trip
+                    // populate obj w snapshot values
+                    // replace all trips map by trip id
+
                 }
-
-                //testing
-
-
-                val currentTrips = _allTrips.value
-                Log.d("listenToTrip", "listen")
-
-                if (currentTrips is Resource.Success) {
-                    val updatedMap = currentTrips.data.toMutableMap()
-                    // Add the new trip to the map
-                    val newTrip = updatedMap[tripId]?.copy(city = snapshot.getString("city")!!)
-                    updatedMap[tripId] = newTrip!!
-                    // Post the updated map
-                    _allTrips.postValue(Resource.Success(updatedMap))
-                    Log.d("joinTrip", "Trip Get successful")
-                } else {
-                    Log.d(
-                        "joinTrip",
-                        "Cannot update trips: Current trips state is not Success."
-                    )
-                }
-                _allTrips
-                // make new trip
-                // populate obj w snapshot values
-                // replace all trips map by trip id
-
             }
-        }
     }
 
     override fun onCleared() {
         super.onCleared()
         tripListener?.remove()
     }
-
 
 
 }
