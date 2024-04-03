@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.wetravel.R
+import com.example.wetravel.getPlaceDetails
 import com.example.wetravel.service.TripRepository
 import com.example.wetravel.service.UserRepository
 import com.google.firebase.firestore.DocumentSnapshot
@@ -505,13 +506,13 @@ class UserViewModel(
                 )
                 updatedDestinationsList.add(updatedDestination)
             } else {
-//                val userVotesMap2 = entry.value["userVotes"] as? Map<String, Any> ?: emptyMap()
-//                val userVotes2 = (userVotesMap2[currentUserId] as? Number)?.toInt() ?: existingDestination.userVotes
-//                val newEntry: Destination? = null// TODO: placeDetails(entry.key) -> should return a Destination with all the fields populated
+                fetchPlaceDetails(entry.key)
+                Log.d("fetched place details" , _placeDetails.value.toString())
                 updatedDestinationsList.add(
+                    _placeDetails.value ?:
                     Destination(
                         placeId = entry.key,
-                        name = "Trip Name",
+                        name = "Default Trip Name (ERROR)",
                         address = "Address",
                         rating = 5.0,
                         reviewCount = 50,
@@ -544,9 +545,16 @@ class UserViewModel(
 //            }
 //        }
         Log.d("updateDestinations", updatedDestinationsList.toString())
-
-        // Call Shannons google function
         return newTrip.copy(destinationsList = updatedDestinationsList)
+    }
+
+    var _placeDetails  = MutableLiveData<Destination>()
+    fun fetchPlaceDetails(placeId: String) {
+        viewModelScope.launch {
+            // Perform asynchronous operation to fetch place details
+            val result = getPlaceDetails(placeId)
+            _placeDetails.value = result
+        }
     }
 
 
@@ -554,6 +562,9 @@ class UserViewModel(
         super.onCleared()
         tripListener?.remove()
     }
+
+    // Coroutine function to fetch place details and update LiveData
+
 
 
 }
