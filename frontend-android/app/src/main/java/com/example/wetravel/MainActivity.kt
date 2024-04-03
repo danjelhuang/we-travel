@@ -1,8 +1,9 @@
 package com.example.wetravel
 
 import AddDestinations
+import TripCreateForm
+import TripEditForm
 import PlacesClientManager
-import TripConfigurationForm
 import TripLoginSignup
 import android.app.Activity.RESULT_OK
 import android.content.Context
@@ -22,9 +23,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -67,7 +66,6 @@ import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.lang.reflect.Type
-
 
 enum class Screens() {
     Login,
@@ -143,7 +141,6 @@ class TripDeserializer: JsonDeserializer<Trip> {
     private fun parseDestinationsList(jsonElement: JsonElement?) : List<Destination> {
         return emptyList()
     }
-
 
     private fun parseUsersList(usersJson: JsonElement?) : List<TripUsers> {
         val userList = mutableListOf<TripUsers>()
@@ -337,7 +334,7 @@ fun WeTravelApp(
 ) {
     val db = FirebaseFirestore.getInstance();
     val userViewModel = UserViewModel(
-        tripRepository = tripRepository, 
+        tripRepository = tripRepository,
         userRepository = userRepository,
         db)
     NavHost(
@@ -423,8 +420,7 @@ fun WeTravelApp(
         }
         composable(route = Screens.TripConfiguration.name) {
             BackHandler(true) { navController.navigate(Screens.TripCreateOrJoin.name) }
-            TripConfigurationForm(
-                "create",
+            TripCreateForm(
                 onButtonClicked = { navController.navigate(Screens.SessionCode.name) },
                 userViewModel = userViewModel
             )
@@ -475,8 +471,7 @@ fun WeTravelApp(
             VotingResultsMainScreen()
         }
         composable(route = Screens.EditTrip.name) {
-            TripConfigurationForm(
-                "edit",
+            TripEditForm(
                 onButtonClicked = { navController.popBackStack() },
                 userViewModel = userViewModel
             )

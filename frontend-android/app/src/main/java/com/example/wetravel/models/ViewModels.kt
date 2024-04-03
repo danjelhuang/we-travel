@@ -24,6 +24,7 @@ sealed class Resource<out T> {
 
 class UserViewModel(
     private val tripRepository: TripRepository,
+    private val tripRepository: TripRepository,
     private val userRepository: UserRepository,
     private val db: FirebaseFirestore
 
@@ -149,7 +150,6 @@ class UserViewModel(
 
 
     /* TODO: More Fields here for UserViewModel...*/
-
     /////////////////////////////////////////////////
     // listener related vals
 
@@ -222,20 +222,12 @@ class UserViewModel(
                 val result = tripRepository.updateTrip(trip.tripID, trip)
                 Log.d("result", result.toString())
                 if (result.isSuccess) {
-                    val newTrip = result.getOrNull()!!
-                    val currentTrips = _allTrips.value
-                    if (currentTrips is Resource.Success) {
-                        val updatedTrips = currentTrips.data.toMutableMap()
-                        updatedTrips[trip.tripID] = newTrip
-                        _allTrips.postValue(Resource.Success(updatedTrips))
-                    } else {
-                        _allTrips.postValue(Resource.Error("Failed to update trip"))
-                    }
+                    Log.d("updateTrip", "Trip Updated successfully")
                 } else {
-                    _tripCode.postValue(Resource.Error("The API call failed with an Error. Check the API Logs"))
+                    Log.d("updateTrip", "Trip Update API call Failed")
                 }
             } catch (e: Exception) {
-                _tripCode.postValue(Resource.Error("An exception occurred while calling the updateTrip API"))
+                Log.d("updateTrip", "An exception occurred while calling the updateTrip API: $e")
             }
         }
     }
@@ -374,7 +366,6 @@ class UserViewModel(
                     } catch (e: Exception) {
                         _user.postValue(Resource.Error("An exception occurred while trying to join the trip."))
                     }
-
                 }
 
                 else -> {
@@ -418,7 +409,7 @@ class UserViewModel(
         _tripCode.postValue(Resource.Success(newTripCode))
     }
 
-    fun setTripId(newTripId: String) {
+    private fun setTripId(newTripId: String) {
         if (_tripId.value != newTripId) {
             _tripId.value = newTripId
             tripListener?.remove() // Remove the old listener
@@ -426,22 +417,15 @@ class UserViewModel(
         }
     }
 
-    fun listenToTrip(tripId: String) {
-
-        //val mystring = _snapshotUser.value.userID
-
-        // remove any existing listener?
-
+    private fun listenToTrip(tripId: String) {
         tripListener = db.collection("trips").document(tripId)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
-                    Log.d("String", "did not work lol")
+                    Log.d("listenToTrip", "did not work lol")
                     return@addSnapshotListener
                 }
 
                 if (snapshot != null && snapshot.exists()) {
-
-
                     val currentTrips = _allTrips.value
                     Log.d("listenToTrip", "listen")
 
