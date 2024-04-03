@@ -259,3 +259,19 @@ exports.updateUser = async (req, res) => {
     res.status(500).json({ error: 'Failed to update the user' });
   }
 }
+
+exports.updateFinalDestinations = async (req, res) => {
+  try {
+    const tripID = req.params.id
+    const result = await tripService.updateFinalDestinations(tripID)
+    if (!result.success) {
+      res.status(404).json(result)
+    } else {
+      console.log("Final Destinations Updated")
+      res.status(200).json({ success: result.success, message: result});
+    }
+  } catch (error) {
+    console.error('Error updating final destinations: ', error);
+    res.status(500).json({ error: 'Failed to update final destinations' });
+  }
+}

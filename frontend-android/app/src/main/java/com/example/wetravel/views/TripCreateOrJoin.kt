@@ -83,9 +83,11 @@ fun TripList(
 ) {
     val tripsResource by userViewModel.allTrips.observeAsState(initial = Resource.Loading)
     val userResource by userViewModel.user.observeAsState(initial = Resource.Loading)
+
     when {
         tripsResource is Resource.Success<*> && userResource is Resource.Success<*> -> {
             val trips = ArrayList((tripsResource as Resource.Success<Map<String, Trip>>).data.values)
+            Log.d("TripList", trips.toString())
             val user = (userResource as Resource.Success<User>).data
             Log.d("user", user.toString())
             if (trips.isNotEmpty()) {
@@ -101,7 +103,8 @@ fun TripList(
                             onClick = {
                                 userViewModel.updateTripCode(trip.tripID)
                                 onTripCardClicked(trip.phase)
-                            }
+                            },
+                            userViewModel = userViewModel
                         )
                     }
                 }

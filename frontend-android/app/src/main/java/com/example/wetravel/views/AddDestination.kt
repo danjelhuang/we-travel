@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import com.example.wetravel.R
 import com.example.wetravel.models.Resource
+import com.example.wetravel.models.Trip
 import com.example.wetravel.models.User
 import com.google.android.libraries.places.api.model.AutocompletePrediction
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
@@ -75,9 +76,11 @@ fun AddDestinations(
     placesClient : PlacesClient
 ) {
     val tripCodeResource by userViewModel.tripCode.observeAsState(initial = Resource.Loading)
+    val tripsResource by userViewModel.allTrips.observeAsState(initial = Resource.Loading)
     when {
-        tripCodeResource is Resource.Success<*> -> {
+        tripCodeResource is Resource.Success<*> && tripsResource is Resource.Success<*> -> {
             val tripCode = (tripCodeResource as Resource.Success<String>).data
+            val trip = (tripsResource as Resource.Success<Map<String, Trip>>).data[tripCode]
 
             val scope = rememberCoroutineScope()
 
@@ -178,7 +181,7 @@ fun AddDestinations(
                                 expanded = false
                                 if (it.isNotEmpty()) {
                                     scope.launch {
-                                        fetchPredictions(placesClient, it) { predictionsList ->
+                                        fetchPredictions(placesClient, it + trip?.city) { predictionsList ->
                                             predictions = predictionsList
                                         }
                                     }
@@ -226,7 +229,7 @@ fun AddDestinations(
                                         .clickable {
                                             category = prediction
                                                 .getPrimaryText(null)
-                                                .toString() + ", "
+                                                .toString() + ", " +
                                             prediction
                                                 .getSecondaryText(null)
                                                 .toString()

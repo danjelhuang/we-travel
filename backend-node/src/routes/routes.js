@@ -38,6 +38,8 @@ router.post('/remove-participant-from-trip/:id', tripController.removeParticipan
 // get user votes in a trip
 router.get('/trips/:tripID/userVotes/:userID', tripController.getUserVotes)
 
+router.patch('/updateFinalDestinations/:id', tripController.updateFinalDestinations)
+
 // #endregion
 
 module.exports = router;
