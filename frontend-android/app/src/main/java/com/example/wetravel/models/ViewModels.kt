@@ -376,4 +376,8 @@ class UserViewModel(
 
     }
 
+    fun updateTripCode(newTripCode: String) {
+        _tripCode.postValue(Resource.Success(newTripCode))
+    }
+
 }

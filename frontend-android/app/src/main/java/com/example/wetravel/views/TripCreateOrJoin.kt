@@ -52,6 +52,7 @@ fun LandingPage(
     onSignOut: () -> Unit,
     onCreateTripButtonClicked: () -> Unit,
     onJoinTripButtonClicked: () -> Unit,
+    onTripCardClicked: (phase: String) -> Unit,
     userViewModel: UserViewModel
 ) {
     val userResource by userViewModel.user.observeAsState(initial = Resource.Loading)
@@ -68,7 +69,7 @@ fun LandingPage(
     }) { innerpadding ->
         Column(modifier = Modifier.padding(innerpadding)) {
             ProfileSection(userData, onSignOut)
-            TripList(userViewModel, Modifier.weight(1f))
+            TripList(userViewModel, onTripCardClicked, Modifier.weight(1f))
             CreateOrJoinTripBottomBar(onCreateTripButtonClicked, onJoinTripButtonClicked)
         }
     }
@@ -76,7 +77,9 @@ fun LandingPage(
 
 @Composable
 fun TripList(
-    userViewModel: UserViewModel, modifier: Modifier
+    userViewModel: UserViewModel,
+    onTripCardClicked: (phase: String) -> Unit,
+    modifier: Modifier
 ) {
     val tripsResource by userViewModel.allTrips.observeAsState(initial = Resource.Loading)
     val userResource by userViewModel.user.observeAsState(initial = Resource.Loading)
@@ -93,8 +96,13 @@ fun TripList(
                 ) {
                     itemsIndexed(trips) { _, trip ->
                         TripComponent(trip = trip,
-                            user.userID == trip.adminUserID,
-                            if (trip.phase == "Ended") "Ended" else trip.phase + " Phase")
+                            isAdmin = user.userID == trip.adminUserID,
+                            phase = if (trip.phase == "Ended") "Ended" else trip.phase + " Phase",
+                            onClick = {
+                                userViewModel.updateTripCode(trip.tripID)
+                                onTripCardClicked(trip.phase)
+                            }
+                        )
                     }
                 }
             } else {

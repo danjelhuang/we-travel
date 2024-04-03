@@ -39,7 +39,7 @@ import com.example.wetravel.models.UserViewModel
 
 // Header of the Destinations List page
 @Composable
-fun DestinationsListHeader(tripName: String, onSettingsButtonClicked: () -> Unit) {
+fun DestinationsListHeader(tripName: String, userName: String, numParticipants: Int, onSettingsButtonClicked: () -> Unit) {
     Box(
         contentAlignment = Alignment.CenterStart,
         modifier = Modifier
@@ -50,7 +50,7 @@ fun DestinationsListHeader(tripName: String, onSettingsButtonClicked: () -> Unit
             horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = "User1's Trip to",
+                text = "${userName}'s Trip to",
                 style = TextStyle(
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
@@ -91,7 +91,7 @@ fun DestinationsListHeader(tripName: String, onSettingsButtonClicked: () -> Unit
                         )
                         Spacer(modifier = Modifier.width(2.dp))
                         Text(
-                            text = "4", // TODO: ADD STATE FOR USER COUNT
+                            text = numParticipants.toString(),
                             fontWeight = FontWeight.Bold,
                             color = Color.Black,
                             fontSize = 28.sp

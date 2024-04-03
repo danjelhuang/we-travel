@@ -403,6 +403,14 @@ fun WeTravelApp(
                 },
                 onCreateTripButtonClicked = { navController.navigate(Screens.TripConfiguration.name) },
                 onJoinTripButtonClicked = { navController.navigate(Screens.JoinSession.name) },
+                onTripCardClicked = { phase ->
+                    when (phase) {
+                        "Adding" -> navController.navigate(Screens.DestinationsListScreen.name)
+                        "Voting" -> navController.navigate(Screens.VotingScreen.name)
+                        "Ended" -> navController.navigate(Screens.VotingResults.name)
+                        else -> Log.d("Navigate to Trip", "Invalid Phase bro")
+                    }
+                },
                 userViewModel = userViewModel)
         }
         composable(route = Screens.CreateAccount.name) {
@@ -438,7 +446,8 @@ fun WeTravelApp(
                 onAddDestinationButtonClicked = { navController.navigate(Screens.AddDestination.name) },
                 onStartVotingButtonClicked = { navController.navigate(Screens.VotingScreen.name) },
                 onSettingsButtonClicked = { navController.navigate(Screens.EditTrip.name) },
-                userViewModel = userViewModel
+                userViewModel = userViewModel,
+                userName = googleAuthUIClient.getSignedInUser()?.username
             )
         }
         composable(route = Screens.AddDestination.name) {
