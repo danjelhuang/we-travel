@@ -139,8 +139,43 @@ class TripDeserializer: JsonDeserializer<Trip> {
 
     // TODO: Destinations list must be parsed properly
     // Here, create Destination objects by calling the google maps Place API
-    private fun parseDestinationsList(jsonElement: JsonElement?) : List<Destination> {
-        return emptyList()
+    private fun parseDestinationsList(destListJson: JsonElement?) : List<Destination> {
+        val destList = mutableListOf<Destination>()
+        val userID = "test"
+
+        destListJson?.let { json ->
+            if (json.isJsonObject) {
+                val jsonObject = json.asJsonObject
+                for ((destID, votesMapJson) in jsonObject.entrySet()) {
+                    val votesMap = votesMapJson.asJsonObject
+                    val userVoteCount = votesMap.get(userID)?.asInt ?: 0
+
+                    // google call
+                    val newDest = Destination(
+                        placeId = destID,
+                        name = "",
+                        address = "",
+                        rating = 0.0,
+                        reviewCount = 0,
+                        type = "",
+                        imageBitmap = null,
+                        totalVotes = 0,
+                        userVotes = userVoteCount,
+                        userId = "",
+                    )
+
+
+
+                    destList.add(newDest)
+                }
+            }
+        }
+
+        return destList
+
+    // incomplete
+
+
     }
 
 
