@@ -54,8 +54,7 @@ fun DestinationsVotingList(
             VotingBottomCard(
                 onEndVotingButtonClicked,
                 maxVotes = (sampleTrip as Resource.Success<Trip>).data.votesPerPerson,
-                userVotesRemaining = (sampleTrip as Resource.Success<Trip>).data.users.find { it.userID == "local" }?.votes,
-            )
+                userVotesRemaining = (sampleTrip as Resource.Success<Trip>).data.users.find { it.userID == "local" }?.votes, userViewModel)
         }
     ) { innerPadding ->
 

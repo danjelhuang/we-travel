@@ -79,7 +79,7 @@ fun DestinationsList(
 
     Scaffold(
         topBar = { DestinationsListHeader(tripName = "Toronto", onSettingsButtonClicked) },
-        bottomBar = { DestinationsListFooter(onAddDestinationButtonClicked, onStartVotingButtonClicked) }
+        bottomBar = { DestinationsListFooter(onAddDestinationButtonClicked, onStartVotingButtonClicked, userViewModel) }
     ) { innerPadding ->
         when (sampleTrip) {
             is Resource.Success -> {
