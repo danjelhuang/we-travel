@@ -9,22 +9,13 @@ data class Destination(
     val placeId: String,
     val name: String,
     val address: String,
-    val rating: String,
-    val reviewCount: Int,
-    val imageResId: Int,
-    val totalVotes: Int,
-    val userVotes: Int,
-    val description: String
-)
-
-data class APIDestinationData (
-    val placeId: String,
-    val name: String,
-    val address: String,
     val rating: Double,
-    val reviewCount : Int,
-    val type : String,
-    val imageBitmap : Bitmap?
+    val reviewCount: Int,
+    val type: String,
+    val imageBitmap: Bitmap?,
+    val totalVotes: Int,
+    val userVotes : Int,
+    val userId: String,
 )
 
 // ENUM for voting phase

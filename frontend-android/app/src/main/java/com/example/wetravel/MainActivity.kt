@@ -22,6 +22,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -31,7 +32,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.wetravel.models.APIDestinationData
 import com.example.wetravel.models.Destination
 import com.example.wetravel.models.Trip
 import com.example.wetravel.models.TripUsers
@@ -50,7 +50,6 @@ import com.example.wetravel.views.LandingPage
 import com.example.wetravel.views.SessionCodeScreen
 import com.example.wetravel.views.VotingResultsMainScreen
 import com.google.android.gms.auth.api.identity.Identity
-import com.google.android.libraries.places.api.model.PhotoMetadata
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPhotoRequest
 import com.google.android.libraries.places.api.net.FetchPhotoResponse
@@ -141,7 +140,6 @@ class TripDeserializer: JsonDeserializer<Trip> {
     // TODO: Destinations list must be parsed properly
     // Here, create Destination objects by calling the google maps Place API
     private fun parseDestinationsList(jsonElement: JsonElement?) : List<Destination> {
-        ///
         return emptyList()
     }
 
@@ -222,8 +220,10 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-fun getPlaceDetails(placeID: String, callback : (APIDestinationData) -> Unit)  {
-    println("CALLING PLACES CLIENT")
+
+// use Places API to get Destination Details
+fun getPlaceDetails(placeID: String, callback : (Destination) -> Unit)  {
+
     val placesClient = MainActivity.placesClient
     val placeFields = listOf(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.RATING,
         Place.Field.USER_RATINGS_TOTAL, Place.Field.TYPES, Place.Field.PHOTO_METADATAS)
@@ -255,16 +255,18 @@ fun getPlaceDetails(placeID: String, callback : (APIDestinationData) -> Unit)  {
                     .addOnSuccessListener { fetchPhotoResponse: FetchPhotoResponse ->
                         placeImageBitmap = fetchPhotoResponse.bitmap
                         println("bitmap loaded")
-                        // make sure bitmap is not null before continuing
                        callback.invoke(
-                            APIDestinationData(
+                            Destination(
                                 placeId = placeID,
                                 name = placeName,
                                 address = placeAddress,
                                 rating = placeRating,
                                 reviewCount = placeReviewCount,
                                 type = placeType,
-                                imageBitmap = placeImageBitmap
+                                imageBitmap = placeImageBitmap,
+                                totalVotes = 0,
+                                userVotes = 0,
+                                userId = ""
                             )
                         )
                     }
@@ -272,27 +274,33 @@ fun getPlaceDetails(placeID: String, callback : (APIDestinationData) -> Unit)  {
                     .addOnFailureListener { exception ->
                         println("Fetch Photo failed")
                         callback.invoke(
-                            APIDestinationData(
-                            placeId = placeID,
-                            name = placeName,
-                            address = placeAddress,
-                            rating = placeRating,
-                            reviewCount = placeReviewCount,
-                            type = placeType,
-                            imageBitmap = null
+                            Destination (
+                                placeId = placeID,
+                                name = placeName,
+                                address = placeAddress,
+                                rating = placeRating,
+                                reviewCount = placeReviewCount,
+                                type = placeType,
+                                imageBitmap = placeImageBitmap,
+                                totalVotes = 0,
+                                userVotes = 0,
+                                userId = ""
+                            )
                         )
-                    )
                 }
             } else {
                 callback.invoke(
-                    APIDestinationData(
+                    Destination (
                         placeId = placeID,
                         name = placeName,
                         address = placeAddress,
                         rating = placeRating,
                         reviewCount = placeReviewCount,
                         type = placeType,
-                        imageBitmap = null
+                        imageBitmap = null,
+                        totalVotes = 0,
+                        userVotes = 0,
+                        userId = ""
                     )
                 )
             }
@@ -300,14 +308,17 @@ fun getPlaceDetails(placeID: String, callback : (APIDestinationData) -> Unit)  {
         .addOnFailureListener { e: Exception ->
             println("FETCH PLACE DETAILS FAILED")
             callback.invoke(
-                APIDestinationData(
+                Destination (
                     placeId = placeID,
                     name = "",
                     address = "",
                     rating = -1.0,
                     reviewCount = -1,
                     type = "",
-                    imageBitmap = null
+                    imageBitmap = null,
+                    totalVotes = 0,
+                    userVotes = 0,
+                    userId = ""
              )
             )
         }

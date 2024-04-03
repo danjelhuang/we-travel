@@ -68,59 +68,24 @@ fun VotingResultsMainScreen() {
     val destinations = listOf(
         // Add your destinations here, for exampl
         Destination(
-            UUID.randomUUID().toString(),
-            "MoMA",
-            "11 W 53rd St, New York",
-            "4.6",
-            50,
-            R.drawable.sample_destination_image,
-            totalVotes = 3,
-            userVotes = 1,
-            description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
+            placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
+            type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0, userId = ""
         ),
         Destination(
-            UUID.randomUUID().toString(),
-            "MoMA 2",
-            "11 W 53rd St, New York",
-            "4.6",
-            50,
-            R.drawable.sample_destination_image,
-            totalVotes = 3,
-            userVotes = 1,
-            description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
+            placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
+            type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0, userId = ""
         ),
         Destination(
-            UUID.randomUUID().toString(),
-            "MoMA 3",
-            "11 W 53rd St, New York",
-            "4.6",
-            50,
-            R.drawable.sample_destination_image,
-            totalVotes = 3,
-            userVotes = 0,
-            description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
+            placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
+            type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0, userId = ""
         ),
         Destination(
-            UUID.randomUUID().toString(),
-            "MoMA 4",
-            "11 W 53rd St, New York",
-            "4.6",
-            50,
-            R.drawable.sample_destination_image,
-            totalVotes = 4,
-            userVotes = 0,
-            description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
+            placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
+            type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0, userId = ""
         ),
         Destination(
-            UUID.randomUUID().toString(),
-            "MoMA 5",
-            "11 W 53rd St, New York",
-            "4.6",
-            50,
-            R.drawable.sample_destination_image,
-            totalVotes = 1,
-            userVotes = 0,
-            description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
+            placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
+            type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0, userId = ""
         ),
     )
 
