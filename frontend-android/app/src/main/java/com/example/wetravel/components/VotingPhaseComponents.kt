@@ -48,7 +48,7 @@ import com.example.wetravel.models.UserViewModel
 // The header of the page
 @Composable
 // TODO: This is repeated code from DestinationsList lol
-fun DestinationsVotingListHeader(tripName: String, onSettingsButtonClicked: () -> Unit) {
+fun DestinationsVotingListHeader(tripName: String, numParticipants: Int, onSettingsButtonClicked: () -> Unit) {
     Box(
         contentAlignment = Alignment.CenterStart,
         modifier = Modifier
@@ -100,7 +100,7 @@ fun DestinationsVotingListHeader(tripName: String, onSettingsButtonClicked: () -
                         )
                         Spacer(modifier = Modifier.width(2.dp))
                         Text(
-                            text = "4", // TODO: ADD STATE FOR USER COUNT
+                            text = numParticipants.toString(),
                             fontWeight = FontWeight.Bold,
                             color = Color.Black,
                             fontSize = 28.sp

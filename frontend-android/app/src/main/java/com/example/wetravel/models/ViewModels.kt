@@ -37,6 +37,9 @@ class UserViewModel(
     private val _allTrips = MutableLiveData<Resource<Map<String, Trip>>>()
     val allTrips: LiveData<Resource<Map<String, Trip>>> = _allTrips
 
+
+
+
     // Sample trip for frontend voting scaffolding
     private val _sampleTrip = MutableLiveData<Resource<Trip>>(
         Resource.Success<Trip>(
@@ -51,6 +54,10 @@ class UserViewModel(
                     TripUsers(
                         userID = "local",
                         votes = 5
+                    ),
+                    TripUsers(
+                        userID = "random",
+                        votes = 2
                     )
                 ),
                 destinationsList = listOf(

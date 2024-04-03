@@ -1,15 +1,23 @@
 package com.example.wetravel.views
 
+import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.wetravel.components.DestinationsVotingListHeader
 import com.example.wetravel.components.VotingBottomCard
@@ -17,6 +25,8 @@ import com.example.wetravel.components.VotingDestinationEntry
 import com.example.wetravel.models.Destination
 import com.example.wetravel.models.Resource
 import com.example.wetravel.models.Trip
+import com.example.wetravel.models.TripUsers
+import com.example.wetravel.models.User
 import com.example.wetravel.models.UserViewModel
 
 
@@ -48,18 +58,66 @@ fun DestinationsVotingList(
     // Trip from userViewModel
     val sampleTrip by userViewModel.sampleTrip.observeAsState()
 
-    Scaffold(
-        topBar = { DestinationsVotingListHeader(tripName = (sampleTrip as Resource.Success<Trip>).data.city, onSettingsButtonClicked) },
-        bottomBar = {
-            VotingBottomCard(
-                onEndVotingButtonClicked,
-                maxVotes = (sampleTrip as Resource.Success<Trip>).data.votesPerPerson,
-                userVotesRemaining = (sampleTrip as Resource.Success<Trip>).data.users.find { it.userID == "local" }?.votes, userViewModel)
+    val tripCodeResource by userViewModel.tripCode.observeAsState(initial = Resource.Loading)
+    val tripsResource by userViewModel.allTrips.observeAsState(initial = Resource.Loading)
+    val userResource by userViewModel.user.observeAsState(initial = Resource.Loading)
+
+    when {
+        tripCodeResource is Resource.Success<*> && tripsResource is Resource.Success<*> && userResource is Resource.Success<*> -> {
+            val tripCode = (tripCodeResource as Resource.Success<String>).data
+            val trip = (tripsResource as Resource.Success<Map<String, Trip>>).data[tripCode]
+            val tripUsers = trip?.users
+            val user = (userResource as Resource.Success<User>).data
+
+
+//            Log.d("CLASS CHECK", "Trip users type: ${trip?.users?.javaClass}")
+            Log.d("USERS", "${tripUsers?.find { it.userID == user.userID }}")
+//            Log.d("LOOKING FOR THIS", "${trip?.users?.find { it.userID == user.userID }?.votes}")
+
+            Scaffold(
+                topBar = { DestinationsVotingListHeader(
+                    tripName = trip?.name ?: "",
+                    numParticipants = trip?.users?.size ?: -1,
+                    onSettingsButtonClicked = onSettingsButtonClicked,
+                )},
+
+                //trip?.users?.find { it.userID == user.userID }?.votes ?: -1,
+                bottomBar = {
+                    // TODO: Disable end voting for non-admin users
+                    VotingBottomCard(
+                        onEndVotingButtonClicked,
+                        maxVotes = trip?.votesPerPerson ?: -1,
+                        userVotesRemaining = tripUsers?.find { it.userID == user.userID }?.votes ?: -1,
+                        userViewModel = userViewModel
+                    )
+                }
+            ) { innerPadding ->
+                DestinationsVotingColumn(destinations = trip?.destinationsList ?: emptyList(), innerPadding = innerPadding, userViewModel = userViewModel)
+            }
         }
-    ) { innerPadding ->
 
-        DestinationsVotingColumn(destinations = (sampleTrip as Resource.Success<Trip>).data.destinationsList, innerPadding = innerPadding, userViewModel = userViewModel)
+        tripCodeResource is Resource.Loading || tripsResource is Resource.Loading || userResource is Resource.Loading -> {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                CircularProgressIndicator()
+            }
+        }
 
+        tripCodeResource is Resource.Error || tripsResource is Resource.Error || userResource is Resource.Error -> {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                val tripCodeErrorMessage = (tripCodeResource as Resource.Error).message
+                val tripsErrorMessage = (tripsResource as Resource.Error).message
+                val userErrorMessage = (userResource as Resource.Error).message
+                Text(text = "Error: $tripCodeErrorMessage, $tripsErrorMessage, $userErrorMessage", textAlign = TextAlign.Center)
+            }
+        }
     }
 }
 
