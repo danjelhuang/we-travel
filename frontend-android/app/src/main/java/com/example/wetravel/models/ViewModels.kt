@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.wetravel.R
 import com.example.wetravel.service.TripRepository
 import com.example.wetravel.service.UserRepository
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.launch
@@ -22,6 +23,7 @@ sealed class Resource<out T> {
 }
 
 class UserViewModel(
+    private val tripRepository: TripRepository,
     private val tripRepository: TripRepository,
     private val userRepository: UserRepository,
     private val db: FirebaseFirestore
@@ -154,16 +156,18 @@ class UserViewModel(
     private val _tripId = MutableLiveData<String>()
     val tripId: LiveData<String> = _tripId
 
+    private val _snapshotUser = MutableLiveData<User>()
+    val snapshotUser: LiveData<User> = _snapshotUser
+
+
     private val _tripCity = MutableLiveData<String>()
     val tripCity: LiveData<String> = _tripCity
 
-    private val _tripName = MutableLiveData<String>()
-    val tripName: LiveData<String> = _tripName
-
-    private val _tripFinalDestinationCount = MutableLiveData<Int>()
-    val tripFinalDestinationCount: LiveData<Int> = _tripFinalDestinationCount
+    private val _destinationCurrentVotes = MutableLiveData<String>()
+    val destinationCurrentVotes: LiveData<String> = _destinationCurrentVotes
 
     private var tripListener: ListenerRegistration? = null
+
 
     ////////////////////////////////////////////
 
@@ -183,8 +187,7 @@ class UserViewModel(
                         updatedTrips[newTrip.tripID] = newTrip
                         _allTrips.postValue(Resource.Success(updatedTrips))
 
-                        /// listener
-
+                        // listener
                         setTripId(newTrip.tripID)
 
                     } else {
@@ -316,11 +319,15 @@ class UserViewModel(
                     val currentTrips = _allTrips.value
                     Log.d("joinTrip", currentTrips.toString())
                     if (currentTrips is Resource.Success) {
+                        // listener
+                        setTripId(newTrip.tripID)
+
                         val updatedMap = currentTrips.data.toMutableMap()
                         // Add the new trip to the map
                         updatedMap[tripID] = newTrip
                         // Post the updated map
                         _allTrips.postValue(Resource.Success(updatedMap))
+
                         Log.d("joinTrip", "Trip Get successful")
                     } else {
                         Log.d(
@@ -423,31 +430,83 @@ class UserViewModel(
                     Log.d("listenToTrip", "listen")
 
                     if (currentTrips is Resource.Success) {
+                        Log.d("listenToTrip", "currentTrips Success")
+                        // Snapshots
                         val updatedMap = currentTrips.data.toMutableMap()
-                        // Update all trip fields related to trip settings
-                        val newTrip = updatedMap[tripId]?.copy(
+                        val existingTrip = updatedMap[tripId]
+                        val currentUserId = (_user.value as Resource.Success<User>).data.userID
+
+                        // Add the new trip to the map
+
+                        // trip details: name, city, finalDestinationCount, votesPerPerson, phase
+
+                        var newTrip = existingTrip?.copy(
                             name = snapshot.getString("name")!!,
                             city = snapshot.getString("city")!!,
-                            finalDestinationCount = snapshot.getLong("finalDestinationCount")!!
-                                .toInt(),
-                            votesPerPerson = snapshot.getLong("votesPerPerson")!!.toInt()
+                            finalDestinationCount = (snapshot.getLong("finalDestinationCount")
+                                ?: 0L).toInt(),
+                            votesPerPerson = (snapshot.getLong("votesPerPerson") ?: 0L).toInt(),
+                            phase = snapshot.getString("phase")!!
                         )
 
-                        // Update the map and post the updated map
+                        // destinationList details
+                        val destinationsMap = snapshot.get("destinationsList") as? Map<String, Map<String, Any>> ?: emptyMap()
+                        val destinationsCount = destinationsMap.size
+                        val existingDestinationsCount = existingTrip?.destinationsList?.size ?: 0
+                        Log.d("listenToTrip", destinationsMap.toString())
+
+                        // if a new destination has been added to destinationsList
+                        if (destinationsCount != existingDestinationsCount) {
+                            newTrip = updateDestinations(newTrip!!, currentUserId, destinationsMap)
+                            Log.d("listenToTrip", newTrip.toString())
+                        } else {
+                            Log.d("listenToTrip", "Destination count equals existing destination count")
+                            newTrip = updateDestinations(newTrip!!, currentUserId, destinationsMap)
+                            Log.d("listenToTrip", "Updated trip: $newTrip")
+                        }
+
                         updatedMap[tripId] = newTrip!!
+                        // Post the updated map
                         _allTrips.postValue(Resource.Success(updatedMap))
+
                         Log.d("listenToTrip", "Trip Get successful")
                     } else {
                         Log.d(
                             "listenToTrip",
                             "Cannot update trips: Current trips state is not Success."
                         )
-
-
                     }
                 }
             }
     }
+
+    private fun updateDestinations(newTrip: Trip, currentUserId: String, destinationsMap: Map<String, Map<String, Any>>): Trip {
+        val updatedDestinationsList = mutableListOf<Destination>()
+
+        newTrip.destinationsList.forEach { existingDestination ->
+            val destinationData = destinationsMap[existingDestination.placeId]
+
+            if (destinationData != null) {
+                val totalVotes = (destinationData["totalVotes"] as? Number)?.toInt() ?: existingDestination.totalVotes
+                val userVotesMap = destinationData["userVotes"] as? Map<String, Any> ?: emptyMap()
+                val userVotes = (userVotesMap[currentUserId] as? Number)?.toInt() ?: existingDestination.userVotes
+
+                val updatedDestination = existingDestination.copy(
+                    totalVotes = totalVotes,
+                    userVotes = userVotes
+                )
+                updatedDestinationsList.add(updatedDestination)
+            } else {
+                // If no matching destination is found, add the existing destination without changes
+                updatedDestinationsList.add(existingDestination)
+            }
+        }
+        Log.d("updateDestinations", updatedDestinationsList.toString())
+
+        // Call Shannons google function
+        return newTrip.copy(destinationsList = updatedDestinationsList)
+    }
+
 
     override fun onCleared() {
         super.onCleared()
