@@ -3,9 +3,11 @@ package com.example.wetravel
 import AddDestinations
 import TripCreateForm
 import TripEditForm
+import PlacesClientManager
 import TripLoginSignup
 import android.app.Activity.RESULT_OK
 import android.content.Context
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -47,6 +49,12 @@ import com.example.wetravel.views.LandingPage
 import com.example.wetravel.views.SessionCodeScreen
 import com.example.wetravel.views.VotingResultsMainScreen
 import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPhotoRequest
+import com.google.android.libraries.places.api.net.FetchPhotoResponse
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.api.net.FetchPlaceResponse
+import com.google.android.libraries.places.api.net.PlacesClient
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializationContext
@@ -176,12 +184,19 @@ class MainActivity : ComponentActivity() {
         )
     }
 
+    companion object {
+        lateinit var placesClient : PlacesClient
+            private set
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Define the API Managers below
         val tripRepository = TripRepository(apiService = RetrofitBuilder.apiService)
         val userRepository = UserRepository(apiService = RetrofitBuilder.apiService)
+        PlacesClientManager.initialize(applicationContext)
+        placesClient = PlacesClientManager.getPlacesClient()
 
         setContent {
             ProjectTheme {
@@ -194,6 +209,7 @@ class MainActivity : ComponentActivity() {
                         tripRepository = tripRepository,
                         userRepository = userRepository,
                         googleAuthUIClient = googleAuthUIClient,
+                        placesClient = placesClient,
                         lifecycleScope = lifecycleScope,
                         applicationContext = applicationContext
                     )
@@ -203,18 +219,122 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+// use Places API to get Destination Details
+fun getPlaceDetails(placeID: String, callback : (Destination) -> Unit)  {
+
+    val placesClient = MainActivity.placesClient
+    val placeFields = listOf(Place.Field.NAME, Place.Field.ADDRESS, Place.Field.RATING,
+        Place.Field.USER_RATINGS_TOTAL, Place.Field.TYPES, Place.Field.PHOTO_METADATAS)
+
+    val request = FetchPlaceRequest.newInstance(placeID, placeFields)
+    placesClient.fetchPlace(request)
+        .addOnSuccessListener { response: FetchPlaceResponse ->
+            val place = response.place
+            val placeName = place.name ?: ""
+            val placeAddress = place.address ?: ""
+            val placeRating = place.rating ?: -1.0
+            val placeReviewCount = place.userRatingsTotal ?: -1
+            val placeType = place.placeTypes?.get(0) ?: ""
+            var placeImageBitmap: Bitmap? = null
+
+
+            // Check if the place has a photo metadata available
+            if (place.photoMetadatas != null && place.photoMetadatas!!.isNotEmpty()) {
+                // Get the first photo metadata
+                val photoMetadata = place.photoMetadatas!![0]
+
+                // Get the bitmap image data
+                val photoRequest = FetchPhotoRequest.builder(photoMetadata)
+                    .setMaxWidth(550)
+                    .setMaxHeight(550)
+                    .build()
+
+                placesClient.fetchPhoto(photoRequest)
+                    .addOnSuccessListener { fetchPhotoResponse: FetchPhotoResponse ->
+                        placeImageBitmap = fetchPhotoResponse.bitmap
+                        println("bitmap loaded")
+                       callback.invoke(
+                            Destination(
+                                placeId = placeID,
+                                name = placeName,
+                                address = placeAddress,
+                                rating = placeRating,
+                                reviewCount = placeReviewCount,
+                                type = placeType,
+                                imageBitmap = placeImageBitmap,
+                                totalVotes = 0,
+                                userVotes = 0,
+                                userId = ""
+                            )
+                        )
+                    }
+
+                    .addOnFailureListener { exception ->
+                        println("Fetch Photo failed")
+                        callback.invoke(
+                            Destination (
+                                placeId = placeID,
+                                name = placeName,
+                                address = placeAddress,
+                                rating = placeRating,
+                                reviewCount = placeReviewCount,
+                                type = placeType,
+                                imageBitmap = placeImageBitmap,
+                                totalVotes = 0,
+                                userVotes = 0,
+                                userId = ""
+                            )
+                        )
+                }
+            } else {
+                callback.invoke(
+                    Destination (
+                        placeId = placeID,
+                        name = placeName,
+                        address = placeAddress,
+                        rating = placeRating,
+                        reviewCount = placeReviewCount,
+                        type = placeType,
+                        imageBitmap = null,
+                        totalVotes = 0,
+                        userVotes = 0,
+                        userId = ""
+                    )
+                )
+            }
+        }
+        .addOnFailureListener { e: Exception ->
+            println("FETCH PLACE DETAILS FAILED")
+            callback.invoke(
+                Destination (
+                    placeId = placeID,
+                    name = "",
+                    address = "",
+                    rating = -1.0,
+                    reviewCount = -1,
+                    type = "",
+                    imageBitmap = null,
+                    totalVotes = 0,
+                    userVotes = 0,
+                    userId = ""
+             )
+            )
+        }
+}
+
 @Composable
 fun WeTravelApp(
     navController: NavHostController = rememberNavController(),
     tripRepository: TripRepository,
     userRepository: UserRepository,
     googleAuthUIClient: GoogleAuthUIClient,
+    placesClient : PlacesClient,
     lifecycleScope: CoroutineScope,
     applicationContext: Context
 ) {
     val db = FirebaseFirestore.getInstance();
     val userViewModel = UserViewModel(
-        tripRepository = tripRepository, 
+        tripRepository = tripRepository,
         userRepository = userRepository,
         db)
     NavHost(
@@ -284,6 +404,14 @@ fun WeTravelApp(
                 },
                 onCreateTripButtonClicked = { navController.navigate(Screens.TripConfiguration.name) },
                 onJoinTripButtonClicked = { navController.navigate(Screens.JoinSession.name) },
+                onTripCardClicked = { phase ->
+                    when (phase) {
+                        "Adding" -> navController.navigate(Screens.DestinationsListScreen.name)
+                        "Voting" -> navController.navigate(Screens.VotingScreen.name)
+                        "Ended" -> navController.navigate(Screens.VotingResults.name)
+                        else -> Log.d("Navigate to Trip", "Invalid Phase bro")
+                    }
+                },
                 userViewModel = userViewModel)
         }
         composable(route = Screens.CreateAccount.name) {
@@ -318,19 +446,24 @@ fun WeTravelApp(
                 onAddDestinationButtonClicked = { navController.navigate(Screens.AddDestination.name) },
                 onStartVotingButtonClicked = { navController.navigate(Screens.VotingScreen.name) },
                 onSettingsButtonClicked = { navController.navigate(Screens.EditTrip.name) },
-                userViewModel = userViewModel
+                userViewModel = userViewModel,
+                userName = googleAuthUIClient.getSignedInUser()?.username
             )
         }
         composable(route = Screens.AddDestination.name) {
             AddDestinations(
-                onAddDestinationButtonClicked = { navController.navigate(Screens.DestinationsListScreen.name) }
+                onAddDestinationButtonClicked = { navController.navigate(Screens.DestinationsListScreen.name) },
+                onLeaveButtonClicked = { navController.navigate(Screens.DestinationsListScreen.name)},
+                userViewModel = userViewModel,
+                placesClient = placesClient
             )
         }
         composable(route = Screens.VotingScreen.name) {
             BackHandler(true) { navController.navigate(Screens.TripCreateOrJoin.name) }
             DestinationsVotingList(
                 onEndVotingButtonClicked = { navController.navigate(Screens.VotingResults.name) },
-                onSettingsButtonClicked = { navController.navigate(Screens.EditTrip.name) }
+                onSettingsButtonClicked = { navController.navigate(Screens.EditTrip.name) },
+                userViewModel = userViewModel
             )
         }
         composable(route = Screens.VotingResults.name) {

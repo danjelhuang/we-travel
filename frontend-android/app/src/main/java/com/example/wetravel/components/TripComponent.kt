@@ -3,6 +3,7 @@ package com.example.wetravel.components
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,13 +32,12 @@ import com.example.wetravel.R
 import com.example.wetravel.models.Trip
 
 @Composable
-fun TripComponent(trip: Trip, isAdmin: Boolean, phase: String) {
+fun TripComponent(trip: Trip, isAdmin: Boolean, phase: String, onClick: () -> Unit) {
     ElevatedCard(
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 2.dp
-        ), colors = CardDefaults.cardColors(
-            containerColor = Color(0xFFF1FAEE),
-        ), shape = RoundedCornerShape(15.dp), modifier = Modifier.fillMaxWidth()
+        elevation = CardDefaults.cardElevation( defaultElevation = 2.dp ),
+        colors = CardDefaults.cardColors( containerColor = Color(0xFFF1FAEE) ),
+        shape = RoundedCornerShape(15.dp),
+        modifier = Modifier.fillMaxWidth().clickable { onClick() }
 
     ) {
         Row(
@@ -98,12 +98,13 @@ fun TripComponent(trip: Trip, isAdmin: Boolean, phase: String) {
                     }
                 }
             }
-            Row(modifier = Modifier
-                .padding(10.dp)
-                .width(120.dp)
-                .height(30.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .border(BorderStroke(2.dp, Color.Black), shape = RoundedCornerShape(8.dp)),
+            Row(
+                modifier = Modifier
+                    .padding(10.dp)
+                    .width(120.dp)
+                    .height(30.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .border(BorderStroke(2.dp, Color.Black), shape = RoundedCornerShape(8.dp)),
                 Arrangement.Center,
                 Alignment.CenterVertically
             ) {

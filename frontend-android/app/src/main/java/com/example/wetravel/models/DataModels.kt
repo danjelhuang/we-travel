@@ -1,5 +1,6 @@
 package com.example.wetravel.models
 
+import android.graphics.Bitmap
 import java.util.UUID
 
 
@@ -8,12 +9,13 @@ data class Destination(
     val placeId: String,
     val name: String,
     val address: String,
-    val rating: String,
+    val rating: Double,
     val reviewCount: Int,
-    val imageResId: Int,
-    val numOfVotes: Int,
-    val voted: Boolean,
-    val description: String
+    val type: String,
+    val imageBitmap: Bitmap?,
+    val totalVotes: Int,
+    val userVotes : Int,
+    val userId: String,
 )
 
 // ENUM for voting phase
@@ -23,6 +25,15 @@ enum class VotingPhase {
     VOTING,
     RESULTS
 }
+
+data class AddDestinationResponse(
+    val success: String,
+    val message: String
+)
+
+data class AddDestinationRequest(
+    val placeID: String
+)
 
 data class User(
     val userID: String = "",
@@ -60,6 +71,7 @@ data class TripUpdateRequest(
     val city: String = "",
     val finalDestinationCount: Int = 0,
     val votesPerPerson: Int = 0,
+    val phase: String = "Adding"
 )
 
 
