@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.wetravel.R
+import com.example.wetravel.getPlaceDetails
 import com.example.wetravel.service.TripRepository
 import com.example.wetravel.service.UserRepository
 import com.google.firebase.firestore.DocumentSnapshot
@@ -63,17 +64,38 @@ class UserViewModel(
                 destinationsList = listOf(
                     // Add your destinations here, for example:
                     Destination(
-                        placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
-                        type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0
+                        placeId = UUID.randomUUID().toString(),
+                        name = "MoMA",
+                        address = "11 W 53rd St, New York",
+                        rating = 4.6,
+                        reviewCount = 50,
+                        type = "attraction",
+                        imageBitmap = null,
+                        totalVotes = 0,
+                        userVotes = 0
                     ),
                     // Add more destinations...
                     Destination(
-                        placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
-                        type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0
+                        placeId = UUID.randomUUID().toString(),
+                        name = "MoMA",
+                        address = "11 W 53rd St, New York",
+                        rating = 4.6,
+                        reviewCount = 50,
+                        type = "attraction",
+                        imageBitmap = null,
+                        totalVotes = 0,
+                        userVotes = 0
                     ),
                     Destination(
-                        placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
-                        type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0
+                        placeId = UUID.randomUUID().toString(),
+                        name = "MoMA",
+                        address = "11 W 53rd St, New York",
+                        rating = 4.6,
+                        reviewCount = 50,
+                        type = "attraction",
+                        imageBitmap = null,
+                        totalVotes = 0,
+                        userVotes = 0
                     )
                 )
             )
@@ -88,8 +110,9 @@ class UserViewModel(
     // Cast a vote to the sample trip
     fun castSampleVote(id: String) {
         // Don't do anything if the user doesn't have votes left
-        val votesRemaining = (_sampleTrip.value as Resource.Success<Trip>).data.users.find { it.userID == "local" }?.votes
-        if ((votesRemaining ?:0) < 1) {
+        val votesRemaining =
+            (_sampleTrip.value as Resource.Success<Trip>).data.users.find { it.userID == "local" }?.votes
+        if ((votesRemaining ?: 0) < 1) {
             return
         }
         // copy update and post
@@ -119,8 +142,11 @@ class UserViewModel(
 
     fun removeSampleVote(id: String) {
         // To be safe, don't allow users to remove votes if they have full votes
-        val votesRemaining = (_sampleTrip.value as Resource.Success<Trip>).data.users.find { it.userID == "local" }?.votes
-        if ((votesRemaining ?:0) >= (_sampleTrip.value as Resource.Success<Trip>).data.votesPerPerson) {
+        val votesRemaining =
+            (_sampleTrip.value as Resource.Success<Trip>).data.users.find { it.userID == "local" }?.votes
+        if ((votesRemaining
+                ?: 0) >= (_sampleTrip.value as Resource.Success<Trip>).data.votesPerPerson
+        ) {
             return
         }
         // copy update and post
@@ -314,8 +340,12 @@ class UserViewModel(
     }
 
 
-    fun addDestinations(tripID: String, placeID: String, onError: (String) -> Unit, onSuccess: () -> Unit)
-    {
+    fun addDestinations(
+        tripID: String,
+        placeID: String,
+        onError: (String) -> Unit,
+        onSuccess: () -> Unit
+    ) {
         viewModelScope.launch {
             try {
                 Log.d("add destination", "Add Destination called")
@@ -335,6 +365,25 @@ class UserViewModel(
             }
         }
     }
+
+    fun updateFinalDestinations(tripID: String) {
+        viewModelScope.launch {
+            try {
+                val updateFinalDestinationsResult = tripRepository.updateFinalDestinations(tripID)
+                if (updateFinalDestinationsResult.isSuccess) {
+                    Log.d("updateFinalDestinations", "Final Destinations Updated successfully")
+                } else {
+                    Log.d("updateFinalDestinations", "Final Destinations Update API call Failed")
+                }
+            } catch (e: Exception) {
+                Log.d(
+                    "updateTrip",
+                    "An exception occurred while calling the updateFinalDestinations API: $e"
+                )
+            }
+        }
+    }
+
     fun joinTrip(tripID: String, onError: (String) -> Unit, onSuccess: () -> Unit) {
 
         _tripCode.value = Resource.Loading
@@ -436,6 +485,77 @@ class UserViewModel(
 
     }
 
+    fun updateViewModelState(tripID: String) {
+        val docRef = db.collection("trips").document(tripID)
+        docRef.get().addOnSuccessListener { snapshot ->
+            if (snapshot.exists()) {
+
+                val currentTrips = _allTrips.value
+                Log.d("updateViewModelState", "listen")
+
+                if (currentTrips is Resource.Success) {
+                    viewModelScope.launch {
+                        Log.d("updateViewModelState", "currentTrips Success")
+
+                        // Snapshots
+                        val updatedMap = currentTrips.data.toMutableMap()
+                        val existingTrip = updatedMap[tripID]
+                        val currentUserId = (_user.value as Resource.Success<User>).data.userID
+
+                        var newTrip = existingTrip?.copy(
+                            name = snapshot.getString("name")!!,
+                            city = snapshot.getString("city")!!,
+                            finalDestinationCount = (snapshot.getLong("finalDestinationCount")
+                                ?: 0L).toInt(),
+                            votesPerPerson = (snapshot.getLong("votesPerPerson") ?: 0L).toInt(),
+                            phase = snapshot.getString("phase")!!,
+                            users = snapshot.get("users")!! as? List<TripUsers> ?: emptyList()
+                        )
+
+//                        if (existingTrip.phase != newTrip.phase) {
+//                            // phase has been updated
+//
+//                        }
+
+                        // destinationList details
+                        val destinationsMap =
+                            snapshot.get("destinationsList") as? Map<String, Map<String, Any>>
+                                ?: emptyMap()
+                        val destinationsCount = destinationsMap.size
+                        val existingDestinationsCount = existingTrip?.destinationsList?.size ?: 0
+                        Log.d("updateViewModelState", destinationsMap.toString())
+
+                        // if a new destination has been added to destinaFtionsList
+                        if (destinationsCount != existingDestinationsCount) {
+                            newTrip = updateDestinations(newTrip!!, currentUserId, destinationsMap)
+                            Log.d("updateViewModelState", newTrip.toString())
+                        } else {
+                            Log.d(
+                                "updateViewModelState",
+                                "Destination count equals existing destination count"
+                            )
+                            newTrip = updateDestinations(newTrip!!, currentUserId, destinationsMap)
+                            Log.d("updateViewModelState", "Updated trip: $newTrip")
+                        }
+
+                        updatedMap[tripID] = newTrip
+                        // Post the updated map
+                        _allTrips.postValue(Resource.Success(updatedMap))
+
+                        Log.d("updateViewModelState", "Trip Get successful")
+                    }
+                } else {
+                    Log.d(
+                        "updateViewModelState",
+                        "Cannot update trips: Current trips state is not Success."
+                    )
+                }
+            }
+        }.addOnFailureListener { exception ->
+            Log.d("updateViewModelState", "Manual Snapshot Exception: $exception")
+        }
+    }
+
     fun updateTripCode(newTripCode: String) {
         _tripCode.postValue(Resource.Success(newTripCode))
         setTripId(newTripCode)
@@ -464,24 +584,30 @@ class UserViewModel(
 
                     if (currentTrips is Resource.Success) {
                         Log.d("listenToTrip", "currentTrips Success")
+
                         // Snapshots
                         val updatedMap = currentTrips.data.toMutableMap()
                         val existingTrip = updatedMap[tripId]
                         val currentUserId = (_user.value as Resource.Success<User>).data.userID
+                        viewModelScope.launch {
+                            Log.d("listenToTrip", "currentTrips Success")
+                            // Snapshots
+                            val updatedMap = currentTrips.data.toMutableMap()
+                            val existingTrip = updatedMap[tripId]
+                            val currentUserId = (_user.value as Resource.Success<User>).data.userID
 
-                        // Add the new trip to the map
+//                        // Set allTrips to Loading as we update it below
+//                        _allTrips.value = Resource.Loading
 
-                        // trip details: name, city, finalDestinationCount, votesPerPerson, phase
-
-                        var newTrip = existingTrip?.copy(
-                            name = snapshot.getString("name")!!,
-                            city = snapshot.getString("city")!!,
-                            finalDestinationCount = (snapshot.getLong("finalDestinationCount")
-                                ?: 0L).toInt(),
-                            votesPerPerson = (snapshot.getLong("votesPerPerson") ?: 0L).toInt(),
-                            phase = snapshot.getString("phase")!!,
-                            users = snapshot.get("users")!! as? List<TripUsers> ?: emptyList()
-                        )
+                            var newTrip = existingTrip?.copy(
+                                name = snapshot.getString("name")!!,
+                                city = snapshot.getString("city")!!,
+                                finalDestinationCount = (snapshot.getLong("finalDestinationCount")
+                                    ?: 0L).toInt(),
+                                votesPerPerson = (snapshot.getLong("votesPerPerson") ?: 0L).toInt(),
+                                phase = snapshot.getString("phase")!!,
+                                users = snapshot.get("users")!! as? List<TripUsers> ?: emptyList()
+                            )
 
 //                        if (existingTrip.phase != newTrip.phase) {
 //                            // phase has been updated
@@ -489,7 +615,9 @@ class UserViewModel(
 //                        }
 
                         // destinationList details
-                        val destinationsMap = snapshot.get("destinationsList") as? Map<String, Map<String, Any>> ?: emptyMap()
+                        val destinationsMap =
+                            snapshot.get("destinationsList") as? Map<String, Map<String, Any>>
+                                ?: emptyMap()
                         val destinationsCount = destinationsMap.size
                         val existingDestinationsCount = existingTrip?.destinationsList?.size ?: 0
                         Log.d("listenToTrip", destinationsMap.toString())
@@ -499,16 +627,20 @@ class UserViewModel(
                             newTrip = updateDestinations(newTrip!!, currentUserId, destinationsMap)
                             Log.d("listenToTrip", newTrip.toString())
                         } else {
-                            Log.d("listenToTrip", "Destination count equals existing destination count")
+                            Log.d(
+                                "listenToTrip",
+                                "Destination count equals existing destination count"
+                            )
                             newTrip = updateDestinations(newTrip!!, currentUserId, destinationsMap)
                             Log.d("listenToTrip", "Updated trip: $newTrip")
                         }
 
-                        updatedMap[tripId] = newTrip
-                        // Post the updated map
-                        _allTrips.postValue(Resource.Success(updatedMap))
+                            updatedMap[tripId] = newTrip
+                            // Post the updated map
+                            _allTrips.postValue(Resource.Success(updatedMap))
 
-                        Log.d("listenToTrip", "Trip Get successful")
+                            Log.d("listenToTrip", "Trip Get successful")
+                        }
                     } else {
                         Log.d(
                             "listenToTrip",
@@ -519,7 +651,7 @@ class UserViewModel(
             }
     }
 
-    private fun updateDestinations(newTrip: Trip, currentUserId: String, destinationsMap: Map<String, Map<String, Any>>): Trip {
+    private suspend fun updateDestinations(newTrip: Trip, currentUserId: String, destinationsMap: Map<String, Map<String, Any>>): Trip {
         val updatedDestinationsList = mutableListOf<Destination>()
 
         for (entry in destinationsMap) {
@@ -527,35 +659,41 @@ class UserViewModel(
             val existingDestination = newTrip.destinationsList.find { it.placeId == entry.key }
             if (existingDestination != null) {
                 val destinationData = entry.value
-                val totalVotes = (destinationData["totalVotes"] as? Number)?.toInt() ?: existingDestination.totalVotes
+                val totalVotes = (destinationData["totalVotes"] as? Number)?.toInt()
+                    ?: existingDestination.totalVotes
                 val userVotesMap = destinationData["userVotes"] as? Map<String, Any> ?: emptyMap()
-                val userVotes = (userVotesMap[currentUserId] as? Number)?.toInt() ?: existingDestination.userVotes
+                val userVotes = (userVotesMap[currentUserId] as? Number)?.toInt()
+                    ?: existingDestination.userVotes
 
-                val updatedDestination = existingDestination.copy(
-                    totalVotes = totalVotes,
-                    userVotes = userVotes
-                )
-                updatedDestinationsList.add(updatedDestination)
-            } else {
-//                val userVotesMap2 = entry.value["userVotes"] as? Map<String, Any> ?: emptyMap()
-//                val userVotes2 = (userVotesMap2[currentUserId] as? Number)?.toInt() ?: existingDestination.userVotes
-//                val newEntry: Destination? = null// TODO: placeDetails(entry.key) -> should return a Destination with all the fields populated
-                updatedDestinationsList.add(
-                    Destination(
-                        placeId = entry.key,
-                        name = "Trip Name",
-                        address = "Address",
-                        rating = 5.0,
-                        reviewCount = 50,
-                        type = "Type",
-                        imageBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888),
-                        totalVotes = 0,
-                        userVotes = 0
+                    val updatedDestination = existingDestination.copy(
+                        totalVotes = totalVotes,
+                        userVotes = userVotes
                     )
-                )
+                    updatedDestinationsList.add(updatedDestination)
+                } else {
+                    Log.d("fetched place details entry key", entry.key.toString())
 
+                    // Perform asynchronous operation to fetch place details
+                    val result = getPlaceDetails(entry.key)
+                    _placeDetails.value = result
+                    Log.d("fetched place details", _placeDetails.value.toString())
+                    updatedDestinationsList.add(
+                        _placeDetails.value ?: Destination(
+                            placeId = entry.key,
+                            name = "Default Trip Name (ERROR)",
+                            address = "Address",
+                            rating = 5.0,
+                            reviewCount = 50,
+                            type = "Type",
+                            imageBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888),
+                            totalVotes = 0,
+                            userVotes = 0
+                        )
+                    )
+
+
+                }
             }
-        }
 
 //        newTrip.destinationsList.forEach { existingDestination ->
 //            val destinationData = destinationsMap[existingDestination.placeId]
@@ -576,9 +714,16 @@ class UserViewModel(
 //            }
 //        }
         Log.d("updateDestinations", updatedDestinationsList.toString())
-
-        // Call Shannons google function
         return newTrip.copy(destinationsList = updatedDestinationsList)
+    }
+
+    var _placeDetails  = MutableLiveData<Destination>()
+    fun fetchPlaceDetails(placeId: String) {
+        viewModelScope.launch {
+            // Perform asynchronous operation to fetch place details
+            val result = getPlaceDetails(placeId)
+            _placeDetails.value = result
+        }
     }
 
 
@@ -586,6 +731,9 @@ class UserViewModel(
         super.onCleared()
         tripListener?.remove()
     }
+
+    // Coroutine function to fetch place details and update LiveData
+
 
 
 }

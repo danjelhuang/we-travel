@@ -65,8 +65,9 @@ fun DestinationsList(
 
     when {
         tripCodeResource is Resource.Success<*> && tripsResource is Resource.Success<*> && userResource is Resource.Success<*> -> {
+            val sampleTrip = (sampleTripResource as Resource.Success<Trip>).data
             val tripCode = (tripCodeResource as Resource.Success<String>).data
-            val trip = (tripsResource as Resource.Success<Map<String, Trip>>).data[tripCode]
+            val trip = (tripsResource as Resource.Success<Map<String, Trip>>).data[tripCode] ?: sampleTrip
             val user = (userResource as Resource.Success<User>).data
             Log.d("DestinationsList", trip.toString())
             Scaffold(

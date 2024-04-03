@@ -410,4 +410,5 @@ private fun handleEndVotingButtonClick(currentTripIDResource: Resource<String>, 
         )
     }
     userViewModel.updateTrip(updatedTrip)
+    userViewModel.updateFinalDestinations((currentTripIDResource as Resource.Success<String>).data)
 }

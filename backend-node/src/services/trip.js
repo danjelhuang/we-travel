@@ -426,6 +426,56 @@ class TripService {
       throw new Error('Failed to get user');
     }
   }
+
+  async updateFinalDestinations(tripID) {
+
+    try {
+      const docRef = db.collection('trips').doc(tripID);
+      const doc = await docRef.get();
+
+      if (!doc.exists) {
+        return {
+          success: false,
+          message: "Document not found"
+        };
+      }
+
+      const data = doc.data()
+      const finalDestinationCount = data.finalDestinationCount;
+      let destinationsList = data.destinationsList;
+
+      // Convert to array and sort 
+      let destinationsArray = Object.keys(destinationsList).map(key => {
+        return { id: key, ...destinationsList[key] };
+      });
+
+      destinationsArray.sort((a, b) => b.totalVotes - a.totalVotes);
+
+      // Keep top finalDestinationCount destinations
+      if (destinationsArray.length > finalDestinationCount) {
+        destinationsArray = destinationsArray.slice(0, finalDestinationCount);
+      }
+
+      // Convert it back to a map
+      const updatedDestinationsList = {}
+      destinationsArray.forEach(destination => {
+        updatedDestinationsList[destination.id] = {
+          totalVotes: destination.totalVotes,
+          userVotes: destination.userVotes
+        };
+      });
+
+      await docRef.update({ destinationsList: updatedDestinationsList }); // Update firebase
+      console.log("Final Destinations List successfully updated")
+      return { success: true, message: "Destinations list updated successfully"}
+    } catch (error) {
+      console.log('Error updating to final destinations list')
+      return {
+        success: false,
+        message: "Internal server error. Check Firebase Status"
+      };
+    }
+  }
 }
 
 module.exports = TripService;

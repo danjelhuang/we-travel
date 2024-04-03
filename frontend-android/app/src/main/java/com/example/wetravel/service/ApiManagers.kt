@@ -51,6 +51,9 @@ interface ApiService {
 
     @PATCH("trips/{id}")
     suspend fun updateTrip(@Path("id") tripID: String, @Body tripRequestBody: TripUpdateRequest): Response<Trip>
+
+    @PATCH("updateFinalDestinations/{id}")
+    suspend fun updateFinalDestinations(@Path("id") tripID: String): Response<Unit>
 }
 
 
@@ -179,7 +182,19 @@ class TripRepository (private val apiService: ApiService) {
         }
     }
 
-    // TODO: more functions related Trip specific stuff
+    suspend fun updateFinalDestinations(tripID: String): Result<Unit> {
+        return try {
+            val response = apiService.updateFinalDestinations(tripID = tripID)
+            Log.d("updateFinalDestinations", response.toString())
+            if (response.isSuccessful) {
+                Result.success(response.body()!!)
+            } else {
+                Result.failure(RuntimeException("updateFinalDestinations API call failed"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }
 
 class UserRepository (private val apiService: ApiService) {

@@ -18,6 +18,9 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,15 +32,23 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
+import com.example.wetravel.models.Resource
 import com.example.wetravel.models.Trip
+import com.example.wetravel.models.UserViewModel
 
 @Composable
-fun TripComponent(trip: Trip, isAdmin: Boolean, phase: String, onClick: () -> Unit) {
+fun TripComponent(trip: Trip, isAdmin: Boolean, phase: String, onClick: () -> Unit, userViewModel: UserViewModel) {
+    LaunchedEffect (key1 = Unit) {
+        userViewModel.updateViewModelState(trip.tripID)
+    }
+
     ElevatedCard(
         elevation = CardDefaults.cardElevation( defaultElevation = 2.dp ),
         colors = CardDefaults.cardColors( containerColor = Color(0xFFF1FAEE) ),
         shape = RoundedCornerShape(15.dp),
-        modifier = Modifier.fillMaxWidth().clickable { onClick() }
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
 
     ) {
         Row(
