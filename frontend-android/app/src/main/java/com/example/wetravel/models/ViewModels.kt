@@ -452,6 +452,75 @@ class UserViewModel(
 
     }
 
+    fun updateViewModelState(tripID: String) {
+        val docRef = db.collection("trips").document(tripID)
+        docRef.get().addOnSuccessListener { snapshot ->
+            if (snapshot.exists()) {
+
+                val currentTrips = _allTrips.value
+                Log.d("updateViewModelState", "listen")
+
+                if (currentTrips is Resource.Success) {
+                    Log.d("updateViewModelState", "currentTrips Success")
+
+                    // Snapshots
+                    val updatedMap = currentTrips.data.toMutableMap()
+                    val existingTrip = updatedMap[tripID]
+                    val currentUserId = (_user.value as Resource.Success<User>).data.userID
+
+                    var newTrip = existingTrip?.copy(
+                        name = snapshot.getString("name")!!,
+                        city = snapshot.getString("city")!!,
+                        finalDestinationCount = (snapshot.getLong("finalDestinationCount")
+                            ?: 0L).toInt(),
+                        votesPerPerson = (snapshot.getLong("votesPerPerson") ?: 0L).toInt(),
+                        phase = snapshot.getString("phase")!!,
+                        users = snapshot.get("users")!! as? List<TripUsers> ?: emptyList()
+                    )
+
+//                        if (existingTrip.phase != newTrip.phase) {
+//                            // phase has been updated
+//
+//                        }
+
+                    // destinationList details
+                    val destinationsMap =
+                        snapshot.get("destinationsList") as? Map<String, Map<String, Any>>
+                            ?: emptyMap()
+                    val destinationsCount = destinationsMap.size
+                    val existingDestinationsCount = existingTrip?.destinationsList?.size ?: 0
+                    Log.d("updateViewModelState", destinationsMap.toString())
+
+                    // if a new destination has been added to destinaFtionsList
+                    if (destinationsCount != existingDestinationsCount) {
+                        newTrip = updateDestinations(newTrip!!, currentUserId, destinationsMap)
+                        Log.d("updateViewModelState", newTrip.toString())
+                    } else {
+                        Log.d(
+                            "updateViewModelState",
+                            "Destination count equals existing destination count"
+                        )
+                        newTrip = updateDestinations(newTrip!!, currentUserId, destinationsMap)
+                        Log.d("updateViewModelState", "Updated trip: $newTrip")
+                    }
+
+                    updatedMap[tripID] = newTrip
+                    // Post the updated map
+                    _allTrips.postValue(Resource.Success(updatedMap))
+
+                    Log.d("updateViewModelState", "Trip Get successful")
+                } else {
+                    Log.d(
+                        "updateViewModelState",
+                        "Cannot update trips: Current trips state is not Success."
+                    )
+                }
+            }
+        }.addOnFailureListener { exception ->
+            Log.d("updateViewModelState", "Manual Snapshot Exception: $exception")
+        }
+    }
+
     fun updateTripCode(newTripCode: String) {
         _tripCode.postValue(Resource.Success(newTripCode))
         setTripId(newTripCode)
@@ -580,7 +649,6 @@ class UserViewModel(
                         userVotes = 0
                     )
                 )
-
             }
         }
 

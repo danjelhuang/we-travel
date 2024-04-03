@@ -23,6 +23,7 @@ import com.example.wetravel.components.VotingResultsFooter
 import com.example.wetravel.components.VotingResultsPathList
 import com.example.wetravel.models.Destination
 import com.example.wetravel.models.Resource
+import com.example.wetravel.models.Trip
 import com.example.wetravel.models.UserViewModel
 import java.util.UUID
 
@@ -66,7 +67,6 @@ fun ScrollableContent(destinations: List<Destination>, innerPadding: PaddingValu
 }
 
 // The actual page
-@Preview(showBackground = true)
 @Composable
 fun VotingResultsMainScreen(userViewModel: UserViewModel) {
     val allTripsResource by userViewModel.allTrips.observeAsState(initial = Resource.Loading)
@@ -76,8 +76,9 @@ fun VotingResultsMainScreen(userViewModel: UserViewModel) {
     ) { innerPadding ->
         when (allTripsResource) {
             is Resource.Success -> {
-                val  destinations = allTripsResource.data[(currentTripIDResource as Resource.Success<String>).data]
-                ScrollableContent(destinations = destinations, innerPadding = innerPadding)
+                val allTripsMap = (allTripsResource as Resource.Success<Map<String, Trip>>).data[(currentTripIDResource as Resource.Success<String>).data]
+                val destinations = allTripsMap?.destinationsList
+                ScrollableContent(destinations = destinations!!, innerPadding = innerPadding)
             }
 
             else -> {
