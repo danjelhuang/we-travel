@@ -14,8 +14,7 @@ data class Destination(
     val type: String,
     val imageBitmap: Bitmap?,
     val totalVotes: Int,
-    val userVotes : Int,
-    val userId: String,
+    val userVotes : Int
 )
 
 // ENUM for voting phase

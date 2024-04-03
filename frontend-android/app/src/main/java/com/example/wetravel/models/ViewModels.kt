@@ -57,16 +57,16 @@ class UserViewModel(
                     // Add your destinations here, for example:
                     Destination(
                         placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
-                        type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0, userId = ""
+                        type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0
                     ),
                     // Add more destinations...
                     Destination(
                         placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
-                        type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0, userId = ""
+                        type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0
                     ),
                     Destination(
                         placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
-                        type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0, userId = ""
+                        type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0
                     )
                 )
             )
@@ -483,10 +483,11 @@ class UserViewModel(
     private fun updateDestinations(newTrip: Trip, currentUserId: String, destinationsMap: Map<String, Map<String, Any>>): Trip {
         val updatedDestinationsList = mutableListOf<Destination>()
 
-        newTrip.destinationsList.forEach { existingDestination ->
-            val destinationData = destinationsMap[existingDestination.placeId]
-
-            if (destinationData != null) {
+        for (entry in destinationsMap) {
+            Log.d("Remote entry", entry.toString())
+            val existingDestination = newTrip.destinationsList.find { it.placeId == entry.key }
+            if (existingDestination != null) {
+                val destinationData = entry.value
                 val totalVotes = (destinationData["totalVotes"] as? Number)?.toInt() ?: existingDestination.totalVotes
                 val userVotesMap = destinationData["userVotes"] as? Map<String, Any> ?: emptyMap()
                 val userVotes = (userVotesMap[currentUserId] as? Number)?.toInt() ?: existingDestination.userVotes
@@ -497,10 +498,44 @@ class UserViewModel(
                 )
                 updatedDestinationsList.add(updatedDestination)
             } else {
-                // If no matching destination is found, add the existing destination without changes
-                updatedDestinationsList.add(existingDestination)
+//                val userVotesMap2 = entry.value["userVotes"] as? Map<String, Any> ?: emptyMap()
+//                val userVotes2 = (userVotesMap2[currentUserId] as? Number)?.toInt() ?: existingDestination.userVotes
+//                val newEntry: Destination? = null// TODO: placeDetails(entry.key) -> should return a Destination with all the fields populated
+                updatedDestinationsList.add(
+                    Destination(
+                        placeId = entry.key,
+                        name = "Trip Name",
+                        address = "Address",
+                        rating = 5.0,
+                        reviewCount = 50,
+                        type = "Type",
+                        imageBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888),
+                        totalVotes = 0,
+                        userVotes = 0
+                    )
+                )
+
             }
         }
+
+//        newTrip.destinationsList.forEach { existingDestination ->
+//            val destinationData = destinationsMap[existingDestination.placeId]
+//
+//            if (destinationData != null) {
+//                val totalVotes = (destinationData["totalVotes"] as? Number)?.toInt() ?: existingDestination.totalVotes
+//                val userVotesMap = destinationData["userVotes"] as? Map<String, Any> ?: emptyMap()
+//                val userVotes = (userVotesMap[currentUserId] as? Number)?.toInt() ?: existingDestination.userVotes
+//
+//                val updatedDestination = existingDestination.copy(
+//                    totalVotes = totalVotes,
+//                    userVotes = userVotes
+//                )
+//                updatedDestinationsList.add(updatedDestination)
+//            } else {
+//                // If no matching destination is found, add the existing destination without changes
+//                updatedDestinationsList.add(existingDestination)
+//            }
+//        }
         Log.d("updateDestinations", updatedDestinationsList.toString())
 
         // Call Shannons google function

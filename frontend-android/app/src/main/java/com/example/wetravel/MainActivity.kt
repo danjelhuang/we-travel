@@ -263,8 +263,7 @@ fun getPlaceDetails(placeID: String, callback : (Destination) -> Unit)  {
                                 type = placeType,
                                 imageBitmap = placeImageBitmap,
                                 totalVotes = 0,
-                                userVotes = 0,
-                                userId = ""
+                                userVotes = 0
                             )
                         )
                     }
@@ -281,8 +280,7 @@ fun getPlaceDetails(placeID: String, callback : (Destination) -> Unit)  {
                                 type = placeType,
                                 imageBitmap = placeImageBitmap,
                                 totalVotes = 0,
-                                userVotes = 0,
-                                userId = ""
+                                userVotes = 0
                             )
                         )
                 }
@@ -297,8 +295,7 @@ fun getPlaceDetails(placeID: String, callback : (Destination) -> Unit)  {
                         type = placeType,
                         imageBitmap = null,
                         totalVotes = 0,
-                        userVotes = 0,
-                        userId = ""
+                        userVotes = 0
                     )
                 )
             }
@@ -315,8 +312,7 @@ fun getPlaceDetails(placeID: String, callback : (Destination) -> Unit)  {
                     type = "",
                     imageBitmap = null,
                     totalVotes = 0,
-                    userVotes = 0,
-                    userId = ""
+                    userVotes = 0
              )
             )
         }
