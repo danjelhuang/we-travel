@@ -1,7 +1,9 @@
 package com.example.wetravel.components
 
+import android.widget.ImageView
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -111,12 +114,15 @@ fun DestinationEntry(destination: Destination) {
 
     ) {
         Row(
-            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .padding(10.dp)
                 .fillMaxWidth()
         ) {
-            Column {
+            Column (
+                modifier = Modifier.width(250.dp)
+            ){
                 Text(
                     text = destination.name,
                     fontWeight = FontWeight.Bold,
@@ -144,29 +150,42 @@ fun DestinationEntry(destination: Destination) {
                         contentDescription = "Location pin widget",
                         modifier = Modifier.size(16.dp)
                     )
+                    if (destination.reviewCount > 0) {
+                        Text(
+                            text = " ${destination.rating} "
+                        )
+                        Text(
+                            text = "(${destination.reviewCount})",
+                            fontSize = 14.sp
+                        )
+                    } else {
+                        Text(
+                            text = " No Reviews"
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(5.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
-                        text = " ${destination.rating} "
-                    )
-                    Text(
-                        text = "(${destination.reviewCount})",
-                        fontSize = 14.sp
+                        text = destination.type.replace('_', ' ').split(' ').joinToString(" ") { it.capitalize() }
                     )
                 }
             }
 
 
-            Spacer(modifier = Modifier.weight(1f))
+//            Spacer(modifier = Modifier.weight(1f))
 
-            // TODO: LOAD BITMAP IMAGE
             // Destination image
-//            Image(
-//                painter = painterResource(id = destination.imageResId),
-//                contentDescription = "${destination.name} image",
-//                contentScale = ContentScale.Crop,
-//                modifier = Modifier
-//                    .size(65.dp)
-//                    .clip(RoundedCornerShape(8.dp))
-//            )
+            if (destination.imageBitmap !== null) {
+                Image(
+                    bitmap = destination.imageBitmap.asImageBitmap(),
+                    contentDescription = "${destination.name} image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(65.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                )
+            }
         }
     }
 }

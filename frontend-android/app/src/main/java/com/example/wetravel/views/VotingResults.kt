@@ -30,13 +30,16 @@ import java.util.UUID
 
 // The scrollable that structures the components for this page
 @Composable
-fun ScrollableContent(destinations: List<Destination>, innerPadding: PaddingValues) {
+fun ScrollableContent(destinations: List<Destination>, innerPadding: PaddingValues, userViewModel: UserViewModel) {
+    val allTripsResource by userViewModel.allTrips.observeAsState(initial = Resource.Loading)
+    val currentTripIDResource by userViewModel.tripCode.observeAsState(initial = Resource.Loading)
+    val trip = (allTripsResource as Resource.Success<Map<String, Trip>>).data[(currentTripIDResource as Resource.Success<String>).data]
     LazyColumn(
         modifier = Modifier
             .padding(innerPadding),
     ) {
         item {
-            VotingResultsHeader("New York")
+            VotingResultsHeader(trip!!.city)
         }
         itemsIndexed(destinations) { idx, destination ->
             VotingResultItineraryListComponent(idx + 1, destination)
@@ -78,7 +81,7 @@ fun VotingResultsMainScreen(userViewModel: UserViewModel) {
             is Resource.Success -> {
                 val allTripsMap = (allTripsResource as Resource.Success<Map<String, Trip>>).data[(currentTripIDResource as Resource.Success<String>).data]
                 val destinations = allTripsMap?.destinationsList
-                ScrollableContent(destinations = destinations!!, innerPadding = innerPadding)
+                ScrollableContent(destinations = destinations!!, innerPadding = innerPadding, userViewModel)
             }
 
             else -> {

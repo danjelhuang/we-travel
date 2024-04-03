@@ -56,53 +56,17 @@ fun DestinationsList(
     userName: String? = ""
 ) {
     val sampleTripResource by userViewModel.sampleTrip.observeAsState(initial = Resource.Loading)
-    // Assuming we have a list of destinations to display
-//    val destinations = listOf(
-//        // Add your destinations here, for example:
-//        Destination(
-//            UUID.randomUUID().toString(),"MoMA", "11 W 53rd St, New York", "4.6", 50,
-//            R.drawable.sample_destination_image, totalVotes = 0, userVotes = 0, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
-//        ),
-//        // Add more destinations...
-//        Destination(
-//            UUID.randomUUID().toString(),"MoMA 2", "11 W 53rd St, New York", "4.6", 50,
-//            R.drawable.sample_destination_image, totalVotes = 0, userVotes = 0, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
-//        ),
-//        Destination(
-//            UUID.randomUUID().toString(),"MoMA", "11 W 53rd St, New York", "4.6", 50,
-//            R.drawable.sample_destination_image, totalVotes = 0, userVotes = 0, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
-//        ),
-//    )
-
     val tripCodeResource by userViewModel.tripCode.observeAsState(initial = Resource.Loading)
     val tripsResource by userViewModel.allTrips.observeAsState(initial = Resource.Loading)
     val userResource by userViewModel.user.observeAsState(initial = Resource.Loading)
 
-//    Scaffold(
-//        topBar = { DestinationsListHeader(tripName = "Toronto", onSettingsButtonClicked) },
-//        bottomBar = { DestinationsListFooter(onAddDestinationButtonClicked, onStartVotingButtonClicked) }
-//    ) { innerPadding ->
-//        when (sampleTrip) {
-//            is Resource.Success -> {
-//                val trip = (sampleTrip as Resource.Success<Trip>).data
-//                DestinationsColumn(destinations = trip.destinationsList, innerPadding = innerPadding)
-//            }
-//            is Resource.Loading -> {
-//                CircularProgressIndicator()
-//            }
-//            is Resource.Error -> {
-//                val errorMessage = (sampleTrip as Resource.Error).message
-//                // Display the error message
-//                Text(text = "Error: $errorMessage")
-//            }
-//        }
-
     when {
         tripCodeResource is Resource.Success<*> && tripsResource is Resource.Success<*> && userResource is Resource.Success<*> -> {
+            val sampleTrip = (sampleTripResource as Resource.Success<Trip>).data
             val tripCode = (tripCodeResource as Resource.Success<String>).data
-            val trip = (tripsResource as Resource.Success<Map<String, Trip>>).data[tripCode]
+            val trip = (tripsResource as Resource.Success<Map<String, Trip>>).data[tripCode] ?: sampleTrip
             val user = (userResource as Resource.Success<User>).data
-            Log.d("DestinationsList", trip.toString())
+            Log.d("DestinationsList", trip.destinationsList.toString())
             Scaffold(
                 topBar = { DestinationsListHeader(
                     tripName = trip?.name ?: "",
@@ -111,8 +75,7 @@ fun DestinationsList(
                     onSettingsButtonClicked = onSettingsButtonClicked) },
                 bottomBar = { DestinationsListFooter(onAddDestinationButtonClicked, onStartVotingButtonClicked, userViewModel) }
             ) { innerPadding ->
-                val sampleTrip = (sampleTripResource as Resource.Success<Trip>).data
-                DestinationsColumn(destinations = sampleTrip.destinationsList, innerPadding = innerPadding, userViewModel = userViewModel)
+                DestinationsColumn(destinations = trip.destinationsList, innerPadding = innerPadding, userViewModel = userViewModel)
             }
         }
 
