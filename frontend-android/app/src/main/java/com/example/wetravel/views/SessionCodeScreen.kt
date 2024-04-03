@@ -1,6 +1,9 @@
 package com.example.wetravel.views
 
 import android.annotation.SuppressLint
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.border
@@ -12,18 +15,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -33,9 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -46,7 +43,6 @@ import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
 import com.example.wetravel.components.LogoTopAppBar
 import com.example.wetravel.models.Resource
-import com.example.wetravel.models.Trip
 import com.example.wetravel.models.UserViewModel
 
 val dmSansFamily = FontFamily(
@@ -138,6 +134,9 @@ fun CreateCodeContent(
     tripCode: String,
     onContinueButtonClicked: () -> Unit
 ) {
+    val context = LocalContext.current
+    val clipboardManager = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+
     Column(
         modifier = Modifier.padding(innerpadding),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -166,7 +165,11 @@ fun CreateCodeContent(
                 Text(tripCode, fontFamily = dmSansFamily, fontSize = 24.sp)
             }
             Button(
-                onClick = { /* TODO */ },
+                onClick =
+                {
+                    val clip = ClipData.newPlainText("Trip Code", tripCode)
+                    clipboardManager.setPrimaryClip(clip)
+                },
                 shape = RoundedCornerShape(8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.secondary

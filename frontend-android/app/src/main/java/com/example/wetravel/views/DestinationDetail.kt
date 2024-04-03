@@ -43,8 +43,8 @@ fun UserProfilePreview(
 class UserPreviewParameterProvider : PreviewParameterProvider<Destination> {
     override val values = sequenceOf(
         Destination(
-            UUID.randomUUID().toString(),"MoMA", "11 W 53rd St, New York", "4.6", 50,
-            R.drawable.sample_destination_image, voted = true, numOfVotes = 5, description = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat"
+            placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
+            type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0, userId = ""
         ),
     )
 }
@@ -68,13 +68,13 @@ fun DetailContent(destination: Destination, innerPadding: PaddingValues) {
             )
         )
         Spacer(Modifier.height(10.dp))
-        Image(
-            painter = painterResource(id = destination.imageResId),
-            contentDescription = "${destination.name} image",
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(10.dp))
-        )
+//        Image(
+//            painter = painterResource(id = destination.imageResId),
+//            contentDescription = "${destination.name} image",
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .clip(RoundedCornerShape(10.dp))
+//        )
         Spacer(Modifier.height(16.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Image(
@@ -108,7 +108,7 @@ fun DetailContent(destination: Destination, innerPadding: PaddingValues) {
         }
         Spacer(modifier = Modifier.height(10.dp))
         Text(
-            text = destination.description,
+            text = destination.type,
             fontSize = 20.sp
         )
     }

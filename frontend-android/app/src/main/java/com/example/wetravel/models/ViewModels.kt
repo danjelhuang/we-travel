@@ -1,15 +1,18 @@
 package com.example.wetravel.models
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.wetravel.R
 import com.example.wetravel.service.TripRepository
 import com.example.wetravel.service.UserRepository
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 // Below is a class to help us enforce state of data while we fetch from the backend
 sealed class Resource<out T> {
@@ -32,6 +35,117 @@ class UserViewModel(
 
     private val _allTrips = MutableLiveData<Resource<Map<String, Trip>>>()
     val allTrips: LiveData<Resource<Map<String, Trip>>> = _allTrips
+
+    // Sample trip for frontend voting scaffolding
+    private val _sampleTrip = MutableLiveData<Resource<Trip>>(
+        Resource.Success<Trip>(
+            Trip(
+                tripID = "tester",
+                name = "Sample Trip",
+                city = "Sample City",
+                finalDestinationCount = 5,
+                votesPerPerson = 5,
+                phase = "ADD_DESTINATIONS",
+                users = listOf(
+                    TripUsers(
+                        userID = "local",
+                        votes = 5
+                    )
+                ),
+                destinationsList = listOf(
+                    // Add your destinations here, for example:
+                    Destination(
+                        placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
+                        type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0, userId = ""
+                    ),
+                    // Add more destinations...
+                    Destination(
+                        placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
+                        type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0, userId = ""
+                    ),
+                    Destination(
+                        placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
+                        type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0, userId = ""
+                    )
+                )
+            )
+        )
+    )
+
+    val sampleTrip: LiveData<Resource<Trip>> = _sampleTrip
+
+    // Cast a vote to the sample trip
+    fun castSampleVote(id: String) {
+        // Don't do anything if the user doesn't have votes left
+        val votesRemaining = (_sampleTrip.value as Resource.Success<Trip>).data.users.find { it.userID == "local" }?.votes
+        if ((votesRemaining ?:0) < 1) {
+            return
+        }
+        // copy update and post
+        viewModelScope.launch {
+            val updatedTrip = (_sampleTrip.value as Resource.Success<Trip>).data.copy(
+                destinationsList = (_sampleTrip.value as Resource.Success<Trip>).data.destinationsList.map { d ->
+                    if (id == d.placeId) {
+                        d.copy(totalVotes = d.totalVotes + 1, userVotes = d.userVotes + 1)
+                    } else {
+                        d
+                    }
+                },
+                users = (_sampleTrip.value as Resource.Success<Trip>).data.users.map { u ->
+                    if (u.userID == "local") {
+                        u.copy(votes = u.votes - 1)
+                    } else {
+                        u
+                    }
+                }
+
+            )
+            Log.d("UPDATED", updatedTrip.toString())
+            // Create the updated Trip
+            _sampleTrip.postValue(Resource.Success(updatedTrip))
+        }
+    }
+
+    fun removeSampleVote(id: String) {
+        // To be safe, don't allow users to remove votes if they have full votes
+        val votesRemaining = (_sampleTrip.value as Resource.Success<Trip>).data.users.find { it.userID == "local" }?.votes
+        if ((votesRemaining ?:0) >= (_sampleTrip.value as Resource.Success<Trip>).data.votesPerPerson) {
+            return
+        }
+        // copy update and post
+        viewModelScope.launch {
+            val updatedTrip = (_sampleTrip.value as Resource.Success<Trip>).data.copy(
+                destinationsList = (_sampleTrip.value as Resource.Success<Trip>).data.destinationsList.map { d ->
+                    if (id == d.placeId) {
+                        d.copy(totalVotes = d.totalVotes - 1, userVotes = d.userVotes - 1)
+                    } else {
+                        d
+                    }
+                },
+                users = (_sampleTrip.value as Resource.Success<Trip>).data.users.map { u ->
+                    if (u.userID == "local") {
+                        u.copy(votes = u.votes + 1)
+                    } else {
+                        u
+                    }
+                }
+            )
+            Log.d("UPDATED", updatedTrip.toString())
+            // Create the updated Trip
+            _sampleTrip.postValue(Resource.Success(updatedTrip))
+        }
+    }
+
+    // TODO: API call for casting a vote; requires destinations
+    fun castVote(tripId: String, placeId: String) {
+
+    }
+
+    // TODO: API call for removing a vote; requires destinations
+    fun removeVote(tripId: String, placeId: String) {
+
+    }
+
 
     /* TODO: More Fields here for UserViewModel...*/
 
@@ -178,6 +292,28 @@ class UserViewModel(
         }
     }
 
+
+    fun addDestinations(tripID: String, placeID: String, onError: (String) -> Unit, onSuccess: () -> Unit)
+    {
+        viewModelScope.launch {
+            try {
+                Log.d("add destination", "Add Destination called")
+                val result = tripRepository.addDestination(tripID, placeID)
+                Log.d("Add Destination Return Values: ", result.toString())
+                if (result.isSuccess) {
+                    onSuccess()
+                    return@launch
+                } else {
+                    onError("Error adding destination. Destination may already exist")
+                    return@launch
+
+                }
+            } catch (e: Exception) {
+                onError("Error adding destination. Destination may already exist")
+                return@launch
+            }
+        }
+    }
     fun joinTrip(tripID: String, onError: (String) -> Unit, onSuccess: () -> Unit) {
 
         _tripCode.value = Resource.Loading
@@ -274,6 +410,10 @@ class UserViewModel(
             onSuccess()
         }
 
+    }
+
+    fun updateTripCode(newTripCode: String) {
+        _tripCode.postValue(Resource.Success(newTripCode))
     }
 
     fun setTripId(newTripId: String) {

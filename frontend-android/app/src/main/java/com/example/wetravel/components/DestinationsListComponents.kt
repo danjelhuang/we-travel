@@ -19,6 +19,8 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -29,11 +31,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.wetravel.R
+import com.example.wetravel.models.Resource
+import com.example.wetravel.models.Trip
+import com.example.wetravel.models.TripUpdateRequest
+import com.example.wetravel.models.UserViewModel
 
 
 // Header of the Destinations List page
 @Composable
-fun DestinationsListHeader(tripName: String, onSettingsButtonClicked: () -> Unit) {
+fun DestinationsListHeader(tripName: String, userName: String, numParticipants: Int, onSettingsButtonClicked: () -> Unit) {
     Box(
         contentAlignment = Alignment.CenterStart,
         modifier = Modifier
@@ -44,7 +50,7 @@ fun DestinationsListHeader(tripName: String, onSettingsButtonClicked: () -> Unit
             horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = "User1's Trip to",
+                text = "${userName}'s Trip to",
                 style = TextStyle(
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp,
@@ -85,7 +91,7 @@ fun DestinationsListHeader(tripName: String, onSettingsButtonClicked: () -> Unit
                         )
                         Spacer(modifier = Modifier.width(2.dp))
                         Text(
-                            text = "4", // TODO: ADD STATE FOR USER COUNT
+                            text = numParticipants.toString(),
                             fontWeight = FontWeight.Bold,
                             color = Color.Black,
                             fontSize = 28.sp
@@ -115,7 +121,9 @@ fun DestinationsListHeader(tripName: String, onSettingsButtonClicked: () -> Unit
 
 // Footer of DestinationsList Page
 @Composable
-fun DestinationsListFooter(onAddDestinationButtonClicked: () -> Unit, onStartVotingButtonClicked: () -> Unit) {
+fun DestinationsListFooter(onAddDestinationButtonClicked: () -> Unit, onStartVotingButtonClicked: () -> Unit, userViewModel: UserViewModel) {
+    val currentTripIDResource by userViewModel.tripCode.observeAsState(initial = Resource.Loading)
+    val allTripsResource by userViewModel.allTrips.observeAsState(initial = Resource.Loading)
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -182,7 +190,11 @@ fun DestinationsListFooter(onAddDestinationButtonClicked: () -> Unit, onStartVot
                 }
                 Spacer(modifier = Modifier.width(10.dp))
                 FilledTonalButton(
-                    onClick = { onStartVotingButtonClicked() },
+                    onClick =
+                    {
+                        handleStartVotingButtonClick(currentTripIDResource, allTripsResource, userViewModel)
+                        onStartVotingButtonClicked()
+                    },
                     shape = RoundedCornerShape(20),
                     colors = mainButtonColor,
                     contentPadding = PaddingValues(horizontal = 10.dp, vertical = 8.dp)
@@ -199,5 +211,22 @@ fun DestinationsListFooter(onAddDestinationButtonClicked: () -> Unit, onStartVot
             // TODO: Move this out
         }
     }
+}
+
+private fun handleStartVotingButtonClick(currentTripIDResource: Resource<String>, allTripsResource: Resource<Map<String, Trip>>, userViewModel: UserViewModel) {
+    var updatedTrip = TripUpdateRequest()
+    if (currentTripIDResource is Resource.Success && allTripsResource is Resource.Success) {
+        val currentTripID = currentTripIDResource.data
+        val currentTrip = allTripsResource.data[currentTripID]
+        updatedTrip = TripUpdateRequest(
+            tripID = currentTrip!!.tripID,
+            name = currentTrip.name,
+            city = currentTrip.city,
+            finalDestinationCount = currentTrip.finalDestinationCount,
+            votesPerPerson = currentTrip.votesPerPerson,
+            phase = "Voting"
+        )
+    }
+    userViewModel.updateTrip(updatedTrip)
 }
 
