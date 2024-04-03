@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -29,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -90,7 +92,7 @@ fun TripCreateForm(
             dmSansFamily
         )
         Spacer(modifier = Modifier.height(20.dp))
-        InputField(
+        IntInputField(
             label = "final destination count",
             value = finalDestinationCount.value,
             onValueChange = { finalDestinationCount.value = it },
@@ -200,7 +202,7 @@ fun TripEditForm(
             dmSansFamily
         )
         Spacer(modifier = Modifier.height(20.dp))
-        InputField(
+        IntInputField(
             label = "final destination count",
             value = finalDestinationCount.value,
             onValueChange = { finalDestinationCount.value = it },
@@ -281,6 +283,25 @@ fun InputField(
     )
 }
 
+@Composable
+fun IntInputField(
+    label: String,
+    value: TextFieldValue,
+    onValueChange: (TextFieldValue) -> Unit,
+    fontFamily: FontFamily
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label, fontFamily = fontFamily) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .padding(horizontal = 48.dp),
+        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+    )
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogoTopBar() {
@@ -340,5 +361,4 @@ private fun handleEditButtonClick(
         )
         userViewModel.updateTrip(tripData)
     }
-
 }
