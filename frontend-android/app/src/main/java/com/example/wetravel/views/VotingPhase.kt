@@ -13,6 +13,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -69,12 +70,19 @@ fun DestinationsVotingList(
     // Trip from userViewModel
     val sampleTrip by userViewModel.sampleTrip.observeAsState()
 
+
     val tripCodeResource by userViewModel.tripCode.observeAsState(initial = Resource.Loading)
     val tripsResource by userViewModel.allTrips.observeAsState(initial = Resource.Loading)
     val userResource by userViewModel.user.observeAsState(initial = Resource.Loading)
+    LaunchedEffect (key1 = Unit) {
+        userViewModel.updateViewModelState(tripID = (tripCodeResource as Resource.Success<String>).data)
+    }
 
     when {
+
         tripCodeResource is Resource.Success<*> && tripsResource is Resource.Success<*> && userResource is Resource.Success<*> -> {
+            Log.d("DestinationsVotingList", (tripsResource as Resource.Success<Map<String, Trip>>).data.toString())
+
             val tripCode = (tripCodeResource as Resource.Success<String>).data
             val trip = (tripsResource as Resource.Success<Map<String, Trip>>).data[tripCode]
             val userID = (userResource as Resource.Success<User>).data.userID
