@@ -38,6 +38,9 @@ class UserViewModel(
     private val _allTrips = MutableLiveData<Resource<Map<String, Trip>>>()
     val allTrips: LiveData<Resource<Map<String, Trip>>> = _allTrips
 
+
+
+
     // Sample trip for frontend voting scaffolding
     private val _sampleTrip = MutableLiveData<Resource<Trip>>(
         Resource.Success<Trip>(
@@ -52,6 +55,10 @@ class UserViewModel(
                     TripUsers(
                         userID = "local",
                         votes = 5
+                    ),
+                    TripUsers(
+                        userID = "random",
+                        votes = 2
                     )
                 ),
                 destinationsList = listOf(
@@ -96,6 +103,9 @@ class UserViewModel(
     )
 
     val sampleTrip: LiveData<Resource<Trip>> = _sampleTrip
+
+    // THEN HERE 4
+
 
     // Cast a vote to the sample trip
     fun castSampleVote(id: String) {
@@ -163,16 +173,6 @@ class UserViewModel(
         }
     }
 
-    // TODO: API call for casting a vote; requires destinations
-    fun castVote(tripId: String, placeId: String) {
-
-    }
-
-    // TODO: API call for removing a vote; requires destinations
-    fun removeVote(tripId: String, placeId: String) {
-
-    }
-
 
     /* TODO: More Fields here for UserViewModel...*/
     /////////////////////////////////////////////////
@@ -196,6 +196,38 @@ class UserViewModel(
 
     ////////////////////////////////////////////
 
+    fun addVote(tripID: String, userID: String, placeID: String) {
+        viewModelScope.launch {
+            try {
+                // LOG
+                val result = tripRepository.addVote(tripID, userID, placeID)
+                if (result.isSuccess) {
+                    Log.d("addVote", "Vote added successfully")
+                } else {
+                    Log.d("addVote", "Vote add failed")
+                    Log.d("RESULT", result.toString())
+                }
+            } catch (e: Exception) {
+                Log.d("addVote", "An exception occurred while calling the addVote API: $e")
+            }
+        }
+    }
+
+    fun removeVote(tripID: String, userID: String, placeID: String) {
+        viewModelScope.launch {
+            try {
+                // LOG
+                val result = tripRepository.removeVote(tripID, userID, placeID)
+                if (result.isSuccess) {
+                    Log.d("removeVote", "Vote removed successfully")
+                } else {
+                    Log.d("remove", "Vote remove failed")
+                }
+            } catch (e: Exception) {
+                Log.d("removeVote", "An exception occurred while calling the removeVote API: $e")
+            }
+        }
+    }
     fun createTrip(trip: Trip) {
         _tripCode.value = Resource.Loading
 
