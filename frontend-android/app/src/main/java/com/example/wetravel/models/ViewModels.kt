@@ -445,7 +445,8 @@ class UserViewModel(
                             finalDestinationCount = (snapshot.getLong("finalDestinationCount")
                                 ?: 0L).toInt(),
                             votesPerPerson = (snapshot.getLong("votesPerPerson") ?: 0L).toInt(),
-                            phase = snapshot.getString("phase")!!
+                            phase = snapshot.getString("phase")!!,
+                            users = snapshot.get("users")!! as? List<TripUsers> ?: emptyList()
                         )
 
                         // destinationList details
