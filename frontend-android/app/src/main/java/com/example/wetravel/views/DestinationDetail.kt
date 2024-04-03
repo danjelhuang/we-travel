@@ -44,7 +44,7 @@ class UserPreviewParameterProvider : PreviewParameterProvider<Destination> {
     override val values = sequenceOf(
         Destination(
             placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
-            type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0, userId = ""
+            type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0
         ),
     )
 }

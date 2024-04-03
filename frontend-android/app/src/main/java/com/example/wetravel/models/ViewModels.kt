@@ -9,6 +9,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.wetravel.R
 import com.example.wetravel.service.TripRepository
 import com.example.wetravel.service.UserRepository
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -20,7 +23,10 @@ sealed class Resource<out T> {
 }
 
 class UserViewModel(
-    private val tripRepository: TripRepository, private val userRepository: UserRepository
+    private val tripRepository: TripRepository,
+    private val userRepository: UserRepository,
+    private val db: FirebaseFirestore
+
 ) : ViewModel() {
     private val _tripCode = MutableLiveData<Resource<String>>()
     val tripCode: LiveData<Resource<String>> = _tripCode
@@ -51,16 +57,16 @@ class UserViewModel(
                     // Add your destinations here, for example:
                     Destination(
                         placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
-                        type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0, userId = ""
+                        type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0
                     ),
                     // Add more destinations...
                     Destination(
                         placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
-                        type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0, userId = ""
+                        type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0
                     ),
                     Destination(
                         placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
-                        type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0, userId = ""
+                        type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0
                     )
                 )
             )
@@ -143,6 +149,26 @@ class UserViewModel(
 
 
     /* TODO: More Fields here for UserViewModel...*/
+    /////////////////////////////////////////////////
+    // listener related vals
+
+    private val _tripId = MutableLiveData<String>()
+    val tripId: LiveData<String> = _tripId
+
+    private val _snapshotUser = MutableLiveData<User>()
+    val snapshotUser: LiveData<User> = _snapshotUser
+
+
+    private val _tripCity = MutableLiveData<String>()
+    val tripCity: LiveData<String> = _tripCity
+
+    private val _destinationCurrentVotes = MutableLiveData<String>()
+    val destinationCurrentVotes: LiveData<String> = _destinationCurrentVotes
+
+    private var tripListener: ListenerRegistration? = null
+
+
+    ////////////////////////////////////////////
 
     fun createTrip(trip: Trip) {
         _tripCode.value = Resource.Loading
@@ -159,6 +185,10 @@ class UserViewModel(
                         val updatedTrips = currentTrips.data.toMutableMap()
                         updatedTrips[newTrip.tripID] = newTrip
                         _allTrips.postValue(Resource.Success(updatedTrips))
+
+                        // listener
+                        setTripId(newTrip.tripID)
+
                     } else {
                         _allTrips.postValue(Resource.Error("Failed to add new trip to all trips"))
                     }
@@ -191,20 +221,12 @@ class UserViewModel(
                 val result = tripRepository.updateTrip(trip.tripID, trip)
                 Log.d("result", result.toString())
                 if (result.isSuccess) {
-                    val newTrip = result.getOrNull()!!
-                    val currentTrips = _allTrips.value
-                    if (currentTrips is Resource.Success) {
-                        val updatedTrips = currentTrips.data.toMutableMap()
-                        updatedTrips[trip.tripID] = newTrip
-                        _allTrips.postValue(Resource.Success(updatedTrips))
-                    } else {
-                        _allTrips.postValue(Resource.Error("Failed to update trip"))
-                    }
+                    Log.d("updateTrip", "Trip Updated successfully")
                 } else {
-                    _tripCode.postValue(Resource.Error("The API call failed with an Error. Check the API Logs"))
+                    Log.d("updateTrip", "Trip Update API call Failed")
                 }
             } catch (e: Exception) {
-                _tripCode.postValue(Resource.Error("An exception occurred while calling the updateTrip API"))
+                Log.d("updateTrip", "An exception occurred while calling the updateTrip API: $e")
             }
         }
     }
@@ -296,11 +318,15 @@ class UserViewModel(
                     val currentTrips = _allTrips.value
                     Log.d("joinTrip", currentTrips.toString())
                     if (currentTrips is Resource.Success) {
+                        // listener
+                        setTripId(newTrip.tripID)
+
                         val updatedMap = currentTrips.data.toMutableMap()
                         // Add the new trip to the map
                         updatedMap[tripID] = newTrip
                         // Post the updated map
                         _allTrips.postValue(Resource.Success(updatedMap))
+
                         Log.d("joinTrip", "Trip Get successful")
                     } else {
                         Log.d(
@@ -339,7 +365,6 @@ class UserViewModel(
                     } catch (e: Exception) {
                         _user.postValue(Resource.Error("An exception occurred while trying to join the trip."))
                     }
-
                 }
 
                 else -> {
@@ -356,7 +381,10 @@ class UserViewModel(
                     try {
                         Log.d("joinTrip", "Adding current participant to trip users")
                         val addParticipantResult =
-                            tripRepository.addParticipant(tripID = tripID, userID = currentUser.data.userID)
+                            tripRepository.addParticipant(
+                                tripID = tripID,
+                                userID = currentUser.data.userID
+                            )
 
                         if (!addParticipantResult.isSuccess) {
                             Log.d("joinTrip", "Add Participant Failed, userID not added to trip")
@@ -378,6 +406,154 @@ class UserViewModel(
 
     fun updateTripCode(newTripCode: String) {
         _tripCode.postValue(Resource.Success(newTripCode))
+        setTripId(newTripCode)
     }
+
+    private fun setTripId(newTripId: String) {
+        if (_tripId.value != newTripId) {
+            _tripId.value = newTripId
+            tripListener?.remove() // Remove the old listener
+            listenToTrip(newTripId) // Start listening to the new trip ID
+        }
+    }
+
+    private fun listenToTrip(tripId: String) {
+        //remove existing listener
+        tripListener = db.collection("trips").document(tripId)
+            .addSnapshotListener { snapshot, e ->
+                if (e != null) {
+                    Log.d("listenToTrip", "did not work lol")
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    val currentTrips = _allTrips.value
+                    Log.d("listenToTrip", "listen")
+
+                    if (currentTrips is Resource.Success) {
+                        Log.d("listenToTrip", "currentTrips Success")
+                        // Snapshots
+                        val updatedMap = currentTrips.data.toMutableMap()
+                        val existingTrip = updatedMap[tripId]
+                        val currentUserId = (_user.value as Resource.Success<User>).data.userID
+
+                        // Add the new trip to the map
+
+                        // trip details: name, city, finalDestinationCount, votesPerPerson, phase
+
+                        var newTrip = existingTrip?.copy(
+                            name = snapshot.getString("name")!!,
+                            city = snapshot.getString("city")!!,
+                            finalDestinationCount = (snapshot.getLong("finalDestinationCount")
+                                ?: 0L).toInt(),
+                            votesPerPerson = (snapshot.getLong("votesPerPerson") ?: 0L).toInt(),
+                            phase = snapshot.getString("phase")!!,
+                            users = snapshot.get("users")!! as? List<TripUsers> ?: emptyList()
+                        )
+
+//                        if (existingTrip.phase != newTrip.phase) {
+//                            // phase has been updated
+//
+//                        }
+
+                        // destinationList details
+                        val destinationsMap = snapshot.get("destinationsList") as? Map<String, Map<String, Any>> ?: emptyMap()
+                        val destinationsCount = destinationsMap.size
+                        val existingDestinationsCount = existingTrip?.destinationsList?.size ?: 0
+                        Log.d("listenToTrip", destinationsMap.toString())
+
+                        // if a new destination has been added to destinaFtionsList
+                        if (destinationsCount != existingDestinationsCount) {
+                            newTrip = updateDestinations(newTrip!!, currentUserId, destinationsMap)
+                            Log.d("listenToTrip", newTrip.toString())
+                        } else {
+                            Log.d("listenToTrip", "Destination count equals existing destination count")
+                            newTrip = updateDestinations(newTrip!!, currentUserId, destinationsMap)
+                            Log.d("listenToTrip", "Updated trip: $newTrip")
+                        }
+
+                        updatedMap[tripId] = newTrip
+                        // Post the updated map
+                        _allTrips.postValue(Resource.Success(updatedMap))
+
+                        Log.d("listenToTrip", "Trip Get successful")
+                    } else {
+                        Log.d(
+                            "listenToTrip",
+                            "Cannot update trips: Current trips state is not Success."
+                        )
+                    }
+                }
+            }
+    }
+
+    private fun updateDestinations(newTrip: Trip, currentUserId: String, destinationsMap: Map<String, Map<String, Any>>): Trip {
+        val updatedDestinationsList = mutableListOf<Destination>()
+
+        for (entry in destinationsMap) {
+            Log.d("Remote entry", entry.toString())
+            val existingDestination = newTrip.destinationsList.find { it.placeId == entry.key }
+            if (existingDestination != null) {
+                val destinationData = entry.value
+                val totalVotes = (destinationData["totalVotes"] as? Number)?.toInt() ?: existingDestination.totalVotes
+                val userVotesMap = destinationData["userVotes"] as? Map<String, Any> ?: emptyMap()
+                val userVotes = (userVotesMap[currentUserId] as? Number)?.toInt() ?: existingDestination.userVotes
+
+                val updatedDestination = existingDestination.copy(
+                    totalVotes = totalVotes,
+                    userVotes = userVotes
+                )
+                updatedDestinationsList.add(updatedDestination)
+            } else {
+//                val userVotesMap2 = entry.value["userVotes"] as? Map<String, Any> ?: emptyMap()
+//                val userVotes2 = (userVotesMap2[currentUserId] as? Number)?.toInt() ?: existingDestination.userVotes
+//                val newEntry: Destination? = null// TODO: placeDetails(entry.key) -> should return a Destination with all the fields populated
+                updatedDestinationsList.add(
+                    Destination(
+                        placeId = entry.key,
+                        name = "Trip Name",
+                        address = "Address",
+                        rating = 5.0,
+                        reviewCount = 50,
+                        type = "Type",
+                        imageBitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888),
+                        totalVotes = 0,
+                        userVotes = 0
+                    )
+                )
+
+            }
+        }
+
+//        newTrip.destinationsList.forEach { existingDestination ->
+//            val destinationData = destinationsMap[existingDestination.placeId]
+//
+//            if (destinationData != null) {
+//                val totalVotes = (destinationData["totalVotes"] as? Number)?.toInt() ?: existingDestination.totalVotes
+//                val userVotesMap = destinationData["userVotes"] as? Map<String, Any> ?: emptyMap()
+//                val userVotes = (userVotesMap[currentUserId] as? Number)?.toInt() ?: existingDestination.userVotes
+//
+//                val updatedDestination = existingDestination.copy(
+//                    totalVotes = totalVotes,
+//                    userVotes = userVotes
+//                )
+//                updatedDestinationsList.add(updatedDestination)
+//            } else {
+//                // If no matching destination is found, add the existing destination without changes
+//                updatedDestinationsList.add(existingDestination)
+//            }
+//        }
+        Log.d("updateDestinations", updatedDestinationsList.toString())
+
+        // Call Shannons google function
+        return newTrip.copy(destinationsList = updatedDestinationsList)
+    }
+
+
+    override fun onCleared() {
+        super.onCleared()
+        tripListener?.remove()
+    }
+
 
 }

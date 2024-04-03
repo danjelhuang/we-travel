@@ -96,6 +96,7 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:21.0.0")
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0")
+    implementation("com.google.firebase:firebase-firestore-ktx:24.11.0")
 //    implementation("androidx.lifecycle:lifecycle-runtime-ktx-android:2.8.0-alpha03")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")

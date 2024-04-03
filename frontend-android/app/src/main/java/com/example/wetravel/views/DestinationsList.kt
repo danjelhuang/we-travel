@@ -1,5 +1,6 @@
 package com.example.wetravel.views
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -101,7 +102,7 @@ fun DestinationsList(
             val tripCode = (tripCodeResource as Resource.Success<String>).data
             val trip = (tripsResource as Resource.Success<Map<String, Trip>>).data[tripCode]
             val user = (userResource as Resource.Success<User>).data
-
+            Log.d("DestinationsList", trip.toString())
             Scaffold(
                 topBar = { DestinationsListHeader(
                     tripName = trip?.name ?: "",
@@ -138,7 +139,6 @@ fun DestinationsList(
         }
     }
 }
-
 
 
 
