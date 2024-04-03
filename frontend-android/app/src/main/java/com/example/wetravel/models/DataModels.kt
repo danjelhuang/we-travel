@@ -73,13 +73,3 @@ data class TripUpdateRequest(
     val phase: String = "Adding"
 )
 
-
-// TODO: Remove this and convert ViewModel properties in the ViewModels.kt class
-data class ViewModel(
-    val userId: String = "",
-    val username: String = "",
-    val userEmail: String = "",
-    val trips: List<String> = emptyList(), // List of Trip Code's
-    val currentTrip: Trip = Trip(), // The current Trip's
-)
-

@@ -56,17 +56,38 @@ class UserViewModel(
                 destinationsList = listOf(
                     // Add your destinations here, for example:
                     Destination(
-                        placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
-                        type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0
+                        placeId = UUID.randomUUID().toString(),
+                        name = "MoMA",
+                        address = "11 W 53rd St, New York",
+                        rating = 4.6,
+                        reviewCount = 50,
+                        type = "attraction",
+                        imageBitmap = null,
+                        totalVotes = 0,
+                        userVotes = 0
                     ),
                     // Add more destinations...
                     Destination(
-                        placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
-                        type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0
+                        placeId = UUID.randomUUID().toString(),
+                        name = "MoMA",
+                        address = "11 W 53rd St, New York",
+                        rating = 4.6,
+                        reviewCount = 50,
+                        type = "attraction",
+                        imageBitmap = null,
+                        totalVotes = 0,
+                        userVotes = 0
                     ),
                     Destination(
-                        placeId = UUID.randomUUID().toString(),name = "MoMA", address ="11 W 53rd St, New York", rating =4.6, reviewCount = 50,
-                        type = "attraction", imageBitmap = null, totalVotes = 0, userVotes = 0
+                        placeId = UUID.randomUUID().toString(),
+                        name = "MoMA",
+                        address = "11 W 53rd St, New York",
+                        rating = 4.6,
+                        reviewCount = 50,
+                        type = "attraction",
+                        imageBitmap = null,
+                        totalVotes = 0,
+                        userVotes = 0
                     )
                 )
             )
@@ -78,8 +99,9 @@ class UserViewModel(
     // Cast a vote to the sample trip
     fun castSampleVote(id: String) {
         // Don't do anything if the user doesn't have votes left
-        val votesRemaining = (_sampleTrip.value as Resource.Success<Trip>).data.users.find { it.userID == "local" }?.votes
-        if ((votesRemaining ?:0) < 1) {
+        val votesRemaining =
+            (_sampleTrip.value as Resource.Success<Trip>).data.users.find { it.userID == "local" }?.votes
+        if ((votesRemaining ?: 0) < 1) {
             return
         }
         // copy update and post
@@ -109,8 +131,11 @@ class UserViewModel(
 
     fun removeSampleVote(id: String) {
         // To be safe, don't allow users to remove votes if they have full votes
-        val votesRemaining = (_sampleTrip.value as Resource.Success<Trip>).data.users.find { it.userID == "local" }?.votes
-        if ((votesRemaining ?:0) >= (_sampleTrip.value as Resource.Success<Trip>).data.votesPerPerson) {
+        val votesRemaining =
+            (_sampleTrip.value as Resource.Success<Trip>).data.users.find { it.userID == "local" }?.votes
+        if ((votesRemaining
+                ?: 0) >= (_sampleTrip.value as Resource.Success<Trip>).data.votesPerPerson
+        ) {
             return
         }
         // copy update and post
@@ -282,8 +307,12 @@ class UserViewModel(
     }
 
 
-    fun addDestinations(tripID: String, placeID: String, onError: (String) -> Unit, onSuccess: () -> Unit)
-    {
+    fun addDestinations(
+        tripID: String,
+        placeID: String,
+        onError: (String) -> Unit,
+        onSuccess: () -> Unit
+    ) {
         viewModelScope.launch {
             try {
                 Log.d("add destination", "Add Destination called")
@@ -303,6 +332,25 @@ class UserViewModel(
             }
         }
     }
+
+    fun updateFinalDestinations(tripID: String) {
+        viewModelScope.launch {
+            try {
+                val updateFinalDestinationsResult = tripRepository.updateFinalDestinations(tripID)
+                if (updateFinalDestinationsResult.isSuccess) {
+                    Log.d("updateFinalDestinations", "Final Destinations Updated successfully")
+                } else {
+                    Log.d("updateFinalDestinations", "Final Destinations Update API call Failed")
+                }
+            } catch (e: Exception) {
+                Log.d(
+                    "updateTrip",
+                    "An exception occurred while calling the updateFinalDestinations API: $e"
+                )
+            }
+        }
+    }
+
     fun joinTrip(tripID: String, onError: (String) -> Unit, onSuccess: () -> Unit) {
 
         _tripCode.value = Resource.Loading
@@ -432,14 +480,14 @@ class UserViewModel(
 
                     if (currentTrips is Resource.Success) {
                         Log.d("listenToTrip", "currentTrips Success")
+
                         // Snapshots
                         val updatedMap = currentTrips.data.toMutableMap()
                         val existingTrip = updatedMap[tripId]
                         val currentUserId = (_user.value as Resource.Success<User>).data.userID
 
-                        // Add the new trip to the map
-
-                        // trip details: name, city, finalDestinationCount, votesPerPerson, phase
+                        // Set allTrips to Loading as we update it below
+                        _allTrips.value = Resource.Loading
 
                         var newTrip = existingTrip?.copy(
                             name = snapshot.getString("name")!!,
@@ -457,7 +505,9 @@ class UserViewModel(
 //                        }
 
                         // destinationList details
-                        val destinationsMap = snapshot.get("destinationsList") as? Map<String, Map<String, Any>> ?: emptyMap()
+                        val destinationsMap =
+                            snapshot.get("destinationsList") as? Map<String, Map<String, Any>>
+                                ?: emptyMap()
                         val destinationsCount = destinationsMap.size
                         val existingDestinationsCount = existingTrip?.destinationsList?.size ?: 0
                         Log.d("listenToTrip", destinationsMap.toString())
@@ -467,7 +517,10 @@ class UserViewModel(
                             newTrip = updateDestinations(newTrip!!, currentUserId, destinationsMap)
                             Log.d("listenToTrip", newTrip.toString())
                         } else {
-                            Log.d("listenToTrip", "Destination count equals existing destination count")
+                            Log.d(
+                                "listenToTrip",
+                                "Destination count equals existing destination count"
+                            )
                             newTrip = updateDestinations(newTrip!!, currentUserId, destinationsMap)
                             Log.d("listenToTrip", "Updated trip: $newTrip")
                         }
@@ -487,7 +540,11 @@ class UserViewModel(
             }
     }
 
-    private fun updateDestinations(newTrip: Trip, currentUserId: String, destinationsMap: Map<String, Map<String, Any>>): Trip {
+    private fun updateDestinations(
+        newTrip: Trip,
+        currentUserId: String,
+        destinationsMap: Map<String, Map<String, Any>>
+    ): Trip {
         val updatedDestinationsList = mutableListOf<Destination>()
 
         for (entry in destinationsMap) {
@@ -495,9 +552,11 @@ class UserViewModel(
             val existingDestination = newTrip.destinationsList.find { it.placeId == entry.key }
             if (existingDestination != null) {
                 val destinationData = entry.value
-                val totalVotes = (destinationData["totalVotes"] as? Number)?.toInt() ?: existingDestination.totalVotes
+                val totalVotes = (destinationData["totalVotes"] as? Number)?.toInt()
+                    ?: existingDestination.totalVotes
                 val userVotesMap = destinationData["userVotes"] as? Map<String, Any> ?: emptyMap()
-                val userVotes = (userVotesMap[currentUserId] as? Number)?.toInt() ?: existingDestination.userVotes
+                val userVotes = (userVotesMap[currentUserId] as? Number)?.toInt()
+                    ?: existingDestination.userVotes
 
                 val updatedDestination = existingDestination.copy(
                     totalVotes = totalVotes,
