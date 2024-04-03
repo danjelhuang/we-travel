@@ -406,6 +406,7 @@ class UserViewModel(
 
     fun updateTripCode(newTripCode: String) {
         _tripCode.postValue(Resource.Success(newTripCode))
+        setTripId(newTripCode)
     }
 
     private fun setTripId(newTripId: String) {
@@ -417,6 +418,7 @@ class UserViewModel(
     }
 
     private fun listenToTrip(tripId: String) {
+        //remove existing listener
         tripListener = db.collection("trips").document(tripId)
             .addSnapshotListener { snapshot, e ->
                 if (e != null) {
@@ -449,13 +451,18 @@ class UserViewModel(
                             users = snapshot.get("users")!! as? List<TripUsers> ?: emptyList()
                         )
 
+//                        if (existingTrip.phase != newTrip.phase) {
+//                            // phase has been updated
+//
+//                        }
+
                         // destinationList details
                         val destinationsMap = snapshot.get("destinationsList") as? Map<String, Map<String, Any>> ?: emptyMap()
                         val destinationsCount = destinationsMap.size
                         val existingDestinationsCount = existingTrip?.destinationsList?.size ?: 0
                         Log.d("listenToTrip", destinationsMap.toString())
 
-                        // if a new destination has been added to destinationsList
+                        // if a new destination has been added to destinaFtionsList
                         if (destinationsCount != existingDestinationsCount) {
                             newTrip = updateDestinations(newTrip!!, currentUserId, destinationsMap)
                             Log.d("listenToTrip", newTrip.toString())
