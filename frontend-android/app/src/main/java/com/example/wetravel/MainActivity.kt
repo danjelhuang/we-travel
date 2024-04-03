@@ -60,6 +60,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import com.google.gson.JsonParseException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -140,7 +141,97 @@ class TripDeserializer: JsonDeserializer<Trip> {
     // TODO: Destinations list must be parsed properly
     // Here, create Destination objects by calling the google maps Place API
     private fun parseDestinationsList(jsonElement: JsonElement?) : List<Destination> {
-        return emptyList()
+//        val destinationList = mutableListOf<Destination>()
+//
+//        val destinationsMap = jsonElement as? Map<String, Map<String, Any>> ?: emptyMap()
+//        Log.d("Help1", jsonElement.toString())
+//        Log.d("Help", destinationsMap.toString())
+//
+//        if (jsonElement.isJsonObject) {
+//
+//        }
+
+        val destinationList = mutableListOf<Destination>()
+
+        if (jsonElement is JsonObject) {
+            // Iterate through each key-value pair in the JsonObject
+            jsonElement.entrySet().forEach { (destinationId, destinationDetailsJsonElement) ->
+                println("Destination ID: $destinationId")
+                var totalVotes = 0
+                var userVotes = 0
+
+                // Check if the destination details is a JsonObject
+                if (destinationDetailsJsonElement is JsonObject) {
+                    // Access the totalVotes field
+                    totalVotes = destinationDetailsJsonElement["totalVotes"]?.asJsonPrimitive?.asInt ?: 0
+                    println("Total Votes: $totalVotes")
+
+                    // Access the userVotes JsonObject
+                    val userVotesJsonObject = destinationDetailsJsonElement["userVotes"]?.asJsonObject
+
+                    userVotesJsonObject?.entrySet()?.forEach { (userId, votes) ->
+                        println("userid: ${userId}")
+                        println("votes: ${votes}")
+                        if (userId == currentUserGlobal) {
+                            userVotes += votes.asInt
+                        }
+                    }
+
+
+                    println("uservotes: ${userVotes}")
+                }
+
+                var destinationData : Destination?
+
+
+            }
+        }
+//
+//        jsonElement?.let {
+//            if (it.isJsonObject) {
+//                val jsonObject = it.asJsonObject
+//                for ((destinationId, votes) in jsonObject) {
+//                    if (destinationDetailsJsonElement is JsonObject) {
+//
+//                    }
+//                }
+//                jsonArray.forEach { element ->
+//                    if (element.isJsonObject) {
+//                        val destinationObject = element.asJsonObject
+//                        try {
+//
+//                            val totalVotes = destinationObject.getAsJsonPrimitive("totalVotes").asInt
+//
+//                            val userVotesMap = destinationObject.get("userVotes") as Map<String, Map<String, Int>>
+//                            Log.d("AHHHHHHH", userVotesMap.toString())
+//
+//
+////                            val userVotesArray = destinationObject.getAsJsonPrimitive("userVotes").
+////                            val userVotes = userVotesArray.find { it. }
+////                                destinationData["userVotes"] as? Map<String, Any> ?: emptyMap()
+////                            val userVotes = (userVotesMap[currentUserId] as? Number)?.toInt()
+////                                ?: existingDestination.userVotes
+//
+//                            val userID = destinationObject.getAsJsonPrimitive("userID").asString
+//                            val votes = destinationObject.getAsJsonPrimitive("votes").asInt
+////                            destinationList.add(TripUsers(userID, votes))
+//                        } catch (e: Exception) {
+//                            // Handle unexpected fields or invalid format
+//                            Log.e("Parsing Error", "Error parsing destination object: ${e.message}")
+//                        }
+//                    } else {
+//                        // Handle invalid format - expected object but found other type
+//                        Log.e("Parsing Error", "Invalid JSON format for destination object: $element")
+//                    }
+//                }
+//            } else {
+//                // Handle invalid format - expected array but found other type
+//                Log.e("Parsing Error", "Invalid JSON format for destinations array: $it")
+//            }
+//        }
+//
+//        Log.d("FLAG", jsonElement.toString())
+        return destinationList
     }
 
     private fun parseUsersList(usersJson: JsonElement?) : List<TripUsers> {
@@ -175,6 +266,8 @@ class TripDeserializer: JsonDeserializer<Trip> {
     }
 
 }
+
+var currentUserGlobal: String = ""
 
 class MainActivity : ComponentActivity() {
 
@@ -230,6 +323,7 @@ suspend fun getPlaceDetails(placeID: String): Destination {
         Place.Field.PHOTO_METADATAS
     )
 
+    Log.d("Place ID", placeID)
     val request = FetchPlaceRequest.newInstance(placeID, placeFields)
 
     return try {
@@ -251,13 +345,15 @@ suspend fun getPlaceDetails(placeID: String): Destination {
 
             // Get the bitmap image data
             val photoRequest = FetchPhotoRequest.builder(photoMetadata)
-                .setMaxWidth(550)
-                .setMaxHeight(550)
+//                .setMaxWidth(550)
+//                .setMaxHeight(550)
                 .build()
 
             val fetchPhotoResponse = placesClient.fetchPhoto(photoRequest).await()
             placeImageBitmap = fetchPhotoResponse.bitmap
         }
+
+        Log.d("Response", place.toString())
 
         Destination(
             placeId = placeID,
@@ -315,6 +411,7 @@ fun WeTravelApp(
             LaunchedEffect(key1 = Unit) {
                 if (googleAuthUIClient.getSignedInUser() != null) {
                     userViewModel.getOrCreateUser(googleAuthUIClient.getSignedInUser()?.userId ?: "")
+                    currentUserGlobal = googleAuthUIClient.getSignedInUser()?.userId ?: ""
                     navController.navigate(Screens.TripCreateOrJoin.name)
                 }
             }
@@ -339,6 +436,7 @@ fun WeTravelApp(
                     ).show()
 
                     userViewModel.getOrCreateUser(googleAuthUIClient.getSignedInUser()?.userId ?: "")
+                    currentUserGlobal = googleAuthUIClient.getSignedInUser()?.userId ?: ""
                     navController.navigate(Screens.TripCreateOrJoin.name)
                     viewModel.resetState()
                 }
