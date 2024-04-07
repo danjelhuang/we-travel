@@ -28,3 +28,5 @@
 | 2024/04/01 |       |         |        |       | 10      |      | Frontend + backend connect  |
 | 2024/04/02 |       |         |        |       | 7       |      | Firestore Snapshots         |
 | 2024/04/02 |       |         |        |       | 3       |      | Frontend + backend connect  |
+| 2024/04/02 |       |         |   3    |       |         |      | Edit trip implementation    |
+| 2024/04/02 |       |         |   3    |       |         |      | Update trip phases          |
