@@ -23,7 +23,7 @@
 | 2024/03/24 |       |         | 1      |       |         |      | implement code generation   |
 | 2024/03/24 |       |         |        |       | 4       |      | Bug fixes                   |
 | 2024/03/24 |       |         | 1      |       |         |      | duplicate trip code check   |
-| 2024/03/27 |       | 5       |        |       |         |      | adding placesAPI to addDest.|
+| 2024/03/27 |       | 8       |        |       |         |      | adding placesAPI to addDest.|
 | 2024/03/27 |       |         | 1      |       |         |      | refactor trip code to tripID|
 | 2024/03/27 |       |         | 1      |       |         |      | add getUserVotes endpoint   |
 | 2024/03/28 |       |         | 3      |       |         |      | improve error handling      |
@@ -33,6 +33,8 @@
 | 2024/03/31 | 3     |         |        |       |         |      | Authentication debug        |
 | 2024/04/01 | 5     |         |        |       |         |      | Connect backend to frontend |
 | 2024/04/01 | 1     |         |        |       |         |      | Refactoring for users       |
+| 2024/04/01 |       |   4     |        |       |         |      | cleanup UI                  |
+| 2024/04/01 |       |   4     |        |       |         |      | Connect frontend to viewmod |
 | 2024/04/01 |       |         |        |       | 10      |      | Frontend + backend connect  |
 | 2024/04/02 | 8     |         |        |       |         |      | dynamically updated frontend|
 | 2024/04/02 | 5     |         |        |       |         |      | testing and debugging       |
@@ -40,3 +42,8 @@
 | 2024/04/02 |       |         |        |       | 3       |      | Frontend + backend connect  |
 | 2024/04/02 |       |         |   3    |       |         |      | Edit trip implementation    |
 | 2024/04/02 |       |         |   3    |       |         |      | Update trip phases          |
+| 2024/04/02 |       |  6      |        |       |         |      | PlaceDetails requests       |
+| 2024/04/02 |       |  3      |        |       |         |      | rework Destin. data struct  |
+| 2024/04/02 |       |  6      |        |       |         |      | update viewmodel            |
+| 2024/04/02 |       |  5      |        |       |         |      | display placedetails        |
+
