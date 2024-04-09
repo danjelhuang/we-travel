@@ -27,7 +27,7 @@
 | 2024/03/27 |       |         | 1      |       |         |      | refactor trip code to tripID|
 | 2024/03/27 |       |         | 1      |       |         |      | add getUserVotes endpoint   |
 | 2024/03/28 |       |         | 3      |       |         |      | improve error handling      |
-| 2024/03/29 | 10    |         |        |       |         |      | Authentication              |
+| 2024/03/29 | 7     |         |        |       |         |      | Authentication              |
 | 2024/03/30 | 5     |         |        |       |         |      | Authentication              |
 | 2024/03/31 | 3     |         |        |       |         |      | User backend endpoints      |
 | 2024/03/31 | 3     |         |        |       |         |      | Authentication debug        |
