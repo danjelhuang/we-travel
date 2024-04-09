@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -167,13 +168,19 @@ fun VotingDestinationEntry(
                         contentDescription = "Location pin widget",
                         modifier = Modifier.size(16.dp)
                     )
-                    Text(
-                        text = " ${destination.rating} "
-                    )
-                    Text(
-                        text = "(${destination.reviewCount})",
-                        fontSize = 14.sp
-                    )
+                    if (destination.reviewCount > 0) {
+                        Text(
+                            text = " ${destination.rating} "
+                        )
+                        Text(
+                            text = "(${destination.reviewCount})",
+                            fontSize = 14.sp
+                        )
+                    } else {
+                        Text(
+                            text = " No Reviews"
+                        )
+                    }
                 }
                 Spacer(modifier = Modifier.height(5.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -281,16 +288,16 @@ fun VotingDestinationEntry(
 
             Spacer(modifier = Modifier.width(10.dp))
 
-            // TODO: LOAD BITMAP IMAGE
-//            Image(
-//                painter = painterResource(id = destination.imageResId),
-//                contentDescription = "${destination.name} image",
-//                contentScale = ContentScale.Crop,
-//                modifier = Modifier
-//                    .size(65.dp)
-//                    .clip(RoundedCornerShape(8.dp))
-//
-//            )
+            if (destination.imageBitmap !== null) {
+                Image(
+                    bitmap = destination.imageBitmap.asImageBitmap(),
+                    contentDescription = "${destination.name} image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(65.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                )
+            }
         }
     }
 }

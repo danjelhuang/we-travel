@@ -299,12 +299,11 @@ fun AddDestinations(
 }
 
 fun fetchPredictions(
-    placesClient: com.google.android.libraries.places.api.net.PlacesClient,
+    placesClient: PlacesClient,
     query: String,
     onComplete: (List<AutocompletePrediction>) -> Unit
 ) {
     val token = AutocompleteSessionToken.newInstance()
-    // TODO: UPDATE QUERY TO INCLUDE CITY AFTER VIEWMODEL IS DONE
     val request =
         FindAutocompletePredictionsRequest.builder().setQuery(query).setSessionToken(token).build()
     placesClient.findAutocompletePredictions(request).addOnSuccessListener { response ->
