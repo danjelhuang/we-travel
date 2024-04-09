@@ -20,7 +20,6 @@
 | 2024/03/27 |       |         | 1      |       |         |      | refactor trip code to tripID|
 | 2024/03/27 |       |         | 1      |       |         |      | add getUserVotes endpoint   |
 | 2024/03/28 |       |         | 3      |       |         |      | improve error handling      |
-
 | 2024/03/11 |       |         |        |       |         | 4    | get endpoint implementation |
 | 2024/03/25 |       |         |        |       |         | 3    | load trip frontend          |
 | 2024/03/27 |       |         |        |       |         | 5    | add/remove vote/addDest API |
