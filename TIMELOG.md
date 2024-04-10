@@ -7,6 +7,9 @@
 | 2024/02/26 | 6     |         |        |       |         |      | linking pages together      |
 | 2024/02/26 |       |         |        |       |         | 5    | login frontend              |
 | 2024/02/26 |       |         |        |       |         | 4    | create/join trip frontend   |
+| 2024/02/20 |       |         |        | 3     |         |      | figma designs               |
+| 2024/02/21 |       |         |        | 2     |         |      | figma designs               |
+| 2024/02/22 |       |         |        | 2     |         |      | figma designs               |
 | 2024/02/26 |       |         |        |       |  5      |      | Creating Custom Components  |
 | 2024/02/26 |       |         |        |       |         | 2    | figma design+imported theme |
 | 2024/02/26 |       | 6       |        |       |         |      | create addDestin. frontend  |
