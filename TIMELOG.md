@@ -7,18 +7,21 @@
 | 2024/02/26 | 6     |         |        |       |         |      | linking pages together      |
 | 2024/02/26 |       |         |        |       |         | 5    | login frontend              |
 | 2024/02/26 |       |         |        |       |         | 4    | create/join trip frontend   |
-| 2024/02/20 |       |         |        | 3     |         |      | figma designs               |
-| 2024/02/21 |       |         |        | 2     |         |      | figma designs               |
+| 2024/02/20 |       |         |        | 7     |         |      | figma designs               |
+| 2024/02/21 |       |         |        | 5     |         |      | figma designs               |
 | 2024/02/22 |       |         |        | 2     |         |      | figma designs               |
 | 2024/02/26 |       |         |        |       |  5      |      | Creating Custom Components  |
+| 2024/02/26 |       |         |        | 4     |         |      | Destination list frontend   |
 | 2024/02/26 |       |         |        |       |         | 2    | figma design+imported theme |
 | 2024/02/26 |       | 6       |        |       |         |      | create addDestin. frontend  |
+| 2024/02/27 |       |         |        | 5     |         |      | Voting list frontend        |
 | 2024/03/14 |       |         |        |       |  2      |      | Voting Results frontend     |
 | 2024/03/16 |       |         | 1      |       |         |      | package refactor            |
 | 2024/03/16 |       |         | 4      |       |         |      | setup database              |
 | 2024/03/16 |       |         | 6      |       |         |      | setup node backend          |
 | 2024/03/16 |       |         | 6      |       |         |      | trip creation               |
 | 2024/03/18 |       |         |        |       |  3      |      | ViewModel Implementation    |
+| 2024/03/19 |       |         |        | 4     |         |      | Figma updates               |
 | 2024/03/20 |       | 7       |        |       |         |      | setting up google maps API  |
 | 2024/03/21 |       | 2       |        |       |         |      | updating fronend            |
 | 2024/03/22 |       |         |        |       |  7      |      | Backend Endpoints           |
@@ -30,6 +33,8 @@
 | 2024/03/27 |       | 8       |        |       |         |      | adding placesAPI to addDest.|
 | 2024/03/27 |       |         | 1      |       |         |      | refactor trip code to tripID|
 | 2024/03/27 |       |         | 3      |       |         |      | add getUserVotes endpoint   |
+| 2024/03/27 |       |         |        | 3     |         |      | destination details page    |
+| 2024/03/28 |       |         |        | 3     |         |      | destination details page    |
 | 2024/03/28 |       |         | 5      |       |         |      | improve error handling      |
 | 2024/03/11 |       |         |        |       |         | 4    | get endpoint implementation |
 | 2024/03/25 |       |         |        |       |         | 3    | load trip frontend          |
@@ -46,6 +51,9 @@
 | 2024/03/31 | 3     |         |        |       |         |      | Authentication debug        |
 | 2024/03/31 |       |  4      |        |       |         |      | Connect frontend to viewmod |
 | 2024/03/31 |       |  4      |        |       |         |      | cleanup UI                  |
+| 2024/04/01 |       |         |        | 4     |         |      | trip deserialization 1      |
+| 2024/04/01 |       |         |        | 5     |         |      | trip deserialization 2      |
+| 2024/04/01 |       |         |        | 3     |         |      | Frontend + backend connect  |
 | 2024/04/01 | 5     |         |        |       |         |      | Connect backend to frontend |
 | 2024/04/01 | 1     |         |        |       |         |      | Refactoring for users       |
 | 2024/04/01 |       |  6      |        |       |         |      | PlaceDetails requests       |
@@ -53,6 +61,9 @@
 | 2024/04/01 |       |         |        |       | 10      |      | Frontend + backend connect  |
 | 2024/04/02 | 8     |         |        |       |         |      | dynamically updated frontend|
 | 2024/04/02 | 5     |         |        |       |         |      | testing and debugging       |
+| 2024/04/02 |       |         |        | 3     |         |      | Frontend + backend connect  |
+| 2024/04/02 |       |         |        | 4     |         |      | Frontend + backend connect  |
+| 2024/04/02 |       |         |        | 4     |         |      | Voting implementation       |
 | 2024/04/02 |       |         |        |       | 7       |      | Firestore Snapshots         |
 | 2024/04/02 |       |         |        |       | 3       |      | Frontend + backend connect  |
 | 2024/04/02 |       |         |   5    |       |         |      | Edit trip implementation    |
